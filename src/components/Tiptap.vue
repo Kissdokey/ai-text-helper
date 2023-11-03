@@ -1,20 +1,64 @@
 <template>
-  <FixedMenu :editor="editor"></FixedMenu>
+  <DropDownMenu
+    v-show="isMenuShow"
+    :type="0"
+    :data="getData()"
+    :editor="editor"
+    >
+  </DropDownMenu>
+  <FixedMenu :editor="editor" :currentType="currentType"></FixedMenu>
   <BubbleMenu :editor="editor"></BubbleMenu>
   <editor-content :editor="editor" />
 </template>
 
 <script setup>
-import FixedMenu from "./FixedMenu.vue";
-import BubbleMenu from "./BubbleMenu.vue"
-import {useEditor, EditorContent } from "@tiptap/vue-3";
-import extensions from '../../util/extensions.js'
+import FixedMenu from "./FixedMenu/FixedMenu.vue";
+import BubbleMenu from "./BubbleMenu.vue";
+import { useEditor, EditorContent } from "@tiptap/vue-3";
+import extensions from "../../util/extensions.js";
+import DropDownMenu from "./FixedMenu/DropDownMenu.vue";
+import { ref, onMounted } from "vue";
+const HEADINGARRAY = ['正文','标题一','标题二','标题三','标题四','标题五']
+let isMenuShow = ref(false);
+let currentType = ref(-1);
+let type = 0;
+const TYPENUM = 4;
 const editor = useEditor({
   content: "",
   extensions: extensions,
   autofocus: true,
   editable: true,
   injectCSS: false,
+});
+function dealClick(e) {
+  if (e?.target?.classList?.contains("drop-down-press")) {
+    for (let i = 0; i < TYPENUM; i++) {
+      if (e.target.classList.contains(`type${i}`)) {
+        if (currentType.value === i) {
+          //关闭
+          isMenuShow.value = false;
+          currentType.value = -1;
+          return;
+        }
+        currentType.value = i;
+        const { top, left, width, height } = e.target.getBoundingClientRect();
+        isMenuShow.value = true;
+        document
+          .querySelector(".drop-down-menu")
+          .setAttribute("style", `left:${left}px;top:${top + height + 3}px `);
+
+        console.log(i, currentType.value);
+      }
+    }
+  }
+}
+function getData() {
+  if(currentType.value===0) {
+    return HEADINGARRAY
+  }
+}
+onMounted(() => {
+  window.addEventListener("click", dealClick);
 });
 </script>
 <style>
@@ -40,7 +84,8 @@ const editor = useEditor({
   border-radius: 10px;
 }
 
-.under-line-style {}
+.under-line-style {
+}
 
 .tiptap p.is-editor-empty:first-child::before {
   content: attr(data-placeholder);
@@ -61,9 +106,11 @@ blockquote {
   border-radius: 4px;
 }
 
-.bullet-list-style {}
+.bullet-list-style {
+}
 
-.image-style {}
+.image-style {
+}
 
 .ProseMirror-selectednode {
   outline: 3px solid #68cef8;
@@ -109,7 +156,10 @@ blockquote {
       z-index: 2;
       position: absolute;
       content: "";
-      left: 0; right: 0; top: 0; bottom: 0;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
       background: rgba(200, 200, 255, 0.4);
       pointer-events: none;
     }

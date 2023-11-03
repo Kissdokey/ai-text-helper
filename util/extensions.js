@@ -72,7 +72,9 @@ const extensions = [
       },
     }),
     ListItem,
-    Heading,
+    Heading.configure({
+      levels: [1, 2,3,4,5,6],
+    }),
     Image.configure({
       allowBase64: true,
       class: "image-style",
