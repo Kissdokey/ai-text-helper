@@ -1,7 +1,26 @@
 <template>
   <div class="drop-down-button">
     <div :class="['drop-down-press', `type${props.type}`]">
-      {{ props.info }}
+      {{ props.type === 1 || props.type === 3 ? "" : props.info }}
+      <input
+        v-if="props.type === 1"
+        type="color"
+        @input="
+          props.editor.chain().focus().setColor($event.target.value).run()
+        "
+        :value="props.editor.getAttributes('textStyle').color"
+      />
+      <input
+        v-if="props.type === 3"
+        type="color"
+        @input="
+          props.editor
+            .chain()
+            .focus()
+            .toggleHighlight({ color: $event.target.value })
+            .run()
+        "
+      />
       <div
         :class="[
           'drop-down-svg',
@@ -34,7 +53,12 @@
 <script setup>
 import { ref, watch } from "vue";
 
-const props = defineProps({ info: String, type: Number, currentType: Number });
+const props = defineProps({
+  info: String,
+  type: Number,
+  currentType: Number,
+  editor: Object,
+});
 //传入的是ref的解包，是一个proxy对象，那么，直接写在watch中就是一个不变的对象引用，监听不到变化；传入getter函数，监听的就是这个对象的值，能够
 watch(
   () => props.currentType,

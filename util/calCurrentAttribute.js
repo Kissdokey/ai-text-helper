@@ -7,5 +7,8 @@ const   calCurrentAttribute = (editor,type) => {
           }
           return "正文";
     }
+    if(type==='color') {
+      return editor.getAttributes('textStyle').color
+    }
   };
   export default  calCurrentAttribute

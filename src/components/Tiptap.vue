@@ -1,12 +1,16 @@
 <template>
   <DropDownMenu
     v-show="isMenuShow"
-    :type="0"
+    :type="type"
     :data="getData()"
     :editor="editor"
-    >
+  >
   </DropDownMenu>
-  <FixedMenu :editor="editor" :currentType="currentType"></FixedMenu>
+  <FixedMenu
+    :editor="editor"
+    :currentType="currentType"
+    @onDropDownMenu="onDropDownMenu"
+  ></FixedMenu>
   <BubbleMenu :editor="editor"></BubbleMenu>
   <editor-content :editor="editor" />
 </template>
@@ -18,10 +22,11 @@ import { useEditor, EditorContent } from "@tiptap/vue-3";
 import extensions from "../../util/extensions.js";
 import DropDownMenu from "./FixedMenu/DropDownMenu.vue";
 import { ref, onMounted } from "vue";
-const HEADINGARRAY = ['正文','标题一','标题二','标题三','标题四','标题五']
+const HEADINGARRAY = ["正文", "标题一", "标题二", "标题三", "标题四", "标题五"];
+const COLORARRAY = ["black", "red", "orange", "yellow", "green", "purple"];
 let isMenuShow = ref(false);
 let currentType = ref(-1);
-let type = 0;
+let type = ref(0);
 const TYPENUM = 4;
 const editor = useEditor({
   content: "",
@@ -30,6 +35,10 @@ const editor = useEditor({
   editable: true,
   injectCSS: false,
 });
+function onDropDownMenu(index) {
+  console.log(index, 222);
+  type.value = index;
+}
 function dealClick(e) {
   if (e?.target?.classList?.contains("drop-down-press")) {
     for (let i = 0; i < TYPENUM; i++) {
@@ -53,8 +62,11 @@ function dealClick(e) {
   }
 }
 function getData() {
-  if(currentType.value===0) {
-    return HEADINGARRAY
+  if (currentType.value === 0) {
+    return HEADINGARRAY;
+  }
+  if (currentType.value === 1 || currentType.value === 3) {
+    return COLORARRAY;
   }
 }
 onMounted(() => {
