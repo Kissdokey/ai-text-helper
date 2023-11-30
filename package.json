@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@mdi/font": "^7.3.67",
     "@tiptap/extension-blockquote": "^2.1.12",
     "@tiptap/extension-bubble-menu": "^2.1.12",
     "@tiptap/extension-bullet-list": "^2.1.12",
@@ -33,8 +34,16 @@
     "@tiptap/starter-kit": "^2.1.12",
     "@tiptap/suggestion": "^2.1.12",
     "@tiptap/vue-3": "^2.1.12",
+    "floating-vue": "^2.0.0-beta.24",
+    "mammoth": "^1.6.0",
+    "pinia": "^2.1.7",
+    "pinia-plugin-persistedstate": "^3.2.0",
     "tippy.js": "^6.3.7",
-    "vue": "^3.3.4"
+    "vite-plugin-vuetify": "^1.0.2",
+    "vue": "^3.3.4",
+    "vue-router": "^4.2.5",
+    "vue3-tour": "^0.3.4",
+    "vuetify": "^3.4.4"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.2.3",

@@ -129,6 +129,9 @@ const rgb = {
   green: "#00FF00",
   purple: "#FF00FF",
 };
+const menuItem = [
+  
+]
 function headingType() {
   const heading = calCurrentAttribute(props.editor, "heading");
   if (heading === "正文") {

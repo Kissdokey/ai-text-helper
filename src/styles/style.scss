@@ -1,0 +1,21 @@
+@use 'vuetify/settings' with (
+  $list-color: #4b4b4b,
+  $list-padding: 0 0,
+
+  $list-subheader-color: #707070,
+  $list-subheader-font-size: 12px,
+  $list-subheader-font-weight: 400,
+  $list-subheader-min-height: 0,
+  $list-subheader-line-height: normal,
+
+  $list-item-one-line-min-height: 35px,
+  $list-item-padding: 0 7px,
+  $list-item-icon-margin-start: 8px,
+  $list-item-icon-margin-end: 4px,
+  $list-item-border-radius: 4px,
+  $list-item-icon-opacity: 0.8,
+  $list-item-icon-active-opacity: 0.8,
+
+  $list-item-title-font-size: 14px,
+  $list-item-title-font-weight: 400
+);

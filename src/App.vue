@@ -1,11 +1,10 @@
 <script setup>
-import Tiptap from './components/Tiptap.vue'
 
 </script>
 
 <template>
 <div id="app">
-    <tiptap />
+  <router-view></router-view>
   </div>
 </template>
 

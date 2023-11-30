@@ -48,14 +48,14 @@ const extensions = [
     TextAlign.configure({
       types: ["heading", "paragraph"],
     }),
-    Placeholder.configure({
-      placeholder: ({ node }) => {
-        if (node.type.name === "heading") {
-          return "What’s the title?";
-        }
-        return "Can you add some further context?";
-      },
-    }),
+    // Placeholder.configure({
+    //   placeholder: ({ node }) => {
+    //     if (node.type.name === "heading") {
+    //       return "What’s the title?";
+    //     }
+    //     return "Can you add some further context?";
+    //   },
+    // }),
     CodeBlock.configure({
       HTMLAttributes: {
         class: "code-block-style",
@@ -76,6 +76,7 @@ const extensions = [
       levels: [1, 2,3,4,5,6],
     }),
     Image.configure({
+      inline: true,
       allowBase64: true,
       class: "image-style",
     }),

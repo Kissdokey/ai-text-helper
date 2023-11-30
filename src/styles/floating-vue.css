@@ -1,0 +1,19 @@
+.v-popper--theme-delicate .v-popper__inner {
+  font-size: 12px;
+  background-color: #747474;
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+.v-popper--theme-delicate .v-popper__arrow-outer {
+  border-color: #747474;
+}
+
+.v-popper--theme-toast .v-popper__inner {
+  background-color: green;
+}
+
+.v-popper--theme-toast .v-popper__arrow-outer {
+  border-color: green;
+}
+

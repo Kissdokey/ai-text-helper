@@ -61,7 +61,7 @@
     <Button :type="'strike'" :editor="props.editor"></Button>
     <Button :type="'code'" :editor="props.editor"></Button>
     <Button :type="'italic'" :editor="props.editor"> </Button>
-    <Button :type="'Underline'" :editor="props.editor"> </Button>
+    <Button :type="'underline'" :editor="props.editor"> </Button>
     <Button :type="'link'" :editor="props.editor"> </Button>
     <Button :type="{ textAlign: 'left' }" :editor="props.editor"> </Button>
     <Button :type="{ textAlign: 'center' }" :editor="props.editor"> </Button>
@@ -90,6 +90,9 @@ const calCurrentColor = computed(() => {
   background-color: rgb(255, 255, 255);
   height: 42px;
   width: 100%;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
   overflow: hidden;
   box-shadow: 0 0 0 1px rgba(13, 13, 13, 0.06),
     0px 1px 4px rgba(13, 13, 13, 0.1);
