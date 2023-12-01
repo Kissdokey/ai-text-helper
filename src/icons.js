@@ -1,4 +1,5 @@
 import Icon from '@/assets/Icon.vue'
-const icons = {Icon}
+import IconArrow from '@/assets/svgs/IconArrow.vue'
+const icons = {Icon,IconArrow}
 
 export { icons }

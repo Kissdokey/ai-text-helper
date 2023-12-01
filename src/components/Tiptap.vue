@@ -1,12 +1,4 @@
 <template>
-  <DropDownMenu
-    v-show="isMenuShow"
-    :type="type"
-    :data="getData()"
-    :editor="editor"
-  >
-  </DropDownMenu>
-  <v-icon>$Icon</v-icon>
   <button @click="getHtml">html</button>
   <button class="yellow-text ml10" @click="$refs.doc.click()">導入文件</button>
   <input ref="doc" accept=".docx" style="position:absolute;left:9px;z-index: -999;" type="file" @change="getWordFile">
@@ -20,20 +12,16 @@
 </template>
 
 <script setup>
-import FixedMenu from "./FixedMenu/FixedMenu.vue";
-import BubbleMenu from "./BubbleMenu.vue";
+import FixedMenu from "@/components/FixedMenu.vue";
+import BubbleMenu from "@/components/BubbleMenu.vue";
 import { useEditor, EditorContent } from "@tiptap/vue-3";
-import extensions from "../../util/extensions.js";
-import DropDownMenu from "./FixedMenu/DropDownMenu.vue";
+import extensions from "@/util/extensions.js";
 import { ref, onMounted, onUpdated } from "vue";
 import mammoth from "mammoth";
 const HEADINGARRAY = ["正文", "标题一", "标题二", "标题三", "标题四", "标题五"];
 const COLORARRAY = ["black", "red", "orange", "yellow", "green", "purple"];
-let doms = []
-let isMenuShow = ref(false);
 let currentType = ref(-1);
 let type = ref(0);
-const TYPENUM = 4;
 const editor = useEditor({
   content: "",
   extensions: extensions,
@@ -41,18 +29,15 @@ const editor = useEditor({
   editable: true,
   injectCSS: false,
   onUpdate({ editor }) {
-    // The content has changed.
-    // doms = document.querySelectorAll("p")
-    // doms.forEach(ele=> {
-    //   ele.onclic=()=> {
-    //     console.log('click')
-    //   }
-    // })
   },
 });
 function onDropDownMenu(index) {
-  console.log(index, 222);
   type.value = index;
+  if(currentType.value === index) {
+    currentType.value = -1
+    return 
+  }
+  currentType.value = index
 }
 function getHtml() {
   const html = editor.value.getHTML()
@@ -77,44 +62,15 @@ function getWordFile(e) {
 }
 function dealClick(e) {
   if (e?.target?.classList?.contains("drop-down-press")) {
-    for (let i = 0; i < TYPENUM; i++) {
-      if (e.target.classList.contains(`type${i}`)) {
-        if (currentType.value === i) {
-          //关闭
-          isMenuShow.value = false;
-          currentType.value = -1;
-          return;
-        }
-        currentType.value = i;
-        const { top, left, width, height } = e.target.getBoundingClientRect();
-        isMenuShow.value = true;
-        document
-          .querySelector(".drop-down-menu")
-          .setAttribute("style", `left:${left}px;top:${top + height + 3}px `);
-
-        console.log(i, currentType.value);
-      }
-    }
+   return
   }
   else {
-    isMenuShow.value = false;
     currentType.value = -1;
-  }
-}
-function getData() {
-  if (currentType.value === 0) {
-    return HEADINGARRAY;
-  }
-  if (currentType.value === 1 || currentType.value === 3) {
-    return COLORARRAY;
   }
 }
 onMounted(() => {
   window.addEventListener("click", dealClick);
 });
-onUpdated(()=> {
-  console.log(111)
-})
 </script>
 <style>
 .is-active {

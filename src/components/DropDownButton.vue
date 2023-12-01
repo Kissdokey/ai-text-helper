@@ -29,23 +29,7 @@
             : 'drop-down-svg-back',
         ]"
       >
-        <svg
-          width="12"
-          height="12"
-          viewBox="0 0 16 16"
-          fill="none"
-          stroke-width="1.5"
-        >
-          <g id="group-0" stroke="currentColor" fill="currentColor">
-            <path
-              d="M4.25 6.49994L7.99327 9.99357C7.99711 9.99716 8.00307 9.99716 8.00691 9.99357L11.75 6.49994"
-              stroke-linecap="round"
-              stroke-linejoin="miter"
-              fill="none"
-              vector-effect="non-scaling-stroke"
-            ></path>
-          </g>
-        </svg>
+      <v-icon size="12">$IconArrow</v-icon>
       </div>
     </div>
   </div>
@@ -59,13 +43,6 @@ const props = defineProps({
   currentType: Number,
   editor: Object,
 });
-//传入的是ref的解包，是一个proxy对象，那么，直接写在watch中就是一个不变的对象引用，监听不到变化；传入getter函数，监听的就是这个对象的值，能够
-watch(
-  () => props.currentType,
-  (newValue, oldValue) => {
-    console.log("watch 已触发", newValue);
-  }
-);
 </script>
 <style scoped>
 .drop-down-button {

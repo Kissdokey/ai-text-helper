@@ -119,7 +119,7 @@
 </template>
 <script setup>
 import { ref, watch } from "vue";
-import calCurrentAttribute from "../../../util/calCurrentAttribute";
+import calCurrentAttribute from "@/util/calCurrentAttribute";
 const props = defineProps({ type: Number, data: Array, editor: Object }); //0:heading,1:color,2:bgc
 const rgb = {
   black: "#000000",

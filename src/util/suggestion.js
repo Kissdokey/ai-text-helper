@@ -1,6 +1,6 @@
 import { VueRenderer } from '@tiptap/vue-3'
 import tippy from 'tippy.js'
-import MentionList from "../src/components/MentionList.vue"
+import MentionList from "@/components/MentionList.vue"
 
 export default {
   items: ({ query }) => {
