@@ -1,4 +1,5 @@
 <template>
+  <div class="operate-item"></div>
   <button @click="getHtml">html</button>
   <button class="yellow-text ml10" @click="$refs.doc.click()">導入文件</button>
   <input ref="doc" accept=".docx" style="position:absolute;left:9px;z-index: -999;" type="file" @change="getWordFile">
@@ -16,21 +17,37 @@ import FixedMenu from "@/components/FixedMenu.vue";
 import BubbleMenu from "@/components/BubbleMenu.vue";
 import { useEditor, EditorContent } from "@tiptap/vue-3";
 import extensions from "@/util/extensions.js";
-import { ref, onMounted, onUpdated } from "vue";
+import { ref, onMounted, onUpdated, onUnmounted } from "vue";
 import mammoth from "mammoth";
-const HEADINGARRAY = ["正文", "标题一", "标题二", "标题三", "标题四", "标题五"];
-const COLORARRAY = ["black", "red", "orange", "yellow", "green", "purple"];
+import { provide,inject } from 'vue'
+import { colorItems } from "../util/constantData";
+import {paragraphTags} from '@/util/constantData.js'
+let operateItemRef = null;
 let currentType = ref(-1);
 let type = ref(0);
+const eventBus = inject('eventBus')
+let editorAreaDom = null
+const PARAGRAPHDOM = paragraphTags
 const editor = useEditor({
   content: "",
   extensions: extensions,
   autofocus: true,
   editable: true,
   injectCSS: false,
-  onUpdate({ editor }) {
+  onUpdate() {
+    if(!editorAreaDom) {
+      editorAreaDom = document.querySelector('.ProseMirror')
+    } 
+    PARAGRAPHDOM.forEach(item=> {
+      let collectDom = editorAreaDom?.getElementsByTagName(item) || []
+      for(let i=0;i<collectDom.length;i++) {
+        collectDom[i].onmouseover = mouseOver
+        collectDom[i].onmouseout = mouseOut
+      }
+    })
   },
 });
+provide('editor', editor)
 function onDropDownMenu(index) {
   type.value = index;
   if(currentType.value === index) {
@@ -55,6 +72,8 @@ function getWordFile(e) {
       .then(res => {
         console.log(res.value)
         editor.value.commands.setContent(res.value)
+        let updateFunc = editor.value.callbacks.update[0]
+        updateFunc()
          //res.value 就是生成的HTML文件，可以直接赋值给富文本编辑器
       })
       .done()
@@ -68,11 +87,36 @@ function dealClick(e) {
     currentType.value = -1;
   }
 }
+function onChangeColor(test,name){
+  console.log(test,name)
+  editor.value.commands.setColor(colorItems[index].rgb)
+  console.log(obj)
+}
+function onChangeHighLightColor(index) {
+  editor.value.commands.toggleHighlight({ color: colorItems[index].rgb })
+}
+function mouseOver(e) {
+  operateItemRef.style.left = e.relatedTarget.offsetLeft + 'px';
+  operateItemRef.style.top = e.relatedTarget.offsetTop + 'px';
+  console.log(e.fromElement.offsetTop)
+}
+function mouseOut(e) {
+  console.log(e)
+}
 onMounted(() => {
+  operateItemRef = document.querySelector('.operate-item')
   window.addEventListener("click", dealClick);
+  eventBus.on('color-index',(test)=>onChangeColor(test))
+  eventBus.on('highLight-index',index=>onChangeHighLightColor(index))
 });
+onUnmounted(()=> {
+  window.removeEventListener("click", dealClick)
+})
 </script>
 <style>
+.ProseMirror {
+  min-height: 70vh;
+}
 .is-active {
   color: red;
   background-color: black;
@@ -200,19 +244,11 @@ blockquote {
   cursor: ew-resize;
   cursor: col-resize;
 }
-// h1,h2,h3,h4,h5,h6,p {
-//   position: relative;
-
-
-// }
-// h1:hover::before,h2:hover::before,h3:hover::before,h4:hover::before,h5:hover::before,h6:hover::before,p:hover::before {
-//   content: '';
-//   width: 30px;
-//   height: 30px;
-//   background-color: red;
-//   position: absolute;
-//   left:-30px;
-//   z-index: 1000;
-//   cursor: pointer;
-// }
+.operate-item {
+  width: 30px;
+  height: 30px;
+  position: absolute;
+  background-color: red;
+  z-index: 99;
+}
 </style>

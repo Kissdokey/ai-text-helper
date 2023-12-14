@@ -1,60 +1,37 @@
 <script>
+import {useColorStore} from '@/store/color'
+import { mapState, mapActions } from 'pinia'
+import { inject } from 'vue';
+import {colorItems} from '@/util/constantData'
 export default {
   props: {
-    colorIndex: {
-      type: Number,
-      required: true,
-    },
-    type: String,
+    type: String, //color or highLight or draw or comment
     title: String,
-
-    eventEmitter: {
-      type: Object,
-      required: true,
-    },
   },
 
   data() {
     return {
       visible: false,
-
-      colorItems: [
-        { name: "Blue", rgb: "#0a23f5" },
-        { name: "Green", rgb: "#87d54c" },
-        { name: "Yellow", rgb: "#f8d147" },
-        { name: "Orange", rgb: "#ee7830" },
-        { name: "Red", rgb: "#d3393f" },
-        { name: "Purple", rgb: "#963b83" },
-        { name: "Light blue", rgb: "#71e2fb" },
-        { name: "Light green", rgb: "#d0f885" },
-        { name: "Light yellow", rgb: "#fbf394" },
-        { name: "Light orange", rgb: "#f6c2a3" },
-        { name: "Pink", rgb: "#ef8791" },
-        { name: "Light purple", rgb: "#ec91f9" },
-        { name: "White", rgb: "#ffffff" },
-        { name: "Pale gray", rgb: "#cccccc" },
-        { name: "Light gray", rgb: "#aaaaaa" },
-        { name: "Medium grey", rgb: "#777777" },
-        { name: "Dark grey", rgb: "#444444" },
-        { name: "Black", rgb: "#000000" },
-      ],
+      eventBus:inject('eventBus'),
+      editor:inject('editor'),
+      colorItems: colorItems,
     };
   },
-
-  watch: {
+  computed: {
+    ...mapState(useColorStore, [ 'wordColorIndex', 'highlightColorIndex']),
     colorIndex() {
-      if (this.colorIndex >= 0 && this.colorIndex < this.colorItems.length) {
-        this.eventEmitter.emit(
-          "color-value",
-          this.colorItems[this.colorIndex].rgb
-        );
-      } else {
-        throw new Error(`Invalid color index: ${this.colorIndex}`);
-      }
-    },
+        switch (this.type) {
+          case 'color' : {
+            return this.wordColorIndex
+          };
+          case 'highLight' : {
+            return this.highlightColorIndex
+          }
+        }
+    }
   },
-
   methods: {
+    ...mapActions(useColorStore, ['updateWordColorIndex','updateHighlightColorIndex']),
     itemColor(item) {
       var style = "background-color: " + item.rgb;
       if (item.name == "White") {
@@ -64,8 +41,18 @@ export default {
     },
 
     setCurrent(index) {
-      this.eventEmitter.emit("color-index", index);
-      this.visible = false;
+      switch (this.type) {
+        case 'color' : {
+         this.eventBus.emit("color-index", index);
+         this.visible = false
+         this.updateWordColorIndex(index)
+        }break;
+        case 'highLight': {
+          this.eventBus.emit("highLight-index", index);
+          this.visible = false
+          this.updateHighlightColorIndex(index)
+        }
+      }
     },
 
     getRGB(colorIndex) {
@@ -98,7 +85,7 @@ export default {
             class="color-item"
             :style="itemColor(item)"
             :title="item.name"
-            @click.stop="setCurrent(index)"
+            @click="setCurrent(index)"
           >
             <!-- 看着v-icon自带居中属性 -->
             <div class="select-icon">
@@ -114,6 +101,9 @@ export default {
 </template>
 
 <style scoped>
+* {
+  user-select: none;
+}
 .color-menu-title {
   font-size: 14px;
   font-weight: 800;

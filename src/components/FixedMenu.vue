@@ -1,35 +1,28 @@
 <template>
-  <ColorSelectMenu
-    :color-index="colorIndex"
-    :title="title"
-    :event-emitter="eventBus"
+  <HeadingLevelMenu
     activator="#heading-level"
     location="bottom"
     offset="6px"
     ref="colorMenu"
   />
   <ColorSelectMenu
-    :color-index="colorIndex"
-    :title="title"
-    :event-emitter="eventBus"
+  type="color"
+    title="Choose Text Color"
     activator="#text-color"
     location="bottom"
     offset="6px"
     ref="colorMenu"
   />
   <ColorSelectMenu
-    :color-index="colorIndex"
-    :title="title"
-    :event-emitter="eventBus"
+  type="highLight"
+    title="Choose HighLight Color"
     activator="#text-background-color"
     location="bottom"
     offset="6px"
     ref="colorMenu"
   />
   <ColorSelectMenu
-    :color-index="colorIndex"
     :title="title"
-    :event-emitter="eventBus"
     activator="#table-actions"
     location="bottom"
     offset="6px"
@@ -45,38 +38,50 @@
     {{ isFold ? "展开" : "收起" }}
   </button>
   <div
-    v-if="props.editor"
+    v-if="editor"
     :class="['fixed-menu', isFold ? '' : 'fix-menu-unfold']"
   >
     <template v-for="(item, index) in buttonInfo">
       <DropDownButton
         v-if="item.type === 'drowDown'"
         :id="item.id"
-        :info="item.info"
+        :info="calMenuName(item.info)"
         :type="item.typeIndex"
         :currentType="currentType"
-        :editor="props.editor"
+        :editor="editor"
         @click.native="item.action"
+        :tooltip="item.tooltip"
       ></DropDownButton>
-      <Button v-else :type="item.typeDetail" :tooltip="item.tooltip" :editor="props.editor"> </Button>
+      <Button v-else :type="item.typeDetail" :tooltip="item.tooltip" :editor="editor"> </Button>
     </template>
   </div>
 </template>
 <script setup>
-import { computed, defineProps, ref } from "vue";
+import { computed, defineProps, ref,inject } from "vue";
 import DropDownButton from "@/components/DropDownButton.vue";
 import ColorSelectMenu from "./ColorSelectMenu.vue";
+import HeadingLevelMenu from "./HeadingLevelMenu.vue";
 import calCurrentAttribute from "@/util/calCurrentAttribute.js";
 import Button from "./Button.vue";
-const props = defineProps({ editor: Object, currentType: Number });
+const editor = inject('editor')
+const props = defineProps({currentType:Number})
 const emits = defineEmits(["onDropDownMenu"]);
 let isFold = ref(false);
 const calHeadingLevel = computed(() => {
-  return calCurrentAttribute(props.editor, "heading");
+  return calCurrentAttribute(editor.value, "heading");
 });
 const calCurrentColor = computed(() => {
-  return props.editor.getAttributes("textStyle").color;
+  return editor.value.getAttributes("textStyle").color;
 });
+const calMenuName = (info)=>{
+  if(info===0) {
+    return calHeadingLevel.value
+  }
+  if(info===1) {
+    return calCurrentColor.value
+  }
+  return info
+}
 const buttonInfo = [
   {
     type: "drowDown",
@@ -86,7 +91,8 @@ const buttonInfo = [
     action: () => {
       emits("onDropDownMenu", 0);
     },
-    info: calHeadingLevel,
+    info: 0,
+    tooltip:'Select Heading Level'
   },
   {
     type: "drowDown",
@@ -96,7 +102,8 @@ const buttonInfo = [
     action: () => {
       emits("onDropDownMenu", 1);
     },
-    info: calCurrentColor,
+    info: 1,
+    tooltip:'Select Text Color'
   },
   {
     type: "drowDown",
@@ -107,6 +114,7 @@ const buttonInfo = [
       emits("onDropDownMenu", 2);
     },
     info: "表格",
+    tooltip:'Select Table Operater'
   },
   {
     type: "drowDown",
@@ -116,7 +124,8 @@ const buttonInfo = [
     action: () => {
       emits("onDropDownMenu", 3);
     },
-    info: calCurrentColor,
+    info: 1,
+    tooltip:'Select HighLight Color'
   },
   {
     type: "normal",

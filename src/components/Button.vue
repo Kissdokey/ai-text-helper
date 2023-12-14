@@ -55,6 +55,8 @@
   </div>
 </template>
 <script setup>
+import { inject } from 'vue';
+const eventBus = inject('eventBus')
 const props = defineProps({ type: String, editor: Object,tooltip:String });
 function isActive() {
   if (props.editor.isActive(props.type)) {

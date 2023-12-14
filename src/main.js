@@ -10,6 +10,7 @@ import { createPinia } from "pinia";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 
 // Libraries
+import mitt from 'mitt'
 import FloatingVue from "floating-vue";
 import Vue3Tour from "vue3-tour";
 import router from './router' 
@@ -36,4 +37,8 @@ app
     .use(router)
     .use(Vue3Tour)
     .use(FloatingVue, configFloatingVue);
+
+const emitter = mitt()
+app.provide('eventBus', emitter)
+
 app.mount("#app");
