@@ -55,9 +55,9 @@
   </div>
 </template>
 <script setup>
-import { inject } from 'vue';
-const eventBus = inject('eventBus')
-const props = defineProps({ type: String, editor: Object,tooltip:String });
+import { inject } from "vue";
+const eventBus = inject("eventBus");
+const props = defineProps({ type: String, editor: Object, tooltip: String });
 function isActive() {
   if (props.editor.isActive(props.type)) {
     return true;
@@ -115,14 +115,37 @@ function clickButton() {
   align-items: center;
   justify-content: center;
   user-select: none;
+
+  font-size: 15px;
+  font-family: inherit;
+  border: none;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  box-shadow: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
+}
+.button-press::before {
+  content: "";
+  width: 0;
+  height: 3em;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-image: linear-gradient(to right, #0fd850 0%, #f9f047 100%);
+  transition: 0.5s ease;
+  display: block;
+  z-index: -1;
 }
 
+.button-press:hover::before {
+  width: 100%;
+}
 .button-press:hover {
   background-color: rgb(241, 241, 241);
 }
 
 .active {
-  background-color: rgb(241, 241, 241);
+  background-color: rgb(220, 220, 220);
 }
 
 .button-press:active {

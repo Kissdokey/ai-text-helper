@@ -6,7 +6,12 @@
       theme: 'delicate',
     }"
   >
-    <div :class="['drop-down-press', `type${props.type}`]">
+    <div
+      :class="[
+        `type${props.type}`,
+        props.currentType === props.type ? 'drop-down-press-active' : 'drop-down-press',
+      ]"
+    >
       {{ props.type === 1 || props.type === 3 ? "" : props.info }}
       <div
         class="color-box"
@@ -50,7 +55,7 @@ const props = defineProps({
   editor: Object,
   tooltip: String,
 });
-const eventBus = inject('eventBus')
+const eventBus = inject("eventBus");
 const calColorStyle = computed(() => {
   if (props.type === 1) {
     return { backgroundColor: colorItems[colorStates.wordColorIndex()].rgb };
@@ -60,14 +65,13 @@ const calColorStyle = computed(() => {
     };
   }
 });
-const clickColorBox = ()=> {
-  if(props.type===1) {
-    eventBus.emit('color-index',(colorStates.wordColorIndex(),{name:111}))
+const clickColorBox = () => {
+  if (props.type === 1) {
+    eventBus.emit("color-index", colorStates.wordColorIndex());
+  } else if (props.type === 3) {
+    eventBus.emit("highLight-index", colorStates.highlightColorIndex());
   }
-  else if(props.type === 3) {
-    eventBus.emit('highLight-index',colorStates.highlightColorIndex())
-  }
-}
+};
 </script>
 <style scoped>
 .drop-down-button {
@@ -88,9 +92,54 @@ const clickColorBox = ()=> {
   align-items: center;
   justify-content: space-between;
   user-select: none;
+
+  font-size: 15px;
+  font-family: inherit;
+  border: none;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  box-shadow: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
+}
+
+.drop-down-press::before {
+  content: "";
+  width: 0;
+  height: 3em;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-image: linear-gradient(to right, #fbd786 0%, #f7797d 100%);
+  transition: 0.5s ease;
+  display: block;
+  z-index: -1;
+}
+.drop-down-press:hover::before {
+  width: 100%;
 }
 .drop-down-press:hover {
+  color: white;
   background-color: rgb(241, 241, 241);
+}
+.drop-down-press-active {
+  position: relative;
+  box-sizing: border-box;
+  border-radius: 6px;
+  height: 100%;
+  padding: 4px 10px 4px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+  color: white;
+  font-size: 15px;
+  font-family: inherit;
+  border: none;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  box-shadow: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
+  background-image: linear-gradient(to right, #fbd786 0%, #f7797d 100%);
 }
 .drop-down-press:active {
   background-color: rgb(230, 230, 230);

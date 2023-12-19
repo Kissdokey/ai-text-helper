@@ -87,26 +87,24 @@ function dealClick(e) {
     currentType.value = -1;
   }
 }
-function onChangeColor(test,name){
-  console.log(test,name)
+function onChangeColor(index){
   editor.value.commands.setColor(colorItems[index].rgb)
-  console.log(obj)
 }
 function onChangeHighLightColor(index) {
   editor.value.commands.toggleHighlight({ color: colorItems[index].rgb })
 }
-function mouseOver(e) {
-  operateItemRef.style.left = e.relatedTarget.offsetLeft + 'px';
-  operateItemRef.style.top = e.relatedTarget.offsetTop + 'px';
-  console.log(e.fromElement.offsetTop)
-}
-function mouseOut(e) {
-  console.log(e)
-}
+// function mouseOver(e) {
+//   operateItemRef.style.left = e.relatedTarget.offsetLeft + 'px';
+//   operateItemRef.style.top = e.relatedTarget.offsetTop + 'px';
+//   console.log(e.fromElement.offsetTop)
+// }
+// function mouseOut(e) {
+//   console.log(e)
+// }
 onMounted(() => {
   operateItemRef = document.querySelector('.operate-item')
   window.addEventListener("click", dealClick);
-  eventBus.on('color-index',(test)=>onChangeColor(test))
+  eventBus.on('color-index',index=>onChangeColor(index))
   eventBus.on('highLight-index',index=>onChangeHighLightColor(index))
 });
 onUnmounted(()=> {
