@@ -53,6 +53,7 @@ eventBus.on("file-bar-auto-scroll", () => autoScroll(fileItems.value.length - 1)
   display: flex;
   width: 100%;
   height: 42px;
+  padding: 6px;
   overflow-x: hidden;
   overflow-y: hidden;
   background-color: rgba(13,13,13,0.1);
@@ -63,7 +64,7 @@ eventBus.on("file-bar-auto-scroll", () => autoScroll(fileItems.value.length - 1)
 .file-item {
   display: inline-block;
   min-width: 80px;
-  height: 36px;
+  height: 30px;
   background-color: #fff;
   display: flex;
   align-items: center;

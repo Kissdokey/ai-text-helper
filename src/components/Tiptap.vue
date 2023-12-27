@@ -19,7 +19,6 @@
       <FixedMenu
         :editor="editor"
         :currentType="currentType"
-        @onDropDownMenu="onDropDownMenu"
       ></FixedMenu>
     </div>
     <BubbleMenu :editor="editor"></BubbleMenu>
@@ -46,8 +45,8 @@ let operateItemRef = null;
 let editorAreaDom = null;
 const PARAGRAPHDOM = paragraphTags;
 
-let currentType = ref(-1);
-let type = ref(0);
+
+
 const initialValue = ref(INITHTML)
 const fileWithoutNameIndex = ref(1)
 const eventBus = inject("eventBus");
@@ -79,7 +78,6 @@ function getdefaultName() {
 }
 function initFile() {
   if(!editorContent2.currentFile) {
-    console.log(111)
     createNewFile()
     return
   }
@@ -91,6 +89,7 @@ function createNewFile() {
   editor.value.commands.setContent(initialValue.value);
   let updateFunc = editor.value.callbacks.update[0];
   updateFunc();
+  //完成更新之后将执行自动scroll
   nextTick(()=> {
     eventBus.emit('file-bar-auto-scroll')
   })
@@ -101,14 +100,7 @@ function onChangeFile(id) {
   let updateFunc = editor.value.callbacks.update[0];
   updateFunc();
 }
-function onDropDownMenu(index) {
-  type.value = index;
-  if (currentType.value === index) {
-    currentType.value = -1;
-    return;
-  }
-  currentType.value = index;
-}
+
 function getHtml() {
   const html = editor.value.getHTML();
   return html
@@ -132,13 +124,7 @@ function getWordFile(e) {
       .done();
   };
 }
-function dealClick(e) {
-  if (e?.target?.classList?.contains("drop-down-press")) {
-    return;
-  } else {
-    currentType.value = -1;
-  }
-}
+
 function onChangeColor(index) {
   editor.value.commands.setColor(colorItems[index].rgb);
 }
@@ -156,13 +142,11 @@ function onChangeHighLightColor(index) {
 onMounted(() => {
   initFile()
   operateItemRef = document.querySelector(".operate-item");
-  window.addEventListener("click", dealClick);
   eventBus.on("change-file",onChangeFile);
   eventBus.on("color-index", (index) => onChangeColor(index));
   eventBus.on("highLight-index", (index) => onChangeHighLightColor(index));
 });
 onUnmounted(() => {
-  window.removeEventListener("click", dealClick);
   editor.destroy()
 });
 </script>

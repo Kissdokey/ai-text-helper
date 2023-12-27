@@ -57,15 +57,22 @@
   </div>
 </template>
 <script setup>
-import { computed, defineProps, ref,inject } from "vue";
+import { computed, defineProps, ref,inject, onMounted, onUnmounted } from "vue";
 import DropDownButton from "@/components/DropDownButton.vue";
 import ColorSelectMenu from "./ColorSelectMenu.vue";
 import HeadingLevelMenu from "./HeadingLevelMenu.vue";
 import calCurrentAttribute from "@/util/calCurrentAttribute.js";
 import Button from "./Button.vue";
+
+onMounted(()=> {
+  window.addEventListener("click", dealClick);
+})
+onUnmounted(()=> {
+  window.removeEventListener("click", dealClick);
+})
+const type = ref(0);
+const currentType = ref(-1);
 const editor = inject('editor')
-const props = defineProps({currentType:Number})
-const emits = defineEmits(["onDropDownMenu"]);
 let isFold = ref(false);
 const calHeadingLevel = computed(() => {
   return calCurrentAttribute(editor.value, "heading");
@@ -89,7 +96,7 @@ const buttonInfo = [
     typeIndex: 0,
     id: "heading-level",
     action: () => {
-      emits("onDropDownMenu", 0);
+      onDropDownMenu(0)
     },
     info: 0,
     tooltip:'Select Heading Level'
@@ -100,7 +107,7 @@ const buttonInfo = [
     id: "text-color",
     typeIndex: 1,
     action: () => {
-      emits("onDropDownMenu", 1);
+      onDropDownMenu(1)
     },
     info: 1,
     tooltip:'Select Text Color'
@@ -111,7 +118,7 @@ const buttonInfo = [
     typeIndex: 2,
     id: "table-actions",
     action: () => {
-      emits("onDropDownMenu", 2);
+      onDropDownMenu(2)
     },
     info: "表格",
     tooltip:'Select Table Operater'
@@ -122,7 +129,7 @@ const buttonInfo = [
     typeIndex: 3,
     id: "text-background-color",
     action: () => {
-      emits("onDropDownMenu", 3);
+      onDropDownMenu(3)
     },
     info: 1,
     tooltip:'Select HighLight Color'
@@ -178,6 +185,22 @@ const buttonInfo = [
     typeDetail: "blockquote",
   },
 ];
+//仅用于菜单的点击，dealCick针对点击菜单外事件，把菜单收起；onDropDownMenu把菜单打开
+function dealClick(e) {
+  if (e?.target?.classList?.contains("drop-down-press")) {
+    return;
+  } else {
+    currentType.value = -1;
+  }
+}
+function onDropDownMenu(index) {
+  type.value = index;
+  if (currentType.value === index) {
+    currentType.value = -1;
+    return;
+  }
+  currentType.value = index;
+}
 </script>
 <style scoped>
 .fixed-menu {
