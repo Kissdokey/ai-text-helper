@@ -7,6 +7,7 @@ export const useEditorContent = defineStore(
   () => {
     // States
     const fileInfo = ref({});
+    const openedFiles = ref([])
     const currentFile = ref("");
     const currentName = ref("");
     // Getters
@@ -32,6 +33,7 @@ export const useEditorContent = defineStore(
       const info = { name: name, content: content };
       fileInfo.value[uuid] = info;
       currentFile.value = uuid;
+      appendOpenedFile(uuid,info)
     };
     const changeFile = (id) => {
       if (id in fileInfo.value) {
@@ -46,17 +48,26 @@ export const useEditorContent = defineStore(
       currentName.value = "";
       currentFile.value = "";
     };
+    const appendOpenedFile = (id,info)=> {
+      openedFiles.value.push({id:id,...info})
+    }
+    const spliceOpenedFile = (index)=> {
+      openedFiles.value.splice(index,1)
+    }
     return {
       fileInfo,
       currentFile,
       currentName,
+      openedFiles,
       saveContent,
       saveName,
       deleteFile,
       createFile,
       changeFile,
       changeCurrentName,
-      initFile
+      initFile,
+      appendOpenedFile,
+      spliceOpenedFile
     };
   },
   { persist: true }

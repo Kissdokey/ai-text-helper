@@ -1,6 +1,11 @@
 <template>
   <FileSelectBar></FileSelectBar>
   <Notification></Notification>
+  <HistoryPanel
+    activator="#history-menu-btn"
+    location="bottom"
+    offset="8px"
+  ></HistoryPanel>
   <div class="app-container">
     <div class="app-header">
       <div class="operate-item"></div>
@@ -16,9 +21,8 @@
         @change="getWordFile"
       />
       <v-btn @click="createNewFile">新建</v-btn>
-      <FixedMenu
-        :editor="editor"
-      ></FixedMenu>
+      <v-btn id="history-menu-btn">历史文档</v-btn>
+      <FixedMenu :editor="editor"></FixedMenu>
     </div>
     <BubbleMenu :editor="editor"></BubbleMenu>
     <div class="editor-container">
@@ -28,15 +32,24 @@
 </template>
 
 <script setup>
-import FileSelectBar from '@/components/FileSelectBar.vue';
-import Notification from '@/components/Notification.vue';
+import HistoryPanel from "@/components/HistoryPanel.vue";
+import FileSelectBar from "@/components/FileSelectBar.vue";
+import Notification from "@/components/Notification.vue";
 import FixedMenu from "@/components/FixedMenu.vue";
 import BubbleMenu from "@/components/BubbleMenu.vue";
 import { useEditor, EditorContent } from "@tiptap/vue-3";
 import extensions from "@/util/extensions.js";
-import { ref, onMounted, onUpdated, onUnmounted,provide, inject, nextTick } from "vue";
+import {
+  ref,
+  onMounted,
+  onUpdated,
+  onUnmounted,
+  provide,
+  inject,
+  nextTick,
+} from "vue";
 import mammoth from "mammoth";
-import { colorItems,INITHTML,paragraphTags } from "@/util/constantData.js";
+import { colorItems, INITHTML, paragraphTags } from "@/util/constantData.js";
 import { useEditorContent } from "@/store/editorContent";
 const editorContent2 = useEditorContent();
 
@@ -44,10 +57,8 @@ let operateItemRef = null;
 let editorAreaDom = null;
 const PARAGRAPHDOM = paragraphTags;
 
-
-
-const initialValue = ref(INITHTML)
-const fileWithoutNameIndex = ref(1)
+const initialValue = ref(INITHTML);
+const fileWithoutNameIndex = ref(1);
 const eventBus = inject("eventBus");
 
 const editor = useEditor({
@@ -67,42 +78,44 @@ const editor = useEditor({
     //     collectDom[i].onmouseout = mouseOut;
     //   }
     // });
-    editorContent2.saveContent(editorContent2.currentFile,getHtml())
+    editorContent2.saveContent(editorContent2.currentFile, getHtml());
   },
 });
 provide("editor", editor);
 
 function getdefaultName() {
-  return `未命名文档(${fileWithoutNameIndex.value++})`
+  return `未命名文档(${fileWithoutNameIndex.value++})`;
 }
 function initFile() {
-  if(!editorContent2.currentFile) {
-    createNewFile()
-    return
+  if (!editorContent2.currentFile) {
+    createNewFile();
+    return;
   }
-  onChangeFile()
+  onChangeFile();
 }
 function createNewFile() {
-  editorContent2.initFile()
-  editorContent2.createFile(getdefaultName(),initialValue.value)
+  editorContent2.initFile();
+  editorContent2.createFile(getdefaultName(), initialValue.value);
   editor.value.commands.setContent(initialValue.value);
   let updateFunc = editor.value.callbacks.update[0];
   updateFunc();
   //完成更新之后将执行自动scroll
-  nextTick(()=> {
-    eventBus.emit('file-bar-auto-scroll')
-  })
+  nextTick(() => {
+    eventBus.emit("file-bar-auto-scroll");
+  });
 }
 function onChangeFile(id) {
   id && editorContent2.changeFile(id);
-  editor.value.commands.setContent(editorContent2.fileInfo[editorContent2.currentFile].content);
+  editor.value.commands.setContent(
+    editorContent2.fileInfo[editorContent2.currentFile].content
+  );
   let updateFunc = editor.value.callbacks.update[0];
   updateFunc();
 }
 
 function getHtml() {
   const html = editor.value.getHTML();
-  return html
+  return html;
 }
 function getWordFile(e) {
   if (e.target.files.length == 0) return;
@@ -139,14 +152,14 @@ function onChangeHighLightColor(index) {
 //   console.log(e)
 // }
 onMounted(() => {
-  initFile()
+  initFile();
   operateItemRef = document.querySelector(".operate-item");
-  eventBus.on("change-file",onChangeFile);
+  eventBus.on("change-file", onChangeFile);
   eventBus.on("color-index", (index) => onChangeColor(index));
   eventBus.on("highLight-index", (index) => onChangeHighLightColor(index));
 });
 onUnmounted(() => {
-  editor.destroy()
+  editor.destroy();
 });
 </script>
 <style>
