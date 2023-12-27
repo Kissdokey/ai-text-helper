@@ -1,33 +1,57 @@
 <template>
-  <div class="operate-item"></div>
-  <button @click="getHtml">html</button>
-  <button class="yellow-text ml10" @click="$refs.doc.click()">導入文件</button>
-  <input ref="doc" accept=".docx" style="position:absolute;left:9px;z-index: -999;" type="file" @change="getWordFile">
-  <FixedMenu
-    :editor="editor"
-    :currentType="currentType"
-    @onDropDownMenu="onDropDownMenu"
-  ></FixedMenu>
-  <BubbleMenu :editor="editor"></BubbleMenu>
-  <editor-content :editor="editor"  />
+  <FileSelectBar></FileSelectBar>
+  <Notification></Notification>
+  <div class="app-container">
+    <div class="app-header">
+      <div class="operate-item"></div>
+      <button @click="getHtml">html</button>
+      <button class="yellow-text ml10" @click="$refs.doc.click()">
+        導入文件
+      </button>
+      <input
+        ref="doc"
+        accept=".docx"
+        style="position: absolute; left: 9px; z-index: -999"
+        type="file"
+        @change="getWordFile"
+      />
+      <v-btn @click="createNewFile">新建</v-btn>
+      <FixedMenu
+        :editor="editor"
+        :currentType="currentType"
+        @onDropDownMenu="onDropDownMenu"
+      ></FixedMenu>
+    </div>
+    <BubbleMenu :editor="editor"></BubbleMenu>
+    <div class="editor-container">
+      <editor-content :editor="editor" class="editor" />
+    </div>
+  </div>
 </template>
 
 <script setup>
+import FileSelectBar from '@/components/FileSelectBar.vue';
+import Notification from '@/components/Notification.vue';
 import FixedMenu from "@/components/FixedMenu.vue";
 import BubbleMenu from "@/components/BubbleMenu.vue";
 import { useEditor, EditorContent } from "@tiptap/vue-3";
 import extensions from "@/util/extensions.js";
-import { ref, onMounted, onUpdated, onUnmounted } from "vue";
+import { ref, onMounted, onUpdated, onUnmounted,provide, inject, nextTick } from "vue";
 import mammoth from "mammoth";
-import { provide,inject } from 'vue'
-import { colorItems } from "../util/constantData";
-import {paragraphTags} from '@/util/constantData.js'
+import { colorItems,INITHTML,paragraphTags } from "@/util/constantData.js";
+import { useEditorContent } from "@/store/editorContent";
+const editorContent2 = useEditorContent();
+
 let operateItemRef = null;
+let editorAreaDom = null;
+const PARAGRAPHDOM = paragraphTags;
+
 let currentType = ref(-1);
 let type = ref(0);
-const eventBus = inject('eventBus')
-let editorAreaDom = null
-const PARAGRAPHDOM = paragraphTags
+const initialValue = ref(INITHTML)
+const fileWithoutNameIndex = ref(1)
+const eventBus = inject("eventBus");
+
 const editor = useEditor({
   content: "",
   extensions: extensions,
@@ -35,63 +59,91 @@ const editor = useEditor({
   editable: true,
   injectCSS: false,
   onUpdate() {
-    if(!editorAreaDom) {
-      editorAreaDom = document.querySelector('.ProseMirror')
-    } 
-    PARAGRAPHDOM.forEach(item=> {
-      let collectDom = editorAreaDom?.getElementsByTagName(item) || []
-      for(let i=0;i<collectDom.length;i++) {
-        collectDom[i].onmouseover = mouseOver
-        collectDom[i].onmouseout = mouseOut
-      }
-    })
+    // if (!editorAreaDom) {
+    //   editorAreaDom = document.querySelector(".ProseMirror");
+    // }
+    // PARAGRAPHDOM.forEach((item) => {
+    //   let collectDom = editorAreaDom?.getElementsByTagName(item) || [];
+    //   for (let i = 0; i < collectDom.length; i++) {
+    //     collectDom[i].onmouseover = mouseOver;
+    //     collectDom[i].onmouseout = mouseOut;
+    //   }
+    // });
+    editorContent2.saveContent(editorContent2.currentFile,getHtml())
   },
 });
-provide('editor', editor)
+provide("editor", editor);
+
+function getdefaultName() {
+  return fileWithoutNameIndex.value++
+}
+function initFile() {
+  if(!editorContent2.currentFile) {
+    console.log(111)
+    createNewFile()
+    return
+  }
+  onChangeFile()
+}
+function createNewFile() {
+  editorContent2.initFile()
+  editorContent2.createFile(getdefaultName(),initialValue.value)
+  editor.value.commands.setContent(initialValue.value);
+  let updateFunc = editor.value.callbacks.update[0];
+  updateFunc();
+  nextTick(()=> {
+    eventBus.emit('file-bar-auto-scroll')
+  })
+}
+function onChangeFile(id) {
+  id && editorContent2.changeFile(id);
+  editor.value.commands.setContent(editorContent2.fileInfo[editorContent2.currentFile].content);
+  let updateFunc = editor.value.callbacks.update[0];
+  updateFunc();
+}
 function onDropDownMenu(index) {
   type.value = index;
-  if(currentType.value === index) {
-    currentType.value = -1
-    return 
+  if (currentType.value === index) {
+    currentType.value = -1;
+    return;
   }
-  currentType.value = index
+  currentType.value = index;
 }
 function getHtml() {
-  const html = editor.value.getHTML()
-  console.log(html)
+  const html = editor.value.getHTML();
+  return html
 }
 function getWordFile(e) {
-  if (e.target.files.length == 0) return
-  const file = e.target.files[0]
-  let reader = new FileReader()
-  reader.readAsArrayBuffer(file)
+  if (e.target.files.length == 0) return;
+  const file = e.target.files[0];
+  let reader = new FileReader();
+  reader.readAsArrayBuffer(file);
   reader.onload = (evt) => {
-    let arrayBuffer = evt.target.result
+    let arrayBuffer = evt.target.result;
     mammoth
-      .convertToHtml({arrayBuffer: arrayBuffer})
-      .then(res => {
-        console.log(res.value)
-        editor.value.commands.setContent(res.value)
-        let updateFunc = editor.value.callbacks.update[0]
-        updateFunc()
-         //res.value 就是生成的HTML文件，可以直接赋值给富文本编辑器
+      .convertToHtml({ arrayBuffer: arrayBuffer })
+      .then((res) => {
+        console.log(res.value);
+        editor.value.commands.setContent(res.value);
+        let updateFunc = editor.value.callbacks.update[0];
+        updateFunc();
+        //res.value 就是生成的HTML文件，可以直接赋值给富文本编辑器
       })
-      .done()
-  }
+      .done();
+  };
 }
 function dealClick(e) {
   if (e?.target?.classList?.contains("drop-down-press")) {
-   return
-  }
-  else {
+    return;
+  } else {
     currentType.value = -1;
   }
 }
-function onChangeColor(index){
-  editor.value.commands.setColor(colorItems[index].rgb)
+function onChangeColor(index) {
+  editor.value.commands.setColor(colorItems[index].rgb);
 }
 function onChangeHighLightColor(index) {
-  editor.value.commands.toggleHighlight({ color: colorItems[index].rgb })
+  editor.value.commands.toggleHighlight({ color: colorItems[index].rgb });
 }
 // function mouseOver(e) {
 //   operateItemRef.style.left = e.relatedTarget.offsetLeft + 'px';
@@ -102,18 +154,41 @@ function onChangeHighLightColor(index) {
 //   console.log(e)
 // }
 onMounted(() => {
-  operateItemRef = document.querySelector('.operate-item')
+  initFile()
+  operateItemRef = document.querySelector(".operate-item");
   window.addEventListener("click", dealClick);
-  eventBus.on('color-index',index=>onChangeColor(index))
-  eventBus.on('highLight-index',index=>onChangeHighLightColor(index))
+  eventBus.on("change-file",onChangeFile);
+  eventBus.on("color-index", (index) => onChangeColor(index));
+  eventBus.on("highLight-index", (index) => onChangeHighLightColor(index));
 });
-onUnmounted(()=> {
-  window.removeEventListener("click", dealClick)
-})
+onUnmounted(() => {
+  window.removeEventListener("click", dealClick);
+  editor.destroy()
+});
 </script>
 <style>
+.app-container {
+  display: flex;
+  flex-direction: column;
+}
 .ProseMirror {
-  min-height: 70vh;
+  width: 740px;
+  background-color: #fff;
+  line-height: 16px;
+  font-size: 12px;
+  padding: 12px;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+}
+.editor-container {
+  overflow: auto;
+  height: 80vh;
+}
+.editor {
+  box-sizing: border-box;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 24px 0 24px 0;
 }
 .is-active {
   color: red;

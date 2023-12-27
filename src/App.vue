@@ -3,7 +3,7 @@
 </script>
 
 <template>
-<div id="app">
+<div id="app" v-ctrl-s>
   <router-view></router-view>
   </div>
 </template>
@@ -12,7 +12,6 @@
 #app {
   width: 100%;
   height: 100%;
-  overflow:auto;
   background-color: rgb(238,238,238);
   padding: 48px;
   box-sizing: border-box;
