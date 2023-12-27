@@ -1,6 +1,6 @@
 <template>
   <div class="file-select-bar" ref="scrollRef">
-    <div
+    <span
       :class="[
         'file-item',
         item.id === editorContent.currentFile ? 'active' : '',
@@ -10,7 +10,7 @@
       @click="() => fileClick(item, index)"
     >
       {{ item.name }}
-    </div>
+  </span>
   </div>
 </template>
 <script setup>
@@ -50,10 +50,10 @@ eventBus.on("file-bar-auto-scroll", () => autoScroll(fileItems.value.length - 1)
 <style scoped>
 .file-select-bar {
   user-select: none;
-  display: flex;
+  white-space: nowrap;
   width: 100%;
   height: 42px;
-  padding: 6px;
+padding: 6px;
   overflow-x: hidden;
   overflow-y: hidden;
   background-color: rgba(13,13,13,0.1);
@@ -63,15 +63,16 @@ eventBus.on("file-bar-auto-scroll", () => autoScroll(fileItems.value.length - 1)
 }
 .file-item {
   display: inline-block;
-  min-width: 80px;
-  height: 30px;
+  padding: 0px 12px;
+  min-width: 40px;
+  max-width: 200px;
   background-color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  line-height: 30px;
   font-size: 14px;
-  margin-left: 1px;
-  margin-right: 1px;
+  margin: 0 2px 0 2px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 .file-item:hover {
   background-color: rgba(13, 13, 13, 0.1);

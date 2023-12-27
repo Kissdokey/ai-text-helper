@@ -18,7 +18,6 @@
       <v-btn @click="createNewFile">新建</v-btn>
       <FixedMenu
         :editor="editor"
-        :currentType="currentType"
       ></FixedMenu>
     </div>
     <BubbleMenu :editor="editor"></BubbleMenu>
@@ -74,7 +73,7 @@ const editor = useEditor({
 provide("editor", editor);
 
 function getdefaultName() {
-  return fileWithoutNameIndex.value++
+  return `未命名文档(${fileWithoutNameIndex.value++})`
 }
 function initFile() {
   if(!editorContent2.currentFile) {
