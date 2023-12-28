@@ -15,18 +15,22 @@
       </button>
       <input
         ref="doc"
-        accept=".docx"
+        accept=".docx,.txt,.md"
         style="position: absolute; left: 9px; z-index: -999"
         type="file"
         @change="getWordFile"
       />
       <v-btn @click="createNewFile">新建</v-btn>
       <v-btn id="history-menu-btn">历史文档</v-btn>
+      <v-btn @click="saveAsDocx">保存为Docx</v-btn>
+      <v-btn @click="saveAsImg">保存为图片</v-btn>
+      <v-btn @click="saveAsPdf">保存为PDF</v-btn>
+      <v-btn @click="saveAsMd">保存为makedown</v-btn>
       <FixedMenu :editor="editor"></FixedMenu>
     </div>
     <BubbleMenu :editor="editor"></BubbleMenu>
     <div class="editor-container">
-      <editor-content :editor="editor" class="editor" />
+      <editor-content :editor="editor" class="editor" id="editorRef" />
     </div>
   </div>
 </template>
@@ -39,15 +43,12 @@ import FixedMenu from "@/components/FixedMenu.vue";
 import BubbleMenu from "@/components/BubbleMenu.vue";
 import { useEditor, EditorContent } from "@tiptap/vue-3";
 import extensions from "@/util/extensions.js";
-import {
-  ref,
-  onMounted,
-  onUpdated,
-  onUnmounted,
-  provide,
-  inject,
-  nextTick,
-} from "vue";
+import { saveDocx } from "@/util/html2docx.js";
+import { exportAsImg } from "@/util/html2canvas.ts";
+import { exportAsPdf } from "@/util/html2pdf.ts";
+import { html2md } from '@/util/html2md.js'
+import { marked }  from 'marked';
+import { ref,onMounted,onUpdated,onUnmounted,provide,inject,nextTick } from "vue";
 import mammoth from "mammoth";
 import { colorItems, INITHTML, paragraphTags } from "@/util/constantData.js";
 import { useEditorContent } from "@/store/editorContent";
@@ -112,7 +113,18 @@ function onChangeFile(id) {
   let updateFunc = editor.value.callbacks.update[0];
   updateFunc();
 }
-
+function saveAsDocx() {
+  saveDocx(getHtml());
+}
+function saveAsImg() {
+  exportAsImg(document.querySelector("#editorRef"), "未命名图片", true);
+}
+function saveAsPdf() {
+  exportAsPdf(document.querySelector("#editorRef"), "未命名pdf");
+}
+function saveAsMd() {
+  html2md(getHtml())
+}
 function getHtml() {
   const html = editor.value.getHTML();
   return html;
@@ -121,20 +133,43 @@ function getWordFile(e) {
   if (e.target.files.length == 0) return;
   const file = e.target.files[0];
   let reader = new FileReader();
-  reader.readAsArrayBuffer(file);
-  reader.onload = (evt) => {
-    let arrayBuffer = evt.target.result;
-    mammoth
-      .convertToHtml({ arrayBuffer: arrayBuffer })
-      .then((res) => {
-        console.log(res.value);
-        editor.value.commands.setContent(res.value);
-        let updateFunc = editor.value.callbacks.update[0];
-        updateFunc();
-        //res.value 就是生成的HTML文件，可以直接赋值给富文本编辑器
-      })
-      .done();
-  };
+  if (file.name.endsWith(".docx")) {
+    reader.readAsArrayBuffer(file);
+    reader.onload = (evt) => {
+      let arrayBuffer = evt.target.result;
+      mammoth
+        .convertToHtml({ arrayBuffer: arrayBuffer })
+        .then((res) => {
+          editor.value.commands.setContent(res.value);
+          let updateFunc = editor.value.callbacks.update[0];
+          updateFunc();
+          //res.value 就是生成的HTML文件，可以直接赋值给富文本编辑器
+        })
+        .done();
+    };
+    return;
+  }
+  if (file.name.endsWith(".txt")) {
+    reader.readAsText(file);
+    reader.onload = (evt) => {
+      let text = evt.target.result;
+      editor.value.commands.setContent(text.split('\n').map(s=>'<p>'+s+'</p>').join(' '));
+      let updateFunc = editor.value.callbacks.update[0];
+      updateFunc();
+    };
+    return;
+  }
+  if (file.name.endsWith(".md")) {
+    reader.readAsText(file);
+    reader.onload = (evt) => {
+      let text = evt.target.result;
+      editor.value.commands.setContent(marked(text));
+      let updateFunc = editor.value.callbacks.update[0];
+      updateFunc();
+    };
+    return;
+  }
+  console.log("文件类型暂不支持");
 }
 
 function onChangeColor(index) {
@@ -182,6 +217,7 @@ onUnmounted(() => {
 .editor {
   box-sizing: border-box;
   width: 100%;
+  min-height: 100%;
   display: flex;
   justify-content: center;
   padding: 24px 0 24px 0;

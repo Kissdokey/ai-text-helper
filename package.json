@@ -36,11 +36,15 @@
     "@tiptap/vue-3": "^2.1.12",
     "element-plus": "^2.4.4",
     "floating-vue": "^2.0.0-beta.24",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^2.5.1",
     "mammoth": "^1.6.0",
+    "marked": "^11.1.0",
     "mitt": "^3.0.1",
     "pinia": "^2.1.7",
     "pinia-plugin-persistedstate": "^3.2.0",
     "tippy.js": "^6.3.7",
+    "turndown": "^7.1.2",
     "uuid": "^9.0.1",
     "vite-plugin-vuetify": "^1.0.2",
     "vue": "^3.3.4",
@@ -50,6 +54,8 @@
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.2.3",
+    "file-saver": "^2.0.5",
+    "html-docx-js-typescript": "^0.1.5",
     "sass": "^1.69.5",
     "vite": "^4.4.5"
   }

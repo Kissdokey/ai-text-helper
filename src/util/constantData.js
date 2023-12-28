@@ -21,3 +21,7 @@ export const colorItems = [
   export const headTitles = ["正文", "标题一", "标题二", "标题三", "标题四", "标题五"];
   export const paragraphTags = ['p','div','h1','h2','h3','h4','h5','h6']
   export const INITHTML = '<p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p><p></p>'
+  export const A4_PAPER_SIZE_ENUM = {
+    'width':595.28,
+    'height': 841.89,
+  }
