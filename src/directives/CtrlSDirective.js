@@ -13,11 +13,11 @@ const CtrlSDirective = {
         }  
       }  
     
-      el.addEventListener('keydown', handleKeyDown)  
+      window.addEventListener('keydown', handleKeyDown)  
     
       // 在组件销毁时移除事件监听  
       const beforeUnmount = () => {  
-        el.removeEventListener('keydown', handleKeyDown)  
+        window.removeEventListener('keydown', handleKeyDown)  
       }  
     
       // 使用Vue提供的onBeforeUnmount钩子来监听组件销毁事件  

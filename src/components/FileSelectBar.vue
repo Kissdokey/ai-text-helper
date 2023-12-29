@@ -1,22 +1,42 @@
 <template>
-  <div class="file-select-bar" ref="scrollRef">
-    <span
-      :class="[
-        'file-item',
-        item.id === editorContent.currentFile ? 'active' : '',
-      ]"
-      v-for="(item, index) in fileItems"
-      :key="item.id"
-      @click="() => fileClick(item, index)"
+  <div class="header-container">
+    <div
+      v-show="editorContent.currentFile.length > 0"
+      class="file-select-bar"
+      ref="scrollRef"
     >
-      {{ item.name }}
-      <div
-        class="icon-close-container"
-        @click.stop="() => fileClose(item, index)"
+      <span
+        :class="[
+          'file-item',
+          item.id === editorContent.currentFile ? 'active' : '',
+        ]"
+        v-for="(item, index) in fileItems"
+        :key="item.id"
+        @click="() => fileClick(item, index)"
       >
-        <v-icon size="16">$IconClose</v-icon>
-      </div>
-    </span>
+        {{ item.name }}
+        <div
+          class="icon-close-container"
+          @click.stop="() => fileClose(item, index)"
+        >
+          <v-icon size="16">$IconClose</v-icon>
+        </div>
+      </span>
+    </div>
+    <div class="file-select-bar" v-show="editorContent.currentFile.length <= 0">
+      选择文件来进行编辑
+    </div>
+    <div
+      v-show="editorContent.currentFile.length > 0"
+      class="clear-btn"
+      v-tooltip.bottom="{
+        content: '一键清空',
+        theme: 'delicate',
+      }"
+      @click="clearAll"
+    >
+      <v-icon size="16">$IconClose</v-icon>
+    </div>
   </div>
 </template>
 <script setup>
@@ -28,6 +48,9 @@ const scrollRef = ref(null);
 const fileItems = computed(() => {
   return editorContent.openedFiles;
 });
+const clearAll = () => {
+  editorContent.clearOpenedFiles();
+};
 const fileClose = async (item, index) => {
   editorContent.spliceOpenedFile(index);
   if (item.id !== editorContent.currentFile) {
@@ -80,15 +103,28 @@ eventBus.on("history-file-open", (file) => {
 </script>
 
 <style scoped>
+.header-container {
+  background: linear-gradient(
+    to right,
+    #fac9cb,
+    rgb(252, 206, 208),
+    #d7f5e3
+  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  border-bottom: 1px solid rgba(13,13,13,0.1);
+}
 .file-select-bar {
+  border-radius: 4px;
+  margin-left: 24px;
+  margin-right: 56px;
+  position: relative;
+  box-sizing: border-box;
   user-select: none;
   white-space: nowrap;
-  width: 100%;
+  width: calc(100% - 80px);
+  padding-top: 6px;
   height: 42px;
-  padding: 6px;
   overflow-x: hidden;
   overflow-y: hidden;
-  background-color: rgba(13, 13, 13, 0.1);
 }
 .file-select-bar:hover {
   overflow-x: auto;
@@ -116,12 +152,13 @@ eventBus.on("history-file-open", (file) => {
   background-color: rgba(13, 13, 13, 0.1);
 }
 .file-item {
+  border-radius: 4px;
   position: relative;
   display: inline-block;
   padding: 0px 44px 0 12px;
   min-width: 40px;
   max-width: 300px;
-  background-color: #fff;
+  background-color: rgba(255, 255, 255, 0.6);
   line-height: 30px;
   font-size: 14px;
   margin: 0 2px 0 2px;
@@ -133,8 +170,40 @@ eventBus.on("history-file-open", (file) => {
   background-color: rgba(13, 13, 13, 0.1);
   cursor: pointer;
 }
+.file-item:active {
+  background-color: rgba(13, 13, 13, 0.2);
+  cursor: pointer;
+}
 .active {
   background-color: rgba(13, 13, 13, 0.2);
+}
+.clear-btn {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  right: 12px;
+  top: 6px;
+  cursor: pointer;
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+.clear-btn::before {
+  content: "";
+  position: absolute;
+  left: -6px;
+  width: 2px;
+  height: calc(100% - 4px);
+  top: 2px;
+  background-color: rgba(13, 13, 13, 0.1);
+}
+.clear-btn:hover {
+  background-color: rgba(13, 13, 13, 0.06);
+}
+.clear-btn:active {
+  background-color: rgba(13, 13, 13, 0.1);
 }
 ::-webkit-scrollbar {
   color: transparent;
@@ -142,7 +211,7 @@ eventBus.on("history-file-open", (file) => {
   height: 6px;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(13, 13, 13, 0.2);
+  background: rgba(13, 13, 13, 0.3);
   opacity: 0.2;
   border-radius: 10px;
   height: 6px;

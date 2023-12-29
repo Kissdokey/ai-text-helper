@@ -1,6 +1,6 @@
 <template>
   <v-menu v-model="visible" :close-on-content-click="false">
-    <div class="drop-down-menu">
+    <div class="drop-down-menu" @click.stop>
       <div
         class="heading-item"
         v-for="(item, index) in HEADINGARRAY"
@@ -19,6 +19,7 @@ import { ref, inject } from "vue";
 import calCurrentAttribute from "@/util/calCurrentAttribute";
 import { headTitles } from "@/util/constantData";
 const editor = inject("editor");
+const eventBus = inject('eventBus')
 const HEADINGARRAY = headTitles;
 const visible = ref(false);
 function clickHeading(index) {
@@ -32,6 +33,7 @@ function clickHeading(index) {
     return;
   }
   editor.value.chain().focus().toggleHeading({ level: index }).run();
+  eventBus.emit('close-menu')
 }
 function headingType() {
   const heading = calCurrentAttribute(editor.value, "heading");

@@ -53,6 +53,7 @@ export default {
           this.updateHighlightColorIndex(index)
         }
       }
+      this.eventBus.emit('close-menu')
     },
 
     getRGB(colorIndex) {
@@ -76,7 +77,7 @@ export default {
 
 <template>
   <v-menu v-model="visible" :close-on-content-click="false">
-    <div class="color-menu">
+    <div class="color-menu" @click.stop>
       <div class="color-menu-title">{{ title }}</div>
 
       <div class="color-container">

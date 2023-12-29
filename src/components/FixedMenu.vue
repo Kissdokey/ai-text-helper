@@ -28,112 +28,23 @@
     offset="6px"
     ref="colorMenu"
   />
-  <button
-    @click="
-      () => {
-        isFold = !isFold;
-      }
-    "
-  >
-    {{ isFold ? "展开" : "收起" }}
-  </button>
   <div
     v-if="editor"
     :class="['fixed-menu', isFold ? '' : 'fix-menu-unfold']"
   >
     <template v-for="(item, index) in buttonInfo">
-      <DropDownButton
-        v-if="item.type === 'drowDown'"
-        :id="item.id"
-        :info="calMenuName(item.info)"
-        :type="item.typeIndex"
-        :currentType="currentType"
-        :editor="editor"
-        @click.native="item.action"
-        :tooltip="item.tooltip"
-      ></DropDownButton>
-      <Button v-else :type="item.typeDetail" :tooltip="item.tooltip" :editor="editor"> </Button>
+      <Button  :type="item.typeDetail" :tooltip="item.tooltip" :editor="editor"> </Button>
     </template>
   </div>
 </template>
 <script setup>
-import { computed, defineProps, ref,inject, onMounted, onUnmounted } from "vue";
-import DropDownButton from "@/components/DropDownButton.vue";
+import {  ref,inject } from "vue";
 import ColorSelectMenu from "./ColorSelectMenu.vue";
 import HeadingLevelMenu from "./HeadingLevelMenu.vue";
-import calCurrentAttribute from "@/util/calCurrentAttribute.js";
-import Button from "./Button.vue";
-
-onMounted(()=> {
-  window.addEventListener("click", dealClick);
-})
-onUnmounted(()=> {
-  window.removeEventListener("click", dealClick);
-})
-const type = ref(0);
-const currentType = ref(-1);
+import Button from "@/components/Button.vue";
 const editor = inject('editor')
 let isFold = ref(false);
-const calHeadingLevel = computed(() => {
-  return calCurrentAttribute(editor.value, "heading");
-});
-const calCurrentColor = computed(() => {
-  return editor.value.getAttributes("textStyle").color;
-});
-const calMenuName = (info)=>{
-  if(info===0) {
-    return calHeadingLevel.value
-  }
-  if(info===1) {
-    return calCurrentColor.value
-  }
-  return info
-}
 const buttonInfo = [
-  {
-    type: "drowDown",
-    title: "Heading Level",
-    typeIndex: 0,
-    id: "heading-level",
-    action: () => {
-      onDropDownMenu(0)
-    },
-    info: 0,
-    tooltip:'Select Heading Level'
-  },
-  {
-    type: "drowDown",
-    title: "select text color",
-    id: "text-color",
-    typeIndex: 1,
-    action: () => {
-      onDropDownMenu(1)
-    },
-    info: 1,
-    tooltip:'Select Text Color'
-  },
-  {
-    type: "drowDown",
-    title: "table actions",
-    typeIndex: 2,
-    id: "table-actions",
-    action: () => {
-      onDropDownMenu(2)
-    },
-    info: "表格",
-    tooltip:'Select Table Operater'
-  },
-  {
-    type: "drowDown",
-    title: "Heading Level",
-    typeIndex: 3,
-    id: "text-background-color",
-    action: () => {
-      onDropDownMenu(3)
-    },
-    info: 1,
-    tooltip:'Select HighLight Color'
-  },
   {
     type: "normal",
     tooltip:"Bold",
@@ -185,38 +96,20 @@ const buttonInfo = [
     typeDetail: "blockquote",
   },
 ];
-//仅用于菜单的点击，dealCick针对点击菜单外事件，把菜单收起；onDropDownMenu把菜单打开
-function dealClick(e) {
-  if (e?.target?.classList?.contains("drop-down-press")) {
-    return;
-  } else {
-    currentType.value = -1;
-  }
-}
-function onDropDownMenu(index) {
-  type.value = index;
-  if (currentType.value === index) {
-    currentType.value = -1;
-    return;
-  }
-  currentType.value = index;
-}
 </script>
 <style scoped>
 .fixed-menu {
   position: relative;
   background-color: rgb(255, 255, 255);
-  height: 42px;
-  width: 100%;
+  width: 70px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   flex-wrap: wrap;
   overflow: hidden;
   box-shadow: 0 0 0 1px rgba(13, 13, 13, 0.06),
     0px 1px 4px rgba(13, 13, 13, 0.1);
-  padding: 0 36px;
   box-sizing: border-box;
-  border-radius: 8px;
   z-index: 1;
 }
 .fix-menu-unfold {

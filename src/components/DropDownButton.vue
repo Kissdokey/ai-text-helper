@@ -99,7 +99,7 @@ const clickColorBox = () => {
   position: relative;
   overflow: hidden;
   z-index: 1;
-  box-shadow: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
+  box-shadow: 2px 2px 6px #c5c5c5, -6px -6px 12px transparent;
 }
 
 .drop-down-press::before {
@@ -119,9 +119,10 @@ const clickColorBox = () => {
 }
 .drop-down-press:hover {
   color: white;
-  background-color: rgb(241, 241, 241);
+  /* background-color: rgb(241, 241, 241); */
 }
 .drop-down-press-active {
+  border: 1px solid rgba(13,13,13,0.1);
   position: relative;
   box-sizing: border-box;
   border-radius: 6px;
@@ -138,7 +139,7 @@ const clickColorBox = () => {
   position: relative;
   overflow: hidden;
   z-index: 1;
-  box-shadow: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
+  /* box-shadow: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff; */
   background-image: linear-gradient(to right, #fbd786 0%, #f7797d 100%);
 }
 .drop-down-press:active {

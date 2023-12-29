@@ -54,6 +54,10 @@ export const useEditorContent = defineStore(
     const spliceOpenedFile = (index)=> {
       openedFiles.value.splice(index,1)
     }
+    const clearOpenedFiles = ()=> {
+      openedFiles.value = []
+      currentFile.value = ''
+    }
     return {
       fileInfo,
       currentFile,
@@ -67,7 +71,8 @@ export const useEditorContent = defineStore(
       changeCurrentName,
       initFile,
       appendOpenedFile,
-      spliceOpenedFile
+      spliceOpenedFile,
+      clearOpenedFiles
     };
   },
   { persist: true }

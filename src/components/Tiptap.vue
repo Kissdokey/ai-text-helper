@@ -1,54 +1,49 @@
 <template>
-  <FileSelectBar></FileSelectBar>
   <Notification></Notification>
-  <HistoryPanel
-    activator="#history-menu-btn"
-    location="bottom"
-    offset="8px"
-  ></HistoryPanel>
+  <BubbleMenu :editor="editor"></BubbleMenu>
   <div class="app-container">
-    <div class="app-header">
-      <div class="operate-item"></div>
-      <button @click="getHtml">html</button>
-      <button class="yellow-text ml10" @click="$refs.doc.click()">
-        導入文件
-      </button>
-      <input
-        ref="doc"
-        accept=".docx,.txt,.md"
-        style="position: absolute; left: 9px; z-index: -999"
-        type="file"
-        @change="getWordFile"
-      />
-      <v-btn @click="createNewFile">新建</v-btn>
-      <v-btn id="history-menu-btn">历史文档</v-btn>
-      <v-btn @click="saveAsDocx">保存为Docx</v-btn>
-      <v-btn @click="saveAsImg">保存为图片</v-btn>
-      <v-btn @click="saveAsPdf">保存为PDF</v-btn>
-      <v-btn @click="saveAsMd">保存为makedown</v-btn>
-      <FixedMenu :editor="editor"></FixedMenu>
-    </div>
-    <BubbleMenu :editor="editor"></BubbleMenu>
-    <div class="editor-container">
-      <editor-content :editor="editor" class="editor" id="editorRef" />
+    <FileSelectBar></FileSelectBar>
+    <div class="editor-wrapper">
+      <ToolPanel></ToolPanel>
+      <WorkSpacePanel v-if="!isHiddenFilePanel"></WorkSpacePanel>
+      <div class="editor-area">
+        <FixedDropDownMenu :isHiddenToolPanel="true"></FixedDropDownMenu>
+        <div class="editor-container" v-show="editorContent2.currentFile">
+          <editor-content :editor="editor" class="editor" id="editorRef" />
+          <RightSidePanel></RightSidePanel>
+        </div>
+        <div class="no-flie-notice" v-show="!editorContent2.currentFile">请选择文件或者新建文件</div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup>
-import HistoryPanel from "@/components/HistoryPanel.vue";
+import _ from "lodash";
+import ToolPanel from "@/components/ToolPanel.vue";
 import FileSelectBar from "@/components/FileSelectBar.vue";
+import RightSidePanel from "@/components/RightSidePanel.vue";
+import WorkSpacePanel from "@/components/WorkSpacePanel.vue";
 import Notification from "@/components/Notification.vue";
 import FixedMenu from "@/components/FixedMenu.vue";
+import FixedDropDownMenu from "@/components/FixedDropDownMenu.vue";
 import BubbleMenu from "@/components/BubbleMenu.vue";
 import { useEditor, EditorContent } from "@tiptap/vue-3";
 import extensions from "@/util/extensions.js";
 import { saveDocx } from "@/util/html2docx.js";
 import { exportAsImg } from "@/util/html2canvas.ts";
 import { exportAsPdf } from "@/util/html2pdf.ts";
-import { html2md } from '@/util/html2md.js'
-import { marked }  from 'marked';
-import { ref,onMounted,onUpdated,onUnmounted,provide,inject,nextTick } from "vue";
+import { html2md } from "@/util/html2md.js";
+import { marked } from "marked";
+import {
+  ref,
+  onMounted,
+  onUpdated,
+  onUnmounted,
+  provide,
+  inject,
+  nextTick,
+} from "vue";
 import mammoth from "mammoth";
 import { colorItems, INITHTML, paragraphTags } from "@/util/constantData.js";
 import { useEditorContent } from "@/store/editorContent";
@@ -82,6 +77,9 @@ const editor = useEditor({
     editorContent2.saveContent(editorContent2.currentFile, getHtml());
   },
 });
+
+const isHiddenToolPanel = ref(false);
+const isHiddenFilePanel = ref(false);
 provide("editor", editor);
 
 function getdefaultName() {
@@ -123,7 +121,7 @@ function saveAsPdf() {
   exportAsPdf(document.querySelector("#editorRef"), "未命名pdf");
 }
 function saveAsMd() {
-  html2md(getHtml())
+  html2md(getHtml());
 }
 function getHtml() {
   const html = editor.value.getHTML();
@@ -153,7 +151,12 @@ function getWordFile(e) {
     reader.readAsText(file);
     reader.onload = (evt) => {
       let text = evt.target.result;
-      editor.value.commands.setContent(text.split('\n').map(s=>'<p>'+s+'</p>').join(' '));
+      editor.value.commands.setContent(
+        text
+          .split("\n")
+          .map((s) => "<p>" + s + "</p>")
+          .join(" ")
+      );
       let updateFunc = editor.value.callbacks.update[0];
       updateFunc();
     };
@@ -186,21 +189,54 @@ function onChangeHighLightColor(index) {
 // function mouseOut(e) {
 //   console.log(e)
 // }
+const autoResize = _.throttle(() => {
+  if (window.innerWidth >= 940) {
+    isHiddenFilePanel.value = false;
+    isHiddenToolPanel.value = false;
+    return;
+  }
+  if (window.innerWidth < 940 && window.innerWidth >= 800) {
+    isHiddenFilePanel.value = true;
+    isHiddenToolPanel.value = false;
+    return;
+  }
+  if (window.innerWidth < 800) {
+    isHiddenFilePanel.value = true;
+    isHiddenToolPanel.value = true;
+    return;
+  }
+}, 100);
 onMounted(() => {
   initFile();
+  autoResize();
   operateItemRef = document.querySelector(".operate-item");
   eventBus.on("change-file", onChangeFile);
   eventBus.on("color-index", (index) => onChangeColor(index));
   eventBus.on("highLight-index", (index) => onChangeHighLightColor(index));
+  eventBus.on("get-html", getHtml);
+  eventBus.on("get-word-file", getWordFile);
+  eventBus.on("create-new-file", createNewFile);
+  eventBus.on("save-as-docx", saveAsDocx);
+  eventBus.on("save-as-img", saveAsImg);
+  eventBus.on("save-as-pdf", saveAsPdf);
+  eventBus.on("save-as-md", saveAsMd);
+  window.addEventListener("resize", autoResize);
 });
 onUnmounted(() => {
   editor.destroy();
+  window.removeEventListener("resize", autoResize);
 });
 </script>
 <style>
 .app-container {
+  height: 100%;
   display: flex;
   flex-direction: column;
+}
+.editor-wrapper {
+  flex: 1;
+  display: flex;
+  overflow-y: hidden;
 }
 .ProseMirror {
   width: 740px;
@@ -210,17 +246,27 @@ onUnmounted(() => {
   padding: 12px;
   box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
 }
+.editor-area {
+  position: relative;
+  width: 100%;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
 .editor-container {
+  position: relative;
   overflow: auto;
-  height: 80vh;
+  width: 100%;
+  display: flex;
+  flex: 1;
 }
 .editor {
   box-sizing: border-box;
-  width: 100%;
+  width: fit-content;
+  height: fit-content;
   min-height: 100%;
   display: flex;
-  justify-content: center;
-  padding: 24px 0 24px 0;
+  padding: 24px 24px 0 24px;
 }
 .is-active {
   color: red;
@@ -230,7 +276,11 @@ onUnmounted(() => {
 .ProseMirror {
   max-width: 90vw;
 }
-
+.no-flie-notice {
+  text-align: center;
+  margin: auto;
+  user-select: none;
+}
 .ProseMirror:focus-visible {
   outline: none;
 }

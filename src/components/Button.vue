@@ -122,7 +122,7 @@ function clickButton() {
   position: relative;
   overflow: hidden;
   z-index: 1;
-  box-shadow: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff;
+  box-shadow: 2px 2px 6px #c5c5c5, -6px -6px 12px transparent;
 }
 .button-press::before {
   content: "";
@@ -141,7 +141,7 @@ function clickButton() {
   width: 100%;
 }
 .button-press:hover {
-  background-color: rgb(241, 241, 241);
+  /* background-color: rgb(241, 241, 241); */
 }
 
 .active {
