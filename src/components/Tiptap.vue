@@ -5,7 +5,7 @@
     <FileSelectBar></FileSelectBar>
     <div class="editor-wrapper">
       <ToolPanel></ToolPanel>
-      <WorkSpacePanel v-if="!isHiddenFilePanel"></WorkSpacePanel>
+      <WorkSpacePanel :isHiddenFilePanel="isHiddenFilePanel"></WorkSpacePanel>
       <div class="editor-area">
         <FixedDropDownMenu :isHiddenToolPanel="true"></FixedDropDownMenu>
         <div class="editor-container" v-show="editorContent2.currentFile">
@@ -19,6 +19,7 @@
 </template>
 
 <script setup>
+import { useFileDependenciesStore } from "@/store/fileDependencies.js";
 import _ from "lodash";
 import ToolPanel from "@/components/ToolPanel.vue";
 import FileSelectBar from "@/components/FileSelectBar.vue";
@@ -48,7 +49,7 @@ import mammoth from "mammoth";
 import { colorItems, INITHTML, paragraphTags } from "@/util/constantData.js";
 import { useEditorContent } from "@/store/editorContent";
 const editorContent2 = useEditorContent();
-
+const fileDependenciesStore = useFileDependenciesStore();
 let operateItemRef = null;
 let editorAreaDom = null;
 const PARAGRAPHDOM = paragraphTags;
@@ -101,6 +102,8 @@ function createNewFile() {
   //完成更新之后将执行自动scroll
   nextTick(() => {
     eventBus.emit("file-bar-auto-scroll");
+    fileDependenciesStore.createFile(editorContent2.currentFile, "未命名文件");
+    eventBus.emit('update-folder')
   });
 }
 function onChangeFile(id) {
@@ -110,6 +113,10 @@ function onChangeFile(id) {
   );
   let updateFunc = editor.value.callbacks.update[0];
   updateFunc();
+  eventBus.emit('update-folder')
+  nextTick(()=> {
+    eventBus.emit('file-bar-auto-scroll',editorContent2.openedFiles.findIndex((item)=>item.id === editorContent2.currentFile))
+  })
 }
 function saveAsDocx() {
   saveDocx(getHtml());
@@ -266,7 +273,7 @@ onUnmounted(() => {
   height: fit-content;
   min-height: 100%;
   display: flex;
-  padding: 24px 24px 0 24px;
+  padding: 24px 24px 24px 24px;
 }
 .is-active {
   color: red;

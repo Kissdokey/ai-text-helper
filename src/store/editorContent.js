@@ -1,13 +1,13 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { v4 as uuidv4 } from "uuid";
-import {emitter} from "@/main.js";
+import { emitter } from "@/main.js";
 export const useEditorContent = defineStore(
   "editorContent",
   () => {
     // States
     const fileInfo = ref({});
-    const openedFiles = ref([])
+    const openedFiles = ref([]);
     const currentFile = ref("");
     const currentName = ref("");
     // Getters
@@ -16,24 +16,33 @@ export const useEditorContent = defineStore(
     const saveContent = (id, content) => {
       if (id in fileInfo.value) {
         fileInfo.value[id].content = content;
-      } 
+      }
     };
     const saveName = (id, name) => {
       if (id in fileInfo.value) {
         fileInfo.value[id].name = name;
+      }
+      let idx = openedFiles.value.findIndex((item) => item.id === id);
+      if(idx >= 0) {
+        openedFiles.value[idx].name = name
       }
     };
     const deleteFile = (id) => {
       if (id in fileInfo.value) {
         delete fileInfo.value[id];
       }
+      let idx = openedFiles.value.findIndex((item) => item.id === id);
+      if(idx >= 0) {
+        openedFiles.value.splice(idx,1)
+      }
+      currentFile.value = ''
     };
     const createFile = (name, content) => {
       const uuid = uuidv4();
       const info = { name: name, content: content };
       fileInfo.value[uuid] = info;
       currentFile.value = uuid;
-      appendOpenedFile(uuid,info)
+      appendOpenedFile(uuid, info);
     };
     const changeFile = (id) => {
       if (id in fileInfo.value) {
@@ -48,16 +57,16 @@ export const useEditorContent = defineStore(
       currentName.value = "";
       currentFile.value = "";
     };
-    const appendOpenedFile = (id,info)=> {
-      openedFiles.value.push({id:id,...info})
-    }
-    const spliceOpenedFile = (index)=> {
-      openedFiles.value.splice(index,1)
-    }
-    const clearOpenedFiles = ()=> {
-      openedFiles.value = []
-      currentFile.value = ''
-    }
+    const appendOpenedFile = (id, info) => {
+      openedFiles.value.push({ id: id, ...info });
+    };
+    const spliceOpenedFile = (index) => {
+      openedFiles.value.splice(index, 1);
+    };
+    const clearOpenedFiles = () => {
+      openedFiles.value = [];
+      currentFile.value = "";
+    };
     return {
       fileInfo,
       currentFile,
@@ -72,7 +81,7 @@ export const useEditorContent = defineStore(
       initFile,
       appendOpenedFile,
       spliceOpenedFile,
-      clearOpenedFiles
+      clearOpenedFiles,
     };
   },
   { persist: true }

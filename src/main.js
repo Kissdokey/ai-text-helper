@@ -24,6 +24,7 @@ import 'element-plus/dist/index.css'
 
 //directives
 import CtrlSDirective from "./directives/CtrlSDirective";
+import WorkSpaceRightClickDirective from "./directives/WorkSpaceRightClickDirective";
 const pinia = createPinia();
 pinia.use(piniaPluginPersistedstate);
 const app = createApp(App);
@@ -43,7 +44,8 @@ app
     .use(FloatingVue, configFloatingVue)
     .use(ElementPlus)
 
-app.directive('ctrl-s', CtrlSDirective) 
+app.directive('ctrl-s', CtrlSDirective)
+app.directive('workspace-right-click',WorkSpaceRightClickDirective) 
 
 export const emitter = mitt()
 app.provide('eventBus', emitter)

@@ -8,90 +8,94 @@ export const useFileDependenciesStore = defineStore(
   "fileDependencies",
   () => {
     // States
-    const fileDependencies = ref([]);//[{id:XXX,name:XXX,sons:[]}]
-    const currentFolder = ref('')
+    const fileDependencies = ref([]); //[{id:XXX,name:XXX,sons:[]}]
+    const currentFolder = ref("");
 
     // Getters
+    let finalIndex = -1;
+    let finalFolder = null;
+    const recursionFindIndex = (data, id) => {
+      try {
+        data.forEach((item, index) => {
+          if (item.id === id) {
+            finalIndex = index;
+            finalFolder = data;
+            throw "finded";
+          }
+          if (item?.sons?.length > 0) {
+            recursionFindIndex(item.sons,id);
+          }
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    };
     // Actions
     const createFolder = (parentId, folderName = "未命名文件夹") => {
-      let finalIndex = -1
-      let finalFolder = null
+      finalIndex = -1;
+      finalFolder = null;
       const id = uuidv4();
-      const info = { id: id,name:folderName,sons:[] };
-      const recursionFindIndex = (data)=> {
-        try {
-          data.forEach((item,index)=> {
-            if(item.id === parentId) {
-              finalIndex = index
-              finalFolder = data
-              throw 'finded' 
-            }
-            if(item.sons.length > 0) {
-              recursionFindIndex(item.sons)
-            }
-         })
-        } catch (error) {
-        }
-         
-      }
+      const info = { id: id, name: folderName, sons: [] };
       if (parentId) {
-        recursionFindIndex(fileDependencies.value)
-        if(finalIndex >= 0) {
-          if(!finalFolder[finalIndex]?.sons) {
-            finalFolder[finalIndex].sons = []
+        recursionFindIndex(fileDependencies.value, parentId);
+        if (finalIndex >= 0) {
+          if (!finalFolder[finalIndex]?.sons) {
+            finalFolder[finalIndex].sons = [];
           }
-          changeCurrentFolder(id)
-          finalFolder[finalIndex].sons.push(info)
-          return 
+          changeCurrentFolder(id);
+          finalFolder[finalIndex].sons.push(info);
+          return;
         }
-      } 
-      changeCurrentFolder(id)
+      }
+      changeCurrentFolder(id);
       fileDependencies.value.push(info);
     };
-    const changeCurrentFolder = (id)=> {
-      console.log(id)
-      currentFolder.value = id
-    }
+    const changeCurrentFolder = (id) => {
+        currentFolder.value = id;
+    };
     const deleteFolder = () => {};
     const createFile = (id, fileName = "未命名文件") => {
-      let finalIndex = -1
-      let finalFolder = null
+      finalIndex = -1;
+      finalFolder = null;
       // const id = uuidv4();
-      const info = { id: id,name:fileName};
-      const recursionFindIndex = (data)=> {
-        try {
-          data.forEach((item,index)=> {
-            if(item.id === currentFolder.value) {
-              finalIndex = index
-              finalFolder = data
-              throw 'finded' 
-            }
-            if(item.sons.length > 0) {
-              recursionFindIndex(item.sons)
-            }
-         })
-        } catch (error) {
-        }
-         
-      }
+      const info = { id: id, name: fileName,parentId:currentFolder.value };
       if (currentFolder.value) {
         console.log(currentFolder.value)
-        recursionFindIndex(fileDependencies.value)
-        if(finalIndex >= 0) {
-          if(!finalFolder[finalIndex]?.sons) {
-            finalFolder[finalIndex].sons = []
+        recursionFindIndex(fileDependencies.value,currentFolder.value);
+        if (finalIndex >= 0) {
+          console.log(finalIndex,1111111111)
+          if (!finalFolder[finalIndex]?.sons) {
+            finalFolder[finalIndex].sons = [];
           }
           // changeCurrentFolder(id)
-          finalFolder[finalIndex].sons.push(info)
-          return 
+          finalFolder[finalIndex].sons.push(info);
+          return;
         }
-      } 
+      }
       // changeCurrentFolder(id)
       fileDependencies.value.push(info);
     };
-    const deleteFile = () => {};
-
-    return {fileDependencies,currentFolder,createFolder,changeCurrentFolder,createFile};
+    const deleteItem = (id) => {
+      finalIndex = -1;
+     finalFolder = null
+     recursionFindIndex(fileDependencies.value, id);
+     finalFolder.splice(finalIndex,1)
+    };
+    const saveName = (id,name)=> {
+      finalIndex = -1;
+     finalFolder = null
+     recursionFindIndex(fileDependencies.value, id);
+     finalFolder[finalIndex].name = name
+    }
+    return {
+      fileDependencies,
+      currentFolder,
+      createFolder,
+      changeCurrentFolder,
+      createFile,
+      saveName,
+      deleteItem
+    };
   },
   { persist: true }
 );

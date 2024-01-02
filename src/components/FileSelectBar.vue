@@ -1,7 +1,7 @@
 <template>
   <div class="header-container">
     <div
-      v-show="editorContent.currentFile.length > 0"
+      v-show="editorContent.openedFiles.length > 0"
       class="file-select-bar"
       ref="scrollRef"
     >
@@ -23,11 +23,11 @@
         </div>
       </span>
     </div>
-    <div class="file-select-bar" v-show="editorContent.currentFile.length <= 0">
+    <div class="file-select-bar" v-show="editorContent.openedFiles.length <= 0">
       选择文件来进行编辑
     </div>
     <div
-      v-show="editorContent.currentFile.length > 0"
+      v-show="editorContent.openedFiles.length > 0"
       class="clear-btn"
       v-tooltip.bottom="{
         content: '一键清空',
@@ -68,8 +68,12 @@ const fileClose = async (item, index) => {
   }
 };
 const autoScroll = (index) => {
+  let idx = index;
+  if (index !== 0 && (index < 0 || !index)) {
+    idx = fileItems.value.length - 1;
+  }
   const selectFileDomInfo =
-    scrollRef.value?.children[index]?.getBoundingClientRect();
+    scrollRef.value?.children[idx]?.getBoundingClientRect();
   const scrollRefInfo = scrollRef.value?.getBoundingClientRect();
   scrollRef.value.scrollTo({
     left:
@@ -82,19 +86,16 @@ const autoScroll = (index) => {
   });
 };
 const fileClick = async (item, index) => {
-  await eventBus.emit("change-file", item.id);
-  autoScroll(index);
+  eventBus.emit("change-file", item.id);
 };
-eventBus.on("file-bar-auto-scroll", () =>
-  autoScroll(fileItems.value.length - 1)
-);
+eventBus.on("file-bar-auto-scroll", (index) => autoScroll(index));
 eventBus.on("history-file-open", (file) => {
   let index = fileItems.value.findIndex((item) => item.id === file.id);
   //没有的话，推入队列
   if (index < 0) {
     editorContent.appendOpenedFile(file.id, {
       name: file.name,
-      content: file.content,
+      content: file?.content,
     });
     index = fileItems.value.length - 1;
   }
@@ -110,7 +111,7 @@ eventBus.on("history-file-open", (file) => {
     rgb(252, 206, 208),
     #d7f5e3
   ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-  border-bottom: 1px solid rgba(13,13,13,0.1);
+  border-bottom: 1px solid rgba(13, 13, 13, 0.1);
 }
 .file-select-bar {
   border-radius: 4px;
