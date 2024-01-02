@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { v4 as uuidv4 } from "uuid";
+import { emitter } from "@/main.js";
 /**
  * 在线文件关系层级数据记录并持久化，文件夹有唯一标识id，创建文件指定父文件夹id
  */
@@ -23,11 +24,17 @@ export const useFileDependenciesStore = defineStore(
             throw "finded";
           }
           if (item?.sons?.length > 0) {
-            recursionFindIndex(item.sons,id);
+            recursionFindIndex(item.sons, id);
           }
         });
       } catch (error) {
         console.log(error);
+      }
+    };
+    const recursionDeleteFile = (data) => {
+      emitter.emit("store-delete-file", data.id);
+      if (data?.sons) {
+        data.sons.forEach((item) => recursionDeleteFile(item));
       }
     };
     // Actions
@@ -51,19 +58,19 @@ export const useFileDependenciesStore = defineStore(
       fileDependencies.value.push(info);
     };
     const changeCurrentFolder = (id) => {
-        currentFolder.value = id;
+      currentFolder.value = id;
     };
     const deleteFolder = () => {};
     const createFile = (id, fileName = "未命名文件") => {
       finalIndex = -1;
       finalFolder = null;
       // const id = uuidv4();
-      const info = { id: id, name: fileName,parentId:currentFolder.value };
+      const info = { id: id, name: fileName, parentId: currentFolder.value };
       if (currentFolder.value) {
-        console.log(currentFolder.value)
-        recursionFindIndex(fileDependencies.value,currentFolder.value);
+        console.log(currentFolder.value);
+        recursionFindIndex(fileDependencies.value, currentFolder.value);
         if (finalIndex >= 0) {
-          console.log(finalIndex,1111111111)
+          console.log(finalIndex, 1111111111);
           if (!finalFolder[finalIndex]?.sons) {
             finalFolder[finalIndex].sons = [];
           }
@@ -77,16 +84,17 @@ export const useFileDependenciesStore = defineStore(
     };
     const deleteItem = (id) => {
       finalIndex = -1;
-     finalFolder = null
-     recursionFindIndex(fileDependencies.value, id);
-     finalFolder.splice(finalIndex,1)
+      finalFolder = null;
+      recursionFindIndex(fileDependencies.value, id);
+      recursionDeleteFile(finalFolder[finalIndex]);
+      finalFolder.splice(finalIndex, 1);
     };
-    const saveName = (id,name)=> {
+    const saveName = (id, name) => {
       finalIndex = -1;
-     finalFolder = null
-     recursionFindIndex(fileDependencies.value, id);
-     finalFolder[finalIndex].name = name
-    }
+      finalFolder = null;
+      recursionFindIndex(fileDependencies.value, id);
+      finalFolder[finalIndex].name = name;
+    };
     return {
       fileDependencies,
       currentFolder,
@@ -94,7 +102,7 @@ export const useFileDependenciesStore = defineStore(
       changeCurrentFolder,
       createFile,
       saveName,
-      deleteItem
+      deleteItem,
     };
   },
   { persist: true }

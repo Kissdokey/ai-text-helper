@@ -35,7 +35,9 @@ export const useEditorContent = defineStore(
       if(idx >= 0) {
         openedFiles.value.splice(idx,1)
       }
-      currentFile.value = ''
+      if(currentFile.value === id) {
+        currentFile.value = ''
+      }
     };
     const createFile = (name, content) => {
       const uuid = uuidv4();

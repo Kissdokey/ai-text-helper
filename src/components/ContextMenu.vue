@@ -49,6 +49,7 @@ const currentId = ref('')
 const inputValue = ref("");
 onMounted(() => {
   eventBus.on("workspace-setting", (e) => updateContextMenu(e));
+  eventBus.on('store-delete-file',id=>editorContent.deleteFile(id))
 });
 const reName = () => {
   isRename.value = true;
