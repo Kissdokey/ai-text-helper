@@ -10,7 +10,7 @@
     </div>
     <div class="workspace-menu" v-else>
       <div v-if="isRename">
-        <input
+        <el-input
           class="input"
           v-model="inputValue"
           placeholder="请输入新名字"
@@ -32,7 +32,6 @@
   </v-menu>
 </template>
 <script setup>
-import { last } from "lodash";
 import { inject, nextTick, onMounted, ref, watch } from "vue";
 import { useEditorContent } from "@/store/editorContent.js";
 import { useFileDependenciesStore } from "@/store/fileDependencies.js";
@@ -158,6 +157,6 @@ watch(isMenuShow, () => {
   justify-content: space-between;
 }
 .input {
-  width: 100px;
+  width: 120px;
 }
 </style>

@@ -28,7 +28,7 @@
         </div>
         <div
           class="new-folder-btn"
-          @click.stop="createNewFolder"
+          @click.stop="createNewFolderWithoutName"
           v-tooltip.bottom="{
             content: '新建文件夹',
             theme: 'delicate',
@@ -54,13 +54,16 @@ const workspaceRef = ref(null);
 const isFolderActive = ref(false);
 const fileDependenciesStore = useFileDependenciesStore();
 const editorContent = useEditorContent();
-const createNewFolder = () => {
-  fileDependenciesStore.createFolder(fileDependenciesStore.currentFolder);
+const createNewFolder = (name) => {
+  fileDependenciesStore.createFolder(fileDependenciesStore.currentFolder,name);
   isFolderActive.value = true;
   updateFolder();
 };
+const createNewFolderWithoutName = ()=> {
+  eventBus.emit('create-new-item','folder')
+}
 const createNewFile = () => {
-  eventBus.emit("create-new-file");
+  eventBus.emit("create-new-item",'file');
 };
 // eventBus.on('workspace-setting',()=> isContextShow.value = true)
 const mouseOffset = { left: 0, top: 0 };
@@ -81,6 +84,7 @@ onMounted(() => {
   eventBus.on("update-folder", updateFolder);
   eventBus.on("create-new-file", () => (isFolderActive.value = false));
   eventBus.on("change-file", () => (isFolderActive.value = false));
+  eventBus.on('create-new-folder',(name)=>createNewFolder(name))
 });
 function updateFolder() {
   const workSpace = document.createElement("div");

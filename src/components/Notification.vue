@@ -16,20 +16,37 @@
 </template>
 <script setup>
 import { ElNotification } from "element-plus";
-import { inject, h, ref, computed } from "vue";
+import { inject, h, ref, computed, nextTick } from "vue";
 import { useEditorContent } from "@/store/editorContent";
 const editorContent = useEditorContent();
 const eventBus = inject("eventBus");
 const editor = inject("editor");
 const isDialogShow = ref(false);
 const inputName = ref("");
+const currentType = ref('file')
 const isConfirmBtnEnable = computed(() => {
   return !inputName.value.trim();
 });
 const confirmBtnClick = () => {
-  editorContent.changeCurrentName(inputName.value);
+  // editorContent.changeCurrentName(inputName.value);
   isDialogShow.value = false;
-  saveFile();
+  if(currentType.value === 'file') {
+    eventBus.emit('create-new-file',inputName.value)
+    ElNotification({
+      title: "成功",
+      message: `成功创建文件${inputName.value}`,
+      type: "success",
+    });
+    inputName.value = ''
+  }else {
+    eventBus.emit('create-new-folder',inputName.value)
+    ElNotification({
+      title: "成功",
+      message: `成功创建文件夹${inputName.value}`,
+      type: "success",
+    });
+    inputName.value = ''
+  }
 };
 const cancelBtnClick = () => {
   isDialogShow.value = false;
@@ -54,12 +71,16 @@ function saveFile() {
   }
 }
 eventBus.on("ctrl-s", () => {
-  if (!editorContent.currentName) {
-    isDialogShow.value = true;
-  } else {
+  // if (!editorContent.currentName) {
+  //   isDialogShow.value = true;
+  // } else {
     saveFile();
-  }
+  // }
 });
+eventBus.on("create-new-item",(type)=> {
+  currentType.value = type
+  isDialogShow.value = true
+})
 </script>
 <style>
 .dialog-container {

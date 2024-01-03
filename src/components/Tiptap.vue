@@ -88,21 +88,21 @@ function getdefaultName() {
 }
 function initFile() {
   if (!editorContent2.currentFile) {
-    createNewFile();
     return;
   }
   onChangeFile();
 }
-function createNewFile() {
+function createNewFile(fileName) {
   editorContent2.initFile();
-  editorContent2.createFile(getdefaultName(), initialValue.value);
+  let name = fileName || getdefaultName();
+  editorContent2.createFile(name, initialValue.value);
   editor.value.commands.setContent(initialValue.value);
   let updateFunc = editor.value.callbacks.update[0];
   updateFunc();
   //完成更新之后将执行自动scroll
   nextTick(() => {
     eventBus.emit("file-bar-auto-scroll");
-    fileDependenciesStore.createFile(editorContent2.currentFile, "未命名文件");
+    fileDependenciesStore.createFile(editorContent2.currentFile, name);
     eventBus.emit('update-folder')
   });
 }
