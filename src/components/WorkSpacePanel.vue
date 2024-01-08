@@ -12,7 +12,7 @@
     @click="clickbg"
     v-workspace-right-click
   >
-  <ContextMenu ></ContextMenu>
+    <ContextMenu></ContextMenu>
     <div class="workspace-header">
       <span>用户空间</span>
       <div class="btn-container">
@@ -46,7 +46,7 @@ import _ from "lodash";
 import { useFileDependenciesStore } from "@/store/fileDependencies.js";
 import { useEditorContent } from "@/store/editorContent.js";
 import { computed, inject, nextTick, onMounted, ref } from "vue";
-import ContextMenu from '@/components/ContextMenu.vue'
+import ContextMenu from "@/components/ContextMenu.vue";
 const props = defineProps({ isHiddenFilePanel: Boolean });
 const eventBus = inject("eventBus");
 const isClose = ref(false);
@@ -55,15 +55,15 @@ const isFolderActive = ref(false);
 const fileDependenciesStore = useFileDependenciesStore();
 const editorContent = useEditorContent();
 const createNewFolder = (name) => {
-  fileDependenciesStore.createFolder(fileDependenciesStore.currentFolder,name);
+  fileDependenciesStore.createFolder(fileDependenciesStore.currentFolder, name);
   isFolderActive.value = true;
   updateFolder();
 };
-const createNewFolderWithoutName = ()=> {
-  eventBus.emit('create-new-item','folder')
-}
+const createNewFolderWithoutName = () => {
+  eventBus.emit("create-new-item", "folder");
+};
 const createNewFile = () => {
-  eventBus.emit("create-new-item",'file');
+  eventBus.emit("create-new-item", "file");
 };
 // eventBus.on('workspace-setting',()=> isContextShow.value = true)
 const mouseOffset = { left: 0, top: 0 };
@@ -76,15 +76,16 @@ const workSpaceDragDown = _.throttle((e) => {
   workspaceRef.value.style.left = e.pageX - mouseOffset.left + "px";
   workspaceRef.value.style.top = e.pageY - mouseOffset.top + "px";
 }, 500);
-eventBus.on("change-workSpace", () => {
-  isClose.value = !isClose.value;
-});
+
 onMounted(() => {
   updateFolder();
   eventBus.on("update-folder", updateFolder);
   eventBus.on("create-new-file", () => (isFolderActive.value = false));
   eventBus.on("change-file", () => (isFolderActive.value = false));
-  eventBus.on('create-new-folder',(name)=>createNewFolder(name))
+  eventBus.on("create-new-folder", (name) => createNewFolder(name));
+  eventBus.on("change-workSpace", () => {
+    isClose.value = !isClose.value;
+  });
 });
 function updateFolder() {
   const workSpace = document.createElement("div");
@@ -105,7 +106,7 @@ function walkThrought(data, target) {
       father.appendChild(img);
       father.appendChild(text);
       father.classList.add("folder-father");
-      father.setAttribute('id',item.id)
+      father.setAttribute("id", item.id);
       if (
         item.id === fileDependenciesStore.currentFolder &&
         isFolderActive.value
@@ -131,7 +132,10 @@ function walkThrought(data, target) {
       const child = document.createElement("div");
       const text = document.createTextNode(item.name);
       if (item?.sons) {
-        if (item.id === fileDependenciesStore.currentFolder && isFolderActive.value) {
+        if (
+          item.id === fileDependenciesStore.currentFolder &&
+          isFolderActive.value
+        ) {
           document
             .querySelector("folder-active")
             ?.classList?.remove("folder-active");
@@ -165,11 +169,10 @@ function walkThrought(data, target) {
             ?.classList?.remove("folder-active");
           child.classList.add("folder-active");
         }
-
       }
       child.appendChild(text);
       child.classList.add("folder");
-      child.setAttribute('id',item.id)
+      child.setAttribute("id", item.id);
       templateDom.appendChild(child);
     }
   });

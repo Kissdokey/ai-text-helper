@@ -8,13 +8,13 @@
       <span
         :class="[
           'file-item',
-          item.id === editorContent.currentFile ? 'active' : '',
+          item === editorContent.currentFile ? 'active' : '',
         ]"
         v-for="(item, index) in fileItems"
-        :key="item.id"
+        :key="item"
         @click="() => fileClick(item, index)"
       >
-        {{ item.name }}
+        {{ editorContent.fileInfo[item]?.name }}
         <div
           class="icon-close-container"
           @click.stop="() => fileClose(item, index)"
@@ -53,7 +53,7 @@ const clearAll = () => {
 };
 const fileClose = async (item, index) => {
   editorContent.spliceOpenedFile(index);
-  if (item.id !== editorContent.currentFile) {
+  if (item !== editorContent.currentFile) {
     return;
   }
   if (fileItems.value.length === 0) {
@@ -86,20 +86,17 @@ const autoScroll = (index) => {
   });
 };
 const fileClick = async (item, index) => {
-  eventBus.emit("change-file", item.id);
+  eventBus.emit("change-file", item);
 };
 eventBus.on("file-bar-auto-scroll", (index) => autoScroll(index));
 eventBus.on("history-file-open", (file) => {
-  let index = fileItems.value.findIndex((item) => item.id === file.id);
+  let index = fileItems.value.findIndex((item) => item === file.id);
   //没有的话，推入队列
   if (index < 0) {
-    editorContent.appendOpenedFile(file.id, {
-      name: file.name,
-      content: file?.content,
-    });
+    editorContent.appendOpenedFile(file.id);
     index = fileItems.value.length - 1;
   }
-  fileClick(file, index);
+  fileClick(file.id, index);
 });
 </script>
 

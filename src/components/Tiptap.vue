@@ -213,7 +213,8 @@ const autoResize = _.throttle(() => {
     return;
   }
 }, 100);
-onMounted(() => {
+onMounted(async () => {
+  await editorContent2.init()
   initFile();
   autoResize();
   operateItemRef = document.querySelector(".operate-item");
