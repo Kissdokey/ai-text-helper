@@ -74,8 +74,11 @@ const autoScroll = (index) => {
   }
   const selectFileDomInfo =
     scrollRef.value?.children[idx]?.getBoundingClientRect();
+  if (!selectFileDomInfo) {
+    return;
+  }
   const scrollRefInfo = scrollRef.value?.getBoundingClientRect();
-  scrollRef.value.scrollTo({
+  scrollRef.value?.scrollTo({
     left:
       selectFileDomInfo.left -
       scrollRefInfo.left +
@@ -85,19 +88,10 @@ const autoScroll = (index) => {
     behavior: "smooth",
   });
 };
-const fileClick = async (item, index) => {
-  eventBus.emit("change-file", item);
+const fileClick = async (id) => {
+  eventBus.emit("change-file", id); //抛出事件，在tiptap中集中处理改变逻辑，这里直接传递id
 };
-eventBus.on("file-bar-auto-scroll", (index) => autoScroll(index));
-eventBus.on("history-file-open", (file) => {
-  let index = fileItems.value.findIndex((item) => item === file.id);
-  //没有的话，推入队列
-  if (index < 0) {
-    editorContent.appendOpenedFile(file.id);
-    index = fileItems.value.length - 1;
-  }
-  fileClick(file.id, index);
-});
+eventBus.on("file-bar-auto-scroll", (index) => autoScroll(index)); //在其他地方改变当前选中文件需要调用自动滚动函数
 </script>
 
 <style scoped>

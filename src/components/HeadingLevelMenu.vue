@@ -33,7 +33,7 @@ function clickHeading(index) {
     return;
   }
   editor.value.chain().focus().toggleHeading({ level: index }).run();
-  eventBus.emit('close-menu')
+  eventBus.emit('menu-button-arrow-rotate')
 }
 function headingType() {
   const heading = calCurrentAttribute(editor.value, "heading");

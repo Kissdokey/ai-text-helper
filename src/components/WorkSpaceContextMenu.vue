@@ -47,8 +47,8 @@ const isDelete = ref(false);
 const currentId = ref('')
 const inputValue = ref("");
 onMounted(() => {
+  //右键触发更新菜单
   eventBus.on("workspace-setting", (e) => updateContextMenu(e));
-  eventBus.on('store-delete-file',id=>editorContent.deleteFile(id))
 });
 const reName = () => {
   isRename.value = true;

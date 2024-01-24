@@ -26,7 +26,6 @@ export const useEditorContent = defineStore({
         const data = await getAllData(db, "file-info");
         data.forEach((item) => {
           fileInfo.value[item.id] = item;
-          console.log(111);
         });
         console.log(fileInfo.value);
       });

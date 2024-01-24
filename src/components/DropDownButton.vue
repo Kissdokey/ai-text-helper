@@ -48,11 +48,12 @@ const colorStates = mapState(useColorStore, [
   "wordColorIndex",
   "highlightColorIndex",
 ]);
+
+// info是展示的文字，type是菜单类型，1代表字体颜色，3代表背景颜色
 const props = defineProps({
   info: String,
   type: Number,
   currentType: Number,
-  editor: Object,
   tooltip: String,
 });
 const eventBus = inject("eventBus");

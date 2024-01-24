@@ -7,12 +7,14 @@
       <ToolPanel></ToolPanel>
       <WorkSpacePanel :isHiddenFilePanel="isHiddenFilePanel"></WorkSpacePanel>
       <div class="editor-area">
-        <FixedDropDownMenu :isHiddenToolPanel="true"></FixedDropDownMenu>
+        <FixedMenu :isHiddenToolPanel="true"></FixedMenu>
         <div class="editor-container" v-show="editorContent2.currentFile">
           <editor-content :editor="editor" class="editor" id="editorRef" />
           <RightSidePanel></RightSidePanel>
         </div>
-        <div class="no-flie-notice" v-show="!editorContent2.currentFile">请选择文件或者新建文件</div>
+        <div class="no-flie-notice" v-show="!editorContent2.currentFile">
+          请选择文件或者新建文件
+        </div>
       </div>
     </div>
   </div>
@@ -27,7 +29,6 @@ import RightSidePanel from "@/components/RightSidePanel.vue";
 import WorkSpacePanel from "@/components/WorkSpacePanel.vue";
 import Notification from "@/components/Notification.vue";
 import FixedMenu from "@/components/FixedMenu.vue";
-import FixedDropDownMenu from "@/components/FixedDropDownMenu.vue";
 import BubbleMenu from "@/components/BubbleMenu.vue";
 import { useEditor, EditorContent } from "@tiptap/vue-3";
 import extensions from "@/util/extensions.js";
@@ -103,20 +104,33 @@ function createNewFile(fileName) {
   nextTick(() => {
     eventBus.emit("file-bar-auto-scroll");
     fileDependenciesStore.createFile(editorContent2.currentFile, name);
-    eventBus.emit('update-folder')
+    eventBus.emit("update-folder");
   });
 }
 function onChangeFile(id) {
+  //修改当前活跃文件id，读取内容并修改
   id && editorContent2.changeFile(id);
   editor.value.commands.setContent(
     editorContent2.fileInfo[editorContent2.currentFile].content
   );
   let updateFunc = editor.value.callbacks.update[0];
   updateFunc();
-  eventBus.emit('update-folder')
-  nextTick(()=> {
-    eventBus.emit('file-bar-auto-scroll',editorContent2.openedFiles.findIndex((item)=>item.id === editorContent2.currentFile))
-  })
+  //工作区workspace的选中
+  eventBus.emit("update-folder");
+  //在数据更新好打开文件列表选中和滚动
+  nextTick(() => {
+    //找到当前id的index
+    let index = editorContent2.openedFiles.findIndex((item) => item === id);
+    //没有的话，推入已打开文件队列
+    if (index < 0) {
+      editorContent2.appendOpenedFile(id);
+      index = editorContent2.openedFiles.length - 1;
+    }
+    eventBus.emit("file-bar-auto-scroll", index);
+  });
+}
+function onDeleteFile(id) {
+    editorContent2.deleteFile(id)
 }
 function saveAsDocx() {
   saveDocx(getHtml());
@@ -188,6 +202,35 @@ function onChangeColor(index) {
 function onChangeHighLightColor(index) {
   editor.value.commands.toggleHighlight({ color: colorItems[index].rgb });
 }
+function simpleButtonClick(type) {
+  if (type === "bold") {
+    editor.value.chain().focus().toggleBold().run();
+  }
+  if (type === "italic") {
+    editor.value.chain().focus().toggleItalic().run();
+  }
+  if (type === "strike") {
+    editor.value.chain().focus().toggleStrike().run();
+  }
+  if (type === "code") {
+    editor.value.chain().focus().toggleCode().run();
+  }
+  if (type === "underline") {
+    editor.value.chain().focus().toggleUnderline().run();
+  }
+  if (type.textAlign === "left") {
+    editor.value.chain().focus().setTextAlign("left").run();
+  }
+  if (type.textAlign === "center") {
+    editor.value.chain().focus().setTextAlign("center").run();
+  }
+  if (type.textAlign === "right") {
+    editor.value.chain().focus().setTextAlign("right").run();
+  }
+  if (type === "blockquote") {
+    editor.value.chain().focus().toggleBlockquote().run();
+  }
+}
 // function mouseOver(e) {
 //   operateItemRef.style.left = e.relatedTarget.offsetLeft + 'px';
 //   operateItemRef.style.top = e.relatedTarget.offsetTop + 'px';
@@ -214,13 +257,15 @@ const autoResize = _.throttle(() => {
   }
 }, 100);
 onMounted(async () => {
-  await editorContent2.init()
+  await editorContent2.init();
   initFile();
   autoResize();
   operateItemRef = document.querySelector(".operate-item");
   eventBus.on("change-file", onChangeFile);
+  eventBus.on("delete-file", onDeleteFile);
   eventBus.on("color-index", (index) => onChangeColor(index));
   eventBus.on("highLight-index", (index) => onChangeHighLightColor(index));
+  eventBus.on("simple-button-click", (type) => simpleButtonClick(type));
   eventBus.on("get-html", getHtml);
   eventBus.on("get-word-file", getWordFile);
   eventBus.on("create-new-file", createNewFile);

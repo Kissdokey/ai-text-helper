@@ -12,7 +12,7 @@
     @click="clickbg"
     v-workspace-right-click
   >
-    <ContextMenu></ContextMenu>
+    <WorkSpaceContextMenu></WorkSpaceContextMenu>
     <div class="workspace-header">
       <span>用户空间</span>
       <div class="btn-container">
@@ -46,7 +46,7 @@ import _ from "lodash";
 import { useFileDependenciesStore } from "@/store/fileDependencies.js";
 import { useEditorContent } from "@/store/editorContent.js";
 import { computed, inject, nextTick, onMounted, ref } from "vue";
-import ContextMenu from "@/components/ContextMenu.vue";
+import WorkSpaceContextMenu from "@/components/WorkSpaceContextMenu.vue";
 const props = defineProps({ isHiddenFilePanel: Boolean });
 const eventBus = inject("eventBus");
 const isClose = ref(false);
@@ -161,7 +161,7 @@ function walkThrought(data, target) {
             ?.classList.remove("folder-active");
           e.target.classList?.add("folder-active");
           fileDependenciesStore.changeCurrentFolder(item?.parentId);
-          eventBus.emit("history-file-open", item);
+          eventBus.emit("change-file", item.id);
         });
         if (item.id === editorContent.currentFile && !isFolderActive.value) {
           document

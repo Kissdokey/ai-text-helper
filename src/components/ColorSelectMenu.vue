@@ -1,8 +1,8 @@
 <script>
-import {useColorStore} from '@/store/color'
-import { mapState, mapActions } from 'pinia'
-import { inject } from 'vue';
-import {colorItems} from '@/util/constantData'
+import { useColorStore } from "@/store/color";
+import { mapState, mapActions } from "pinia";
+import { inject } from "vue";
+import { colorItems } from "@/util/constantData";
 export default {
   props: {
     type: String, //color or highLight or draw or comment
@@ -12,26 +12,28 @@ export default {
   data() {
     return {
       visible: false,
-      eventBus:inject('eventBus'),
-      editor:inject('editor'),
+      eventBus: inject("eventBus"),
       colorItems: colorItems,
     };
   },
   computed: {
-    ...mapState(useColorStore, [ 'wordColorIndex', 'highlightColorIndex']),
+    ...mapState(useColorStore, ["wordColorIndex", "highlightColorIndex"]),
     colorIndex() {
-        switch (this.type) {
-          case 'color' : {
-            return this.wordColorIndex
-          };
-          case 'highLight' : {
-            return this.highlightColorIndex
-          }
+      switch (this.type) {
+        case "color": {
+          return this.wordColorIndex;
         }
-    }
+        case "highLight": {
+          return this.highlightColorIndex;
+        }
+      }
+    },
   },
   methods: {
-    ...mapActions(useColorStore, ['updateWordColorIndex','updateHighlightColorIndex']),
+    ...mapActions(useColorStore, [
+      "updateWordColorIndex",
+      "updateHighlightColorIndex",
+    ]),
     itemColor(item) {
       var style = "background-color: " + item.rgb;
       if (item.name == "White") {
@@ -42,18 +44,20 @@ export default {
 
     setCurrent(index) {
       switch (this.type) {
-        case 'color' : {
-         this.eventBus.emit("color-index", index);
-         this.visible = false
-         this.updateWordColorIndex(index)
-        }break;
-        case 'highLight': {
+        case "color":
+          {
+            this.eventBus.emit("color-index", index); //抛出修改颜色事件，在tiptap中修改颜色
+            this.visible = false;    //关闭菜单
+            this.updateWordColorIndex(index); //更新store
+          }
+          break;
+        case "highLight": {           //同上
           this.eventBus.emit("highLight-index", index);
-          this.visible = false
-          this.updateHighlightColorIndex(index)
-        }
+          this.visible = false;
+          this.updateHighlightColorIndex(index);
+        }break;
       }
-      this.eventBus.emit('close-menu')
+      this.eventBus.emit("menu-button-arrow-rotate"); //抛出事件让菜单按钮的小箭头旋转
     },
 
     getRGB(colorIndex) {

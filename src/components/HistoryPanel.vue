@@ -6,7 +6,7 @@
         <input class="nomeaning-input" ref="noMeaningInput"/>
         <div v-if="data.length > 0">
           <div :class="[viewMore ? 'view-more' : 'no-view-more']">
-            <div v-for="(item, index) in computedData" :key="index" @click="()=>historyItemClick(item)">
+            <div v-for="(item, index) in computedData" :key="index" @click="()=>historyItemClick(item.id)">
               <a :href="item.url" target="_blank"  class="history-item">
                 <v-icon>$IconArrow</v-icon>
                 <div class="text-info">
@@ -86,9 +86,9 @@ import { computed } from 'vue';
       ...mapState(useEditorContent, ['fileInfo']),
     },
     methods: {
-      historyItemClick(item) {
+      historyItemClick(id) {
         this.showHistory = false
-        this.eventBus.emit('history-file-open',item)
+        this.eventBus.emit('change-file',id)
       },
       async onClickViewMore() {
         if(this.isLoading) {

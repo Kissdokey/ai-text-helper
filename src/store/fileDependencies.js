@@ -32,7 +32,8 @@ export const useFileDependenciesStore = defineStore(
       }
     };
     const recursionDeleteFile = (data) => {
-      emitter.emit("store-delete-file", data.id);
+      //递归删除文件时，抛出删除文件事件，在tiptap中处理删除
+      emitter.emit("delete-file", data.id);
       if (data?.sons) {
         data.sons.forEach((item) => recursionDeleteFile(item));
       }
