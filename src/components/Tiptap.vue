@@ -49,7 +49,10 @@ import {
 import mammoth from "mammoth";
 import { colorItems, INITHTML, paragraphTags } from "@/util/constantData.js";
 import { useEditorContent } from "@/store/editorContent";
+import { authentication } from '@/fetch/user.js'
+import { useUserStore } from '@/store/user.js'
 const editorContent2 = useEditorContent();
+const userStore = useUserStore()
 const fileDependenciesStore = useFileDependenciesStore();
 let operateItemRef = null;
 let editorAreaDom = null;
@@ -91,7 +94,7 @@ function initFile() {
   if (!editorContent2.currentFile) {
     return;
   }
-  onChangeFile();
+  onChangeFile(editorContent2.currentFile);
 }
 function createNewFile(fileName) {
   editorContent2.initFile();
@@ -257,6 +260,7 @@ const autoResize = _.throttle(() => {
   }
 }, 100);
 onMounted(async () => {
+  authentication(userStore.initUserInfo)
   await editorContent2.init();
   initFile();
   autoResize();

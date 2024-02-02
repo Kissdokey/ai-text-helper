@@ -10,6 +10,8 @@ import IconHistory from "@/assets/svgs/IconHistory.vue";
 import IconFolder from "@/assets/svgs/IconFolder.vue";
 import IconOpenWorkSpace from "@/assets/svgs/IconOpenWorkSpace.vue";
 import IconCloseWorkSpace from '@/assets/svgs/IconCloseWorkSpace.vue'
+import IconEyesHidden from '@/assets/svgs/IconEyesHidden.vue'
+import IconEyesShow from '@/assets/svgs/IconEyesShow.vue'
 const icons = {
   IconArrow,
   IconCurrentColor,
@@ -22,7 +24,9 @@ const icons = {
   IconCreateFolder,
   IconFolder,
   IconOpenWorkSpace,
-  IconCloseWorkSpace
+  IconCloseWorkSpace,
+  IconEyesShow,
+  IconEyesHidden
 };
 
 export { icons };

@@ -15,7 +15,7 @@
   </div>
 </template>
 <script setup>
-import { ElNotification } from "element-plus";
+import { ElNotification, ElMessage } from "element-plus";
 import { inject, h, ref, computed, nextTick } from "vue";
 import { useEditorContent } from "@/store/editorContent";
 const editorContent = useEditorContent();
@@ -23,30 +23,40 @@ const eventBus = inject("eventBus");
 const editor = inject("editor");
 const isDialogShow = ref(false);
 const inputName = ref("");
-const currentType = ref('file')
+const currentType = ref("file");
 const isConfirmBtnEnable = computed(() => {
   return !inputName.value.trim();
 });
 const confirmBtnClick = () => {
   // editorContent.changeCurrentName(inputName.value);
   isDialogShow.value = false;
-  if(currentType.value === 'file') {
-    eventBus.emit('create-new-file',inputName.value)
+  if (currentType.value === "file") {
+    eventBus.emit("create-new-file", inputName.value);
     ElNotification({
       title: "成功",
       message: `成功创建文件${inputName.value}`,
       type: "success",
     });
-    inputName.value = ''
-  }else {
-    eventBus.emit('create-new-folder',inputName.value)
+    inputName.value = "";
+  } else {
+    eventBus.emit("create-new-folder", inputName.value);
     ElNotification({
       title: "成功",
       message: `成功创建文件夹${inputName.value}`,
       type: "success",
     });
-    inputName.value = ''
+    inputName.value = "";
   }
+};
+const showMessage = (msg, type) => {
+  if(type === 'error') {
+    ElMessage.error(msg || 'something wrong')
+    return
+  }
+  ElMessage({
+    message: msg || type,
+    type: type,
+  });
 };
 const cancelBtnClick = () => {
   isDialogShow.value = false;
@@ -71,16 +81,24 @@ function saveFile() {
   }
 }
 eventBus.on("ctrl-s", () => {
-  // if (!editorContent.currentName) {
-  //   isDialogShow.value = true;
-  // } else {
-    saveFile();
-  // }
+  saveFile();
 });
-eventBus.on("create-new-item",(type)=> {
-  currentType.value = type
-  isDialogShow.value = true
-})
+eventBus.on("create-new-item", (type) => {
+  currentType.value = type;
+  isDialogShow.value = true;
+});
+const userAuthentication = [
+  "login-success",
+  "login-error",
+  "register-success",
+  "register-error",
+];
+userAuthentication.forEach((item) => {
+  eventBus.on(item, (msg) =>
+    showMessage(msg, item.slice(item.indexOf("-") + 1))
+  );
+});
+eventBus.on();
 </script>
 <style>
 .dialog-container {

@@ -43,14 +43,14 @@
       </div>
     </div>
     <div class="tool-panel-footer">
-      <UserLogin />
+      <UserAvatar />
     </div>
   </div>
 </template>
 <script setup>
 import HistoryPanel from "@/components/HistoryPanel.vue";
 import SaveMenu from "@/components/SaveMenu.vue";
-import UserLogin from "@/components/UserLogin.vue";
+import UserAvatar from "@/components/UserAvatar.vue";
 import { inject, ref } from "vue";
 const eventBus = inject("eventBus");
 const doc = ref(null);
