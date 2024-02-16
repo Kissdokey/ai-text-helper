@@ -14,17 +14,19 @@
           >注册</span
         >
       </div>
-      <LoginPanel v-show="isLogin"></LoginPanel>
-      <RegisterPanel v-show="!isLogin"></RegisterPanel>
+      <LoginPanel v-show="isLogin" ref="loginPanel"></LoginPanel>
+      <RegisterPanel v-show="!isLogin" ref="registerPanel"></RegisterPanel>
     </div>
   </v-menu>
 </template>
 <script setup>
-import { provide, ref } from "vue";
+import { inject, nextTick, onMounted, provide, ref, watch } from "vue";
 import LoginPanel from "@/components/LoginPanel.vue";
 import RegisterPanel from "@/components/RegisterPanel.vue";
-
+const eventBus = inject("eventBus");
 const isMenuActive = ref(false);
+const loginPanel = ref(null);
+const registerPanel = ref(null);
 const isLogin = ref(true);
 const changeToLogin = () => {
   if (isLogin.value) {
@@ -38,10 +40,23 @@ const changeToSignup = () => {
   }
   isLogin.value = false;
 };
-const closeMenu = ()=> {
+const closeMenu = () => {
   isMenuActive.value = false;
-}
-provide('closeMenu',closeMenu);
+};
+provide("closeMenu", closeMenu);
+//md这个v-menu太傻逼了，初始化的时候内部的子组件全部不加载，每次打开关闭菜单都会重新创建和销毁，如果把
+//event事件放在内部会因为多次创建设置多次监听执行多次。放在外面因为子组件一开始没有加载，获取不到,而且还有一个动画会导致延迟才可以获取子组件
+let setFlag = false;
+watch(isMenuActive, (value) => {
+  if (value && !setFlag) {
+    nextTick(() => {
+      console.log(loginPanel.value);
+      eventBus.on("login-submit", loginPanel.value.submit);
+      eventBus.on("register-submit", registerPanel.value.submit);
+      setFlag = true;
+    });
+  }
+});
 </script>
 <style scoped>
 .login-container {

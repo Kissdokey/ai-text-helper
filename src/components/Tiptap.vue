@@ -2,11 +2,12 @@
   <Notification></Notification>
   <BubbleMenu :editor="editor"></BubbleMenu>
   <div class="app-container">
-    <FileSelectBar></FileSelectBar>
+    <AppTitle></AppTitle>
     <div class="editor-wrapper">
       <ToolPanel></ToolPanel>
       <WorkSpacePanel :isHiddenFilePanel="isHiddenFilePanel"></WorkSpacePanel>
       <div class="editor-area">
+        <FileSelectBar></FileSelectBar>
         <FixedMenu :isHiddenToolPanel="true"></FixedMenu>
         <div class="editor-container" v-show="editorContent2.currentFile">
           <editor-content :editor="editor" class="editor" id="editorRef" />
@@ -28,6 +29,7 @@ import FileSelectBar from "@/components/FileSelectBar.vue";
 import RightSidePanel from "@/components/RightSidePanel.vue";
 import WorkSpacePanel from "@/components/WorkSpacePanel.vue";
 import Notification from "@/components/Notification.vue";
+import AppTitle from "./AppTitle.vue";
 import FixedMenu from "@/components/FixedMenu.vue";
 import BubbleMenu from "@/components/BubbleMenu.vue";
 import { useEditor, EditorContent } from "@tiptap/vue-3";
@@ -243,12 +245,12 @@ function simpleButtonClick(type) {
 //   console.log(e)
 // }
 const autoResize = _.throttle(() => {
-  if (window.innerWidth >= 940) {
+  if (window.innerWidth >= 988) {
     isHiddenFilePanel.value = false;
     isHiddenToolPanel.value = false;
     return;
   }
-  if (window.innerWidth < 940 && window.innerWidth >= 800) {
+  if (window.innerWidth < 988 && window.innerWidth >= 800) {
     isHiddenFilePanel.value = true;
     isHiddenToolPanel.value = false;
     return;
@@ -291,6 +293,7 @@ onUnmounted(() => {
   flex-direction: column;
 }
 .editor-wrapper {
+  border-top: 1px solid rgba(13, 13, 13, 0.1);
   flex: 1;
   display: flex;
   overflow-y: hidden;
@@ -305,8 +308,8 @@ onUnmounted(() => {
 }
 .editor-area {
   position: relative;
-  width: 100%;
   flex: 1;
+  padding-top: 50px;
   display: flex;
   flex-direction: column;
 }

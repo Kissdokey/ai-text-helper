@@ -186,8 +186,8 @@ const clickbg = () => {
 <style scoped>
 .workspace-container {
   /* position: relative; */
-  max-width: 250px;
-  flex: 1;
+  width: 200px;
+  min-width: 150px;
   border-right: 1px solid rgba(13, 13, 13, 0.1);
 }
 

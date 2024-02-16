@@ -1,14 +1,14 @@
 <template>
-  <div class="user-avatar">{{  userStore.username[0].toUpperCase() }}</div>
+  <div class="user-avatar-target">{{  userStore.username[0].toUpperCase() }}</div>
   <UserAuthentication
     v-if="!userStore.isLogin"
-    activator=".user-avatar"
+    activator=".user-avatar-target"
     location="end center"
     offset="20px"
   ></UserAuthentication>
   <UserInfoPanel
     v-if="userStore.isLogin"
-    activator=".user-avatar"
+    activator=".user-avatar-target"
     location="end center"
     offset="20px"
   ></UserInfoPanel>
@@ -21,7 +21,8 @@ const userStore = useUserStore();
 </script>
 
 <style scoped>
-.user-avatar {
+.user-avatar-target {
+  cursor: pointer;
   user-select: none;
   width: 32px;
   height: 32px;

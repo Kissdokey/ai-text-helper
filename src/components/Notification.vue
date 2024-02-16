@@ -92,10 +92,12 @@ const userAuthentication = [
   "login-error",
   "register-success",
   "register-error",
+  "update-avatar-error",
+  "update-avatar-success",
 ];
 userAuthentication.forEach((item) => {
   eventBus.on(item, (msg) =>
-    showMessage(msg, item.slice(item.indexOf("-") + 1))
+    showMessage(msg, item.slice(item.lastIndexOf("-") + 1))
   );
 });
 eventBus.on();

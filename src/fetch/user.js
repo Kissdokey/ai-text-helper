@@ -1,7 +1,7 @@
-import { REGISTER, LOGIN, AUTHENTICATION } from "@/fetch/api.js";
+import { REGISTER, LOGIN, AUTHENTICATION,UPDATEAVATAR,AIREQUEST } from "@/fetch/api.js";
 import { emitter } from "@/main.js";
 
-const TOKEN = "ai-text-helper-token";
+export const TOKEN = "ai-text-helper-token";
 const DEFAULTERROR = "something wrong";
 const _get = async (url = "", auth = "") => {
   try {
@@ -18,12 +18,13 @@ const _get = async (url = "", auth = "") => {
     emitter.emit("network-error", error);
   }
 };
-const _post = async (url = "", data = {}) => {
+const _post = async (url = "", data = {} ,auth = "") => {
   try {
     const resStr = await fetch(url, {
       method: "POST",
       mode: "cors",
       headers: {
+        "authentication": auth,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(data),
@@ -34,6 +35,7 @@ const _post = async (url = "", data = {}) => {
     emitter.emit("network-error", error);
   }
 };
+
 //目前不限制注册次数，后续可拓展手机号验证码绑定手机号进行限制
 export const register = async (data = {}) => {
   const res = await _post(REGISTER, data);
@@ -73,3 +75,34 @@ export const authentication = async (callback) => {
   emitter.emit('login-success','登陆成功!')
   callback(res);
 };
+
+export const updateUserAvatar = async(data = {},callback) => {
+  const auth = window.localStorage.getItem(TOKEN);
+  if(!auth) {
+    callback({});
+    emitter.emit("login-error", '登录信息出错，请重新登录！');
+  }
+  const res = await _post(UPDATEAVATAR,data,auth)
+  if(res?.code !== 200) {
+    emitter.emit("update-avatar-error", res?.msg || DEFAULTERROR);
+    return;
+  }
+  emitter.emit('update-avatar-success','更换头像成功!')
+  callback(res?.data?.avatar);
+}
+
+export const aiRequest = async(data={},callback) => {
+  const auth = window.localStorage.getItem(TOKEN);
+  if(!auth) {
+    callback({});
+    emitter.emit("login-error", '登录信息出错，请重新登录！');
+  }
+  const res = await _post(AIREQUEST,data,auth)
+  if(res?.code !== 200) {
+    emitter.emit("ai-request-error", res?.msg || DEFAULTERROR);
+    return;
+  }
+  emitter.emit('ai-request-success','ai请求成功!')
+  console.log(res)
+  callback(res);
+}

@@ -1,3 +1,6 @@
-export const REGISTER = 'http://127.0.0.1:8000/userAccount/register'
-export const LOGIN = 'http://127.0.0.1:8000/userAccount/login'
-export const AUTHENTICATION = 'http://127.0.0.1:8000/aiTextHelper/authentication'
+const HOST = 'http://127.0.0.1:8000'
+export const REGISTER = `${HOST}/userAccount/register`
+export const LOGIN = `${HOST}/userAccount/login`
+export const AUTHENTICATION = `${HOST}/userInfo/authentication`
+export const UPDATEAVATAR = `${HOST}/userInfo/updateAvatar`
+export const AIREQUEST = `${HOST}/aiTextHelper/textDeal`

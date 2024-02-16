@@ -2,6 +2,17 @@
   <div class="header-container">
     <div
       v-show="editorContent.openedFiles.length > 0"
+      class="clear-btn"
+      v-tooltip.bottom="{
+        content: '一键清空',
+        theme: 'delicate',
+      }"
+      @click="clearAll"
+    >
+      <v-icon size="16">$IconClose</v-icon>
+    </div>
+    <div
+      v-show="editorContent.openedFiles.length > 0"
       class="file-select-bar"
       ref="scrollRef"
     >
@@ -25,17 +36,6 @@
     </div>
     <div class="file-select-bar" v-show="editorContent.openedFiles.length <= 0">
       选择文件来进行编辑
-    </div>
-    <div
-      v-show="editorContent.openedFiles.length > 0"
-      class="clear-btn"
-      v-tooltip.bottom="{
-        content: '一键清空',
-        theme: 'delicate',
-      }"
-      @click="clearAll"
-    >
-      <v-icon size="16">$IconClose</v-icon>
     </div>
   </div>
 </template>
@@ -96,23 +96,19 @@ eventBus.on("file-bar-auto-scroll", (index) => autoScroll(index)); //在其他�
 
 <style scoped>
 .header-container {
-  background: linear-gradient(
-    to right,
-    #fac9cb,
-    rgb(252, 206, 208),
-    #d7f5e3
-  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  position: absolute;
+  top:0;
+  width: 100%;
   border-bottom: 1px solid rgba(13, 13, 13, 0.1);
+  display: flex;
 }
 .file-select-bar {
   border-radius: 4px;
-  margin-left: 24px;
-  margin-right: 56px;
   position: relative;
   box-sizing: border-box;
   user-select: none;
   white-space: nowrap;
-  width: calc(100% - 80px);
+  width: calc(100% - 60px);
   padding-top: 6px;
   height: 42px;
   overflow-x: hidden;
