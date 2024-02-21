@@ -1,6 +1,7 @@
 <template>
     <div class="app-header">
-        <span @click="click1">AI TEXT HELPER</span>
+        <v-icon class="name">$IconLogo</v-icon>
+        <span @click="click1" id="lijian">AI TEXT HELPER</span>
     </div>
 </template>
 <script setup>
@@ -10,6 +11,10 @@ import { aiRequest } from '@/fetch/user';
  }
 </script>
 <style scoped>
+.name {
+    width: 16px;
+    height: 16px;
+}
 .app-header {
     height: 50px;
     width: 100%;

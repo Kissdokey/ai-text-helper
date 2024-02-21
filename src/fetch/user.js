@@ -1,4 +1,4 @@
-import { REGISTER, LOGIN, AUTHENTICATION,UPDATEAVATAR,AIREQUEST } from "@/fetch/api.js";
+import { REGISTER, LOGIN, AUTHENTICATION,UPDATEAVATAR,TEXTDEAL,AIREQUEST } from "@/fetch/api.js";
 import { emitter } from "@/main.js";
 
 export const TOKEN = "ai-text-helper-token";
@@ -89,6 +89,22 @@ export const updateUserAvatar = async(data = {},callback) => {
   }
   emitter.emit('update-avatar-success','更换头像成功!')
   callback(res?.data?.avatar);
+}
+
+export const textDeal = async(data={},callback) => {
+  const auth = window.localStorage.getItem(TOKEN);
+  if(!auth) {
+    callback({});
+    emitter.emit("login-error", '登录信息出错，请重新登录！');
+  }
+  const res = await _post(TEXTDEAL,data,auth)
+  if(res?.code !== 200) {
+    emitter.emit("ai-request-error", res?.msg || DEFAULTERROR);
+    return;
+  }
+  emitter.emit('ai-request-success','ai请求成功!')
+  console.log(res)
+  callback(res);
 }
 
 export const aiRequest = async(data={},callback) => {

@@ -12,6 +12,8 @@ import IconOpenWorkSpace from "@/assets/svgs/IconOpenWorkSpace.vue";
 import IconCloseWorkSpace from '@/assets/svgs/IconCloseWorkSpace.vue'
 import IconEyesHidden from '@/assets/svgs/IconEyesHidden.vue'
 import IconEyesShow from '@/assets/svgs/IconEyesShow.vue'
+import IconLogo from '@/assets/svgs/IconLogo.vue'
+import IconSubmit from '@/assets/svgs/IconSubmit.vue'
 const icons = {
   IconArrow,
   IconCurrentColor,
@@ -26,7 +28,9 @@ const icons = {
   IconOpenWorkSpace,
   IconCloseWorkSpace,
   IconEyesShow,
-  IconEyesHidden
+  IconEyesHidden,
+  IconLogo,
+  IconSubmit
 };
 
 export { icons };

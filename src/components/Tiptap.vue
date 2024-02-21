@@ -1,6 +1,9 @@
 <template>
   <Notification></Notification>
-  <BubbleMenu :editor="editor"></BubbleMenu>
+  <BubbleMenu
+  :editor="editor"
+  ></BubbleMenu>
+  <CloseAiWindowDialog></CloseAiWindowDialog>
   <div class="app-container">
     <AppTitle></AppTitle>
     <div class="editor-wrapper">
@@ -9,7 +12,9 @@
       <div class="editor-area">
         <FileSelectBar></FileSelectBar>
         <FixedMenu :isHiddenToolPanel="true"></FixedMenu>
-        <div class="editor-container" v-show="editorContent2.currentFile">
+        <div class="editor-container
+        " v-show="editorContent2.currentFile">
+          <AiWindow></AiWindow>
           <editor-content :editor="editor" class="editor" id="editorRef" />
           <RightSidePanel></RightSidePanel>
         </div>
@@ -30,8 +35,10 @@ import RightSidePanel from "@/components/RightSidePanel.vue";
 import WorkSpacePanel from "@/components/WorkSpacePanel.vue";
 import Notification from "@/components/Notification.vue";
 import AppTitle from "./AppTitle.vue";
+import CloseAiWindowDialog from "./CloseAiWindowDialog.vue";
 import FixedMenu from "@/components/FixedMenu.vue";
 import BubbleMenu from "@/components/BubbleMenu.vue";
+import AiWindow from "./AiWindow.vue";
 import { useEditor, EditorContent } from "@tiptap/vue-3";
 import extensions from "@/util/extensions.js";
 import { saveDocx } from "@/util/html2docx.js";
@@ -69,7 +76,7 @@ const editor = useEditor({
   extensions: extensions,
   autofocus: true,
   editable: true,
-  injectCSS: false,
+  injectCSS: true,
   onUpdate() {
     // if (!editorAreaDom) {
     //   editorAreaDom = document.querySelector(".ProseMirror");
