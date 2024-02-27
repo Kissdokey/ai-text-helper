@@ -93,14 +93,13 @@ const clickColorBox = () => {
   align-items: center;
   justify-content: space-between;
   user-select: none;
-
   font-size: 15px;
   font-family: inherit;
   border: none;
   position: relative;
   overflow: hidden;
   z-index: 1;
-  box-shadow: 2px 2px 6px #c5c5c5, -6px -6px 12px transparent;
+  box-shadow: 2px 2px 6px var(--ath-btn-shadow), -6px -6px 12px transparent;
 }
 
 .drop-down-press::before {
@@ -110,7 +109,7 @@ const clickColorBox = () => {
   position: absolute;
   top: 0;
   left: 0;
-  background-image: linear-gradient(to right, #fbd786 0%, #f7797d 100%);
+  /* background-image: linear-gradient(to right, #fbd786 0%, #f7797d 100%); */
   transition: 0.5s ease;
   display: block;
   z-index: -1;
@@ -119,8 +118,7 @@ const clickColorBox = () => {
   width: 100%;
 }
 .drop-down-press:hover {
-  color: white;
-  /* background-color: rgb(241, 241, 241); */
+  background-color: var(--ath-toolbar-item-hover)
 }
 .drop-down-press-active {
   border: 1px solid rgba(13,13,13,0.1);
@@ -133,18 +131,18 @@ const clickColorBox = () => {
   align-items: center;
   justify-content: space-between;
   user-select: none;
-  color: white;
   font-size: 15px;
   font-family: inherit;
   border: none;
   position: relative;
   overflow: hidden;
   z-index: 1;
-  /* box-shadow: 6px 6px 12px #c5c5c5, -6px -6px 12px #ffffff; */
-  background-image: linear-gradient(to right, #fbd786 0%, #f7797d 100%);
+  background-color: var(--ath-toolbar-item-active);
+  box-shadow: 2px 2px 6px var(--ath-btn-shadow), -6px -6px 12px rgba(13,13,13,0.06);
+  /* background-image: linear-gradient(to right, #fbd786 0%, #f7797d 100%); */
 }
 .drop-down-press:active {
-  background-color: rgb(230, 230, 230);
+  background-color: var(--ath-toolbar-item-active)
 }
 .drop-down-menu {
   width: 50px;

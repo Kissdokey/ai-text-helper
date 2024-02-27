@@ -96,11 +96,14 @@ eventBus.on("file-bar-auto-scroll", (index) => autoScroll(index)); //在其他�
 
 <style scoped>
 .header-container {
+  user-select: none;
   position: absolute;
   top:0;
   width: 100%;
-  border-bottom: 1px solid rgba(13, 13, 13, 0.1);
+  border-bottom: 1px solid var(--ath-divider-color);
   display: flex;
+  background-color: var(--ath-latestfilebar-background);
+  color: var(--ath-latestfilebar-text-color);
 }
 .file-select-bar {
   border-radius: 4px;
@@ -134,10 +137,10 @@ eventBus.on("file-bar-auto-scroll", (index) => autoScroll(index)); //在其他�
   border-radius: 4px;
 }
 .icon-close-container:hover {
-  background-color: rgba(13, 13, 13, 0.06);
+  background-color: var(--ath-btn-hover);
 }
 .icon-close-container:active {
-  background-color: rgba(13, 13, 13, 0.1);
+  background-color: var(--ath-btn-active);
 }
 .file-item {
   border-radius: 4px;
@@ -146,7 +149,7 @@ eventBus.on("file-bar-auto-scroll", (index) => autoScroll(index)); //在其他�
   padding: 0px 44px 0 12px;
   min-width: 40px;
   max-width: 300px;
-  background-color: rgba(255, 255, 255, 0.6);
+  background-color: var(--ath-latestfilebar-item-background);
   line-height: 30px;
   font-size: 14px;
   margin: 0 2px 0 2px;
@@ -155,15 +158,15 @@ eventBus.on("file-bar-auto-scroll", (index) => autoScroll(index)); //在其他�
   text-overflow: ellipsis;
 }
 .file-item:hover {
-  background-color: rgba(13, 13, 13, 0.1);
+  background-color: var(--ath-latestfilebar-item-hover);
   cursor: pointer;
 }
 .file-item:active {
-  background-color: rgba(13, 13, 13, 0.2);
+  background-color: var(--ath-latestfilebar-item-active);
   cursor: pointer;
 }
 .active {
-  background-color: rgba(13, 13, 13, 0.2);
+  background-color: var(--ath-latestfilebar-item-active);
 }
 .clear-btn {
   width: 30px;
@@ -176,7 +179,7 @@ eventBus.on("file-bar-auto-scroll", (index) => autoScroll(index)); //在其他�
   top: 6px;
   cursor: pointer;
   border-radius: 6px;
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: var(--ath-latestfilebar-item-background);
 }
 .clear-btn::before {
   content: "";
@@ -185,13 +188,13 @@ eventBus.on("file-bar-auto-scroll", (index) => autoScroll(index)); //在其他�
   width: 2px;
   height: calc(100% - 4px);
   top: 2px;
-  background-color: rgba(13, 13, 13, 0.1);
+  background-color: var(--ath-divider-color)
 }
 .clear-btn:hover {
-  background-color: rgba(13, 13, 13, 0.06);
+  background-color: var(--ath-btn-hover);
 }
 .clear-btn:active {
-  background-color: rgba(13, 13, 13, 0.1);
+  background-color: var(--ath-btn-active);
 }
 ::-webkit-scrollbar {
   color: transparent;
@@ -199,7 +202,7 @@ eventBus.on("file-bar-auto-scroll", (index) => autoScroll(index)); //在其他�
   height: 6px;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(13, 13, 13, 0.3);
+  background: var(--ath-thumb-color);
   opacity: 0.2;
   border-radius: 10px;
   height: 6px;

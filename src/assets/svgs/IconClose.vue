@@ -1,7 +1,8 @@
 <!-- This icon is from <https://github.com/Templarian/MaterialDesign>, distributed under Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0) license-->
 <template>
-    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M4 12L12 4.00969M4 4L12 11.9903" stroke="#253453" stroke-opacity="0.7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-    </svg>
-  </template>
-  
+  <svg t="1708940061756" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="8832"
+    xmlns:xlink="http://www.w3.org/1999/xlink" width="16" height="16">
+    <path
+      d="M825.76 246.496L560.256 512l265.504 265.504-48.256 48.256-265.536-265.504-265.472 265.504-48.256-48.256 265.472-265.536-265.472-265.472 48.256-48.256L512 463.744l265.504-265.504z"
+    fill="var(--ath-icon-color)" p-id="8833"></path>
+</svg></template>

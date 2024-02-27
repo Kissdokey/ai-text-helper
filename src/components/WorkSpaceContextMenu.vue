@@ -94,11 +94,11 @@ async function updateContextMenu(event) {
     if (lastSelectDom.value) {
       lastSelectDom.value.style.border = "unset";
     }
-    event.target.style.border = "1px solid rgba(13,13,13,0.1)";
+    event.target.classList.add('context-selected');
     lastSelectDom.value = event.target;
   } else {
     if(lastSelectDom.value)
-    lastSelectDom.value.style.border = "unset";
+    lastSelectDom.value.classList.remove('context-selected')
     lastSelectDom.value = null;
   }
 }
@@ -158,5 +158,10 @@ watch(isMenuShow, () => {
 }
 .input {
   width: 120px;
+}
+</style>
+<style> 
+.context-selected {
+  border: 1px solid var(--ath-workspace-folder-selected);
 }
 </style>

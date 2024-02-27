@@ -1,0 +1,147 @@
+:root {
+  /* all-back */
+  --ath-total-background: linear-gradient(
+    to right,
+    #fdd8da,
+    #fef4dd,
+    #eefef4
+  );
+  /* switch */
+  --ath-switch-action-color: rgba(255,255,255);
+  --ath-switch-background-color: rgba(241,241,241,0.5);
+  --ath-switch-border-color: rgba(13,13,13,0.1);
+  /* btn-shadow */
+  --ath-btn-shadow: rgba(13,13,13,0.1);
+  /* divider */
+  --ath-divider-color:rgba(13,13,13,0.1);
+  /* icon */
+  --ath-icon-color: black;
+  /* thumb */
+  --ath-thumb-color: rgba(13,13,13,0.06);
+  /* btn */
+  --ath-btn-hover: rgba(13, 13, 13, 0.06);
+  --ath-btn-active: rgba(13, 13, 13, 0.1);
+  /* logo */
+  --ath-logo-background: linear-gradient(to left, #e684ae, #79cbca, #77a1d3);
+  --ath-logo-text-background: -webkit-linear-gradient(
+    left,
+    #473334,
+    #706241,
+    #2b5656
+  );
+  --ath-logo-derection1-background: linear-gradient(
+    to left,
+    #f69297,
+    #fbde9a,
+    #9df6f6
+  );
+  --ath-logo-derection2-background: white;
+  /* header */
+  --ath-header-background: transparent;
+  --ath-header-text-image: -webkit-linear-gradient(
+    left,
+    #f69297,
+    #fbde9a,
+    #9df6f6
+  );
+  /* tool-panel */
+  --ath-toolpanel-background: transparent;
+  --ath-toolpanel-text-color: black;
+  /* workspace */
+  --ath-workspace-background: transparent;
+  --ath-workspace-absolute-background: rgb(248, 235, 235);
+  --ath-workspace-folder-selected: rgba(13, 13, 13, 0.1);
+  --ath-workspace-folder-url: url("../assets/folder-black.png");
+  --ath-workspace-text-color: black;
+  --ath-workspace-item-hover: rgba(255, 255, 255, 0.4);
+  --ath-workspace-item-active: rgba(235, 245, 255, 0.5);
+
+  /* latest-file-bar */
+  --ath-latestfilebar-background: transparent;
+  --ath-latestfilebar-item-background: rgba(255, 255, 255, 0.6);
+  --ath-latestfilebar-item-hover: rgba(13,13,13,0.06);
+  --ath-latestfilebar-item-active: rgba(13,13,13,0.1);
+  --ath-latestfilebar-text-color: black;
+  /* tool-bar  */
+  --ath-toolbar-background: transparent;
+  --ath-toolbar-text-color: black;
+  --ath-toolbar-item-hover: rgba(241, 241, 241, 0.8);
+  --ath-toolbar-item-active: rgba(230, 230, 230, 0.8);
+  /* editor-container */
+  --ath-editorcontainer-background: transparent;
+  --ath-editorcontainer-text-color:black;
+  --ath-editorcontainer-editor-background: rgba(255, 255, 255, 0.3);
+  --ath-editorcontainer-code-color: ;
+  --ath-editorcontainer-code-background: ;
+  --ath-editorcontainer-quote-color: ;
+  --ath-editorcontainer-quote-background: ;
+}
+
+.theme-dark {
+  --ath-total-background: rgba(82,82,80);
+  --ath-switch-action-color: rgba(26,26,26);
+  --ath-switch-background-color: rgba(47,47,47);
+  --ath-switch-border-color: rgba(13,13,13,0.8);
+  --ath-btn-shadow: rgb(20, 18, 18);
+  --ath-divider-color:rgba(255, 255, 255, 0.5);
+  --ath-icon-color: white;
+  --ath-thumb-color: rgba(240,240,240,0.5);
+  /* btn */
+  --ath-btn-hover: rgba(240, 240, 240, 0.3);
+  --ath-btn-active: rgba(240, 240, 240, 0.5);
+  /* logo */
+  --ath-logo-background: linear-gradient(to left, #8b5a6f, #447e7d, #435c7a);
+  --ath-logo-text-background: -webkit-linear-gradient(
+    left,
+    #e44149,
+    #d7a737,
+    #2ecece
+  );
+  --ath-logo-derection1-background: linear-gradient(
+    to left,
+    #965e60,
+    #918054,
+    #4e9090
+  );
+  --ath-logo-derection2-background: rgb(172, 153, 153);
+  /* header */
+  --ath-header-background: rgba(30,31,28);
+  --ath-header-text-image: -webkit-linear-gradient(
+    left,
+    #824a4d,
+    #907f56,
+    #558a8a
+  );
+  /* tool-panel */
+  --ath-toolpanel-background: rgba(39,40,34);
+  --ath-toolpanel-text-color: black;
+  /* workspace */
+  --ath-workspace-background: rgba(30,31,28);
+  --ath-workspace-absolute-background: rgb(30, 30, 30);
+  --ath-workspace-folder-selected: rgba(235, 245, 255, 0.5);
+  --ath-workspace-folder-url: url("../assets/folder-white.png");
+  --ath-workspace-text-color: white;
+  --ath-workspace-item-hover: rgba(255, 255, 255, 0.4);
+  --ath-workspace-item-active: rgba(235, 245, 255, 0.5);
+
+
+  /* latest-file-bar */
+  --ath-latestfilebar-background: rgba(52,53,47);
+  --ath-latestfilebar-item-background: rgba(220, 220, 220, 0.3);
+  --ath-latestfilebar-item-hover: rgba(220, 220, 220, 0.5);
+  --ath-latestfilebar-item-active: rgba(220, 220, 220, 0.7);
+  --ath-latestfilebar-text-color: white;
+  /* tool-bar  */
+  --ath-toolbar-background: rgba(39,40,34);
+  --ath-toolbar-text-color: white;
+  --ath-toolbar-item-hover: rgba(220, 220, 220, 0.5);
+  --ath-toolbar-item-active: rgba(220, 220, 220, 0.7);
+  /* editor-container */
+  --ath-editorcontainer-background: rgba(82,82,80);
+  --ath-editorcontainer-text-color:white;
+  --ath-editorcontainer-editor-background: rgba(39,40,34, 0.3);
+  --ath-editorcontainer-code-color: ;
+  --ath-editorcontainer-code-background: ;
+  --ath-editorcontainer-quote-color: ;
+  --ath-editorcontainer-quote-background: ;
+}

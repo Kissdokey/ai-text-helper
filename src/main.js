@@ -9,6 +9,7 @@ import { registerPlugins } from "@/plugins";
 import { createPinia } from "pinia";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import ElementPlus from 'element-plus'
+import 'element-plus/theme-chalk/dark/css-vars.css'
 
 // Libraries
 import mitt from 'mitt'

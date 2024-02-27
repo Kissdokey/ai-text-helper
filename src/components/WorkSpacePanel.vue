@@ -8,7 +8,7 @@
     ref="workspaceRef"
     @dragstart="workSpaceDragUp"
     @dragend="workSpaceDragDown"
-    v-show="!isClose"
+    v-show="isOpen"
     @click="clickbg"
     v-workspace-right-click
   >
@@ -24,7 +24,7 @@
             theme: 'delicate',
           }"
         >
-          <v-icon>$IconCreateFile2</v-icon>
+          <v-icon color="red">$IconCreateFile2</v-icon>
         </div>
         <div
           class="new-folder-btn"
@@ -47,9 +47,11 @@ import { useFileDependenciesStore } from "@/store/fileDependencies.js";
 import { useEditorContent } from "@/store/editorContent.js";
 import { computed, inject, nextTick, onMounted, ref } from "vue";
 import WorkSpaceContextMenu from "@/components/WorkSpaceContextMenu.vue";
+import { useCustomerSetting } from '@/store/customerSetting.js'
+const customerSetting = useCustomerSetting()
 const props = defineProps({ isHiddenFilePanel: Boolean });
 const eventBus = inject("eventBus");
-const isClose = ref(false);
+const isOpen = ref(customerSetting.ifWorkspaceOpen);
 const workspaceRef = ref(null);
 const isFolderActive = ref(false);
 const fileDependenciesStore = useFileDependenciesStore();
@@ -75,6 +77,7 @@ const workSpaceDragUp = _.throttle((e) => {
 const workSpaceDragDown = _.throttle((e) => {
   workspaceRef.value.style.left = e.pageX - mouseOffset.left + "px";
   workspaceRef.value.style.top = e.pageY - mouseOffset.top + "px";
+  customerSetting.updateWorkspacePosition({x:e.pageX - mouseOffset.left,y:e.pageY - mouseOffset.top})
 }, 500);
 
 onMounted(() => {
@@ -84,8 +87,11 @@ onMounted(() => {
   eventBus.on("change-file", () => (isFolderActive.value = false));
   eventBus.on("create-new-folder", (name) => createNewFolder(name));
   eventBus.on("change-workSpace", () => {
-    isClose.value = !isClose.value;
+    isOpen.value = !isOpen.value;
+    customerSetting.updateFfWorkspaceOpen(isOpen.value)
   });
+  workspaceRef.value.style.left = customerSetting.workspacePosition.x + 'px'
+  workspaceRef.value.style.top = customerSetting.workspacePosition.y + 'px'
 });
 function updateFolder() {
   const workSpace = document.createElement("div");
@@ -185,25 +191,33 @@ const clickbg = () => {
 </script>
 <style scoped>
 .workspace-container {
+  padding: 4px;
   /* position: relative; */
   width: 200px;
   min-width: 150px;
-  border-right: 1px solid rgba(13, 13, 13, 0.1);
+  background: var(--ath-workspace-background);
+  color:var(--ath-workspace-text-color);
+  border-right: 1px solid var(--ath-divider-color);
 }
 
 .workspace-container-absolute {
   position: absolute;
   top: 10px;
   left: 100px;
-  background-color: rgb(248, 235, 235);
-  max-height: 500px;
-  overflow: auto;
+  background-color: var(--ath-workspace-absolute-background);
   z-index: 99;
+  border-radius: 12px;
+  border: 1px solid  var(--ath-divider-color);
 }
-
-.workspace {
+.workspace-container-absolute .workspace {
+  padding-top: 4px;
+  max-height: 500px;
+  overflow:auto;
+}
+.workspace-container .workspace {
+  padding: 4px;
   user-select: none;
-  height: 100%;
+  height: calc(100% - 30px);
   overflow: auto;
 }
 
@@ -215,7 +229,7 @@ const clickbg = () => {
   font-size: 14px;
   align-items: center;
   padding: 8px;
-  border-bottom: 1px solid rgba(13, 13, 13, 0.1);
+  border-bottom: 1px solid var(--ath-divider-color);
 }
 
 .btn-container {
@@ -236,12 +250,12 @@ const clickbg = () => {
 
 .new-file-btn:hover,
 .new-folder-btn:hover {
-  background-color: rgba(13, 13, 13, 0.06);
+  background-color: var(--ath-btn-hover);
 }
 
 .new-file-btn:active,
 .new-folder-btn:active {
-  background-color: rgba(13, 13, 13, 0.1);
+  background-color: var(--ath-btn-active);
 }
 
 /* .container-close {
@@ -269,6 +283,18 @@ const clickbg = () => {
     width: 0;
   }
 } */
+::-webkit-scrollbar {
+  color: transparent;
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--ath-thumb-color);
+  opacity: 0.2;
+  border-radius: 10px;
+  height: 6px;
+  margin-top: 10px;
+}
 </style>
 <style>
 .folder {
@@ -280,14 +306,18 @@ const clickbg = () => {
   padding: 4px;
   /* background-color: rgba(235, 245, 240, 0.9); */
   margin: 2px;
+  border-radius: 4px;
 }
 
 /* .container .list-item:hover, */
 .folder:hover,
 .folder-father:hover {
-  background-color: #fff !important;
+  background-color: var(--ath-workspace-item-hover) !important;
 }
-
+.folder:active,
+.folder-father:active {
+  background-color: var(--ath-workspace-item-active) !important;
+}
 .container .container {
   margin-left: 12px;
 }
@@ -303,21 +333,20 @@ const clickbg = () => {
   font-size: 12px;
   line-height: 16px;
   padding: 4px;
-  border-radius: 1px solid black;
+  border-radius: 4px;
   /* background-color: rgba(235, 245, 240, 0.9); */
   margin: 2px;
   margin-left: 0;
 }
 
 .folder-active {
-  background-color: rgba(235, 245, 255, 0.5) !important;
+  background-color: var(--ath-workspace-item-active) !important;
 }
 
 .folder-img {
   display: inline-block;
   width: 16px;
   height: 16px;
-  color: black;
-  background-image: url("../assets/folder.png");
+  background-image: var(--ath-workspace-folder-url);
 }
 </style>

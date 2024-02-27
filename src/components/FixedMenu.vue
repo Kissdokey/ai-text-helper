@@ -59,8 +59,8 @@ import {
   onUnmounted,
 } from "vue";
 import DropDownButton from "@/components/DropDownButton.vue";
-import ColorSelectMenu from "./ColorSelectMenu.vue";
-import HeadingLevelMenu from "./HeadingLevelMenu.vue";
+import ColorSelectMenu from "@/components/ColorSelectMenu.vue";
+import HeadingLevelMenu from "@/components/HeadingLevelMenu.vue";
 import calCurrentAttribute from "@/util/calCurrentAttribute.js";
 import Button from "./Button.vue";
 const props = defineProps({ isHiddenToolPanel: Boolean });
@@ -216,7 +216,7 @@ function onDropDownMenu(index) {
 <style scoped>
 .fixed-menu {
     user-select: none;
-  border-bottom: 1px solid rgba(13,13,13,0.1);
+  border-bottom: 1px solid var(--ath-divider-color);
   position: relative;
   height: 42px;
   display: flex;
@@ -224,6 +224,8 @@ function onDropDownMenu(index) {
   overflow: auto;
   box-sizing: border-box;
   z-index: 1;
+  background-color: var(--ath-toolbar-background);
+  color: var(--ath-toolbar-text-color);
 }
 .fix-menu-unfold {
   height: auto;

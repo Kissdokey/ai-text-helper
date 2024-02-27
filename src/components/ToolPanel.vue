@@ -52,6 +52,8 @@ import HistoryPanel from "@/components/HistoryPanel.vue";
 import SaveMenu from "@/components/SaveMenu.vue";
 import UserAvatar from "@/components/UserAvatar.vue";
 import { inject, ref } from "vue";
+import { useCustomerSetting } from '@/store/customerSetting.js'
+const customerSetting = useCustomerSetting()
 const eventBus = inject("eventBus");
 const doc = ref(null);
 const getWordFile = (e) => {
@@ -60,7 +62,7 @@ const getWordFile = (e) => {
 const createNewFile = () => {
   eventBus.emit("create-new-file");
 };
-const isOpen = ref(true);
+const isOpen = ref(customerSetting.ifWorkspaceOpen);
 const changeWorkSpace = () => {
   eventBus.emit("change-workSpace");
   isOpen.value = !isOpen.value;
@@ -93,7 +95,9 @@ const navTools = [
 <style scoped>
 .tool-panel {
   width: 50px;
-  border-right: 1px solid rgba(13, 13, 13, 0.1);
+  border-right: 1px solid var(--ath-divider-color);
+  background-color: var(--ath-toolpanel-background);
+  color: var(--ath-toolpanel-text-color);
 }
 .tool-panel-container {
   display: flex;
@@ -101,7 +105,6 @@ const navTools = [
   align-items: center;
   position: relative;
   padding: 12px;
-
   height: fit-content;
 }
 .tool-item {
@@ -115,9 +118,9 @@ const navTools = [
   cursor: pointer;
 }
 .tool-item:hover {
-  background-color: rgba(13, 13, 13, 0.2);
+  background-color: var(--ath-btn-hover);
 }
 .tool-item:active {
-  background-color: rgba(13, 13, 13, 0.3);
+  background-color: var(--ath-btn-active);
 }
 </style>

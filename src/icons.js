@@ -14,8 +14,30 @@ import IconEyesHidden from '@/assets/svgs/IconEyesHidden.vue'
 import IconEyesShow from '@/assets/svgs/IconEyesShow.vue'
 import IconLogo from '@/assets/svgs/IconLogo.vue'
 import IconSubmit from '@/assets/svgs/IconSubmit.vue'
+import IconBlockquote from '@/assets/svgs/IconBlockquote.vue'
+import IconBold from '@/assets/svgs/IconBold.vue'
+import IconCenter from '@/assets/svgs/IconCenter.vue'
+import IconCode from '@/assets/svgs/IconCode.vue'
+import IconItalic from '@/assets/svgs/IconItalic.vue'
+import IconLeft from '@/assets/svgs/IconLeft.vue'
+import IconLink from '@/assets/svgs/IconLink.vue'
+import IconRight from '@/assets/svgs/IconRight.vue'
+import IconStrikethrough from '@/assets/svgs/IconStrikethrough.vue'
+import IconUnderline from '@/assets/svgs/IconUnderline.vue'
+import IconDay from '@/assets/svgs/IconDay.vue'
+import IconNight from '@/assets/svgs/IconNight.vue'
 const icons = {
+  IconBlockquote,
+  IconBold,
+  IconCenter,
+  IconCode,
+  IconItalic,
   IconArrow,
+  IconLeft,
+  IconLink,
+  IconRight,
+  IconUnderline,
+  IconStrikethrough,
   IconCurrentColor,
   IconClose,
   IconImport,
@@ -30,7 +52,9 @@ const icons = {
   IconEyesShow,
   IconEyesHidden,
   IconLogo,
-  IconSubmit
+  IconSubmit,
+  IconDay,
+  IconNight
 };
 
 export { icons };

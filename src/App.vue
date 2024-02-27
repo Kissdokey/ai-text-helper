@@ -2,7 +2,7 @@
 
 <template>
   <div id="app-container" v-ctrl-s>
-    <div id="app">
+    <div id="app-box">
       <router-view></router-view>
     </div>
   </div>
@@ -12,16 +12,10 @@
 #app-container {
   height: 100%;
 }
-#app {
-  background: linear-gradient(
-    to right,
-    #fdd8da,
-    #fef4dd,
-    #eefef4
-  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+#app-box {
   width: 100%;
   height: 100%;
-  background-color: rgb(238, 238, 238);
+  background: var(--ath-total-background);
   box-sizing: border-box;
 }
 </style>

@@ -7,16 +7,16 @@
         content: props.tooltip,
         theme: 'delicate',
     }">
-      <img v-if="props.type === 'bold'" class="icon" src="@/assets/bold.png" />
-      <img v-if="props.type === 'italic'" class="icon" src="@/assets/italic.png" />
-      <img v-if="props.type === 'strike'" class="icon" src="@/assets/strikethrough.png" />
-      <img v-if="props.type === 'code'" class="icon" src="@/assets/code.png" />
-      <img v-if="props.type === 'underline'" class="icon" src="@/assets/underline.png" />
-      <img v-if="props.type === 'link'" class="icon" src="@/assets/link.png" />
-      <img v-if="props.type?.textAlign === 'left'" class="icon" src="@/assets/left.png" />
-      <img v-if="props.type?.textAlign === 'center'" class="icon" src="@/assets/center.png" />
-      <img v-if="props.type?.textAlign === 'right'" class="icon" src="@/assets/right.png" />
-      <img v-if="props.type === 'blockquote'" class="icon" src="@/assets/blockquote.png" />
+      <v-icon v-if="props.type === 'bold'" class="icon" >$IconBold</v-icon>
+      <v-icon v-if="props.type === 'italic'" class="icon" >$IconItalic</v-icon>
+      <v-icon v-if="props.type === 'strike'" class="icon" >$IconStrikethrough</v-icon>
+      <v-icon v-if="props.type === 'code'" class="icon" >$IconCode</v-icon>
+      <v-icon v-if="props.type === 'underline'" class="icon" >$IconUnderline</v-icon>
+      <v-icon v-if="props.type === 'link'" class="icon" >$IconLink</v-icon>
+      <v-icon v-if="props.type?.textAlign === 'left'" class="icon" >$IconLeft</v-icon>
+      <v-icon v-if="props.type?.textAlign === 'center'" class="icon" >$IconCenter</v-icon>
+      <v-icon v-if="props.type?.textAlign === 'right'" class="icon" >$IconRight</v-icon>
+      <v-icon v-if="props.type === 'blockquote'" class="icon" >$IconBlockquote</v-icon>
     </div>
   </div>
 </template>
@@ -63,7 +63,7 @@ const clickButton = ()=> {
   position: relative;
   overflow: hidden;
   z-index: 1;
-  box-shadow: 2px 2px 6px #c5c5c5, -6px -6px 12px transparent;
+  box-shadow: 4px 4px 6px var(--ath-btn-shadow), -6px -6px 12px rgba(13,13,13,0.06);
 }
 
 .button-press::before {
@@ -73,7 +73,7 @@ const clickButton = ()=> {
   position: absolute;
   top: 0;
   left: 0;
-  background-image: linear-gradient(to right, #0fd850 0%, #f9f047 100%);
+  /* background-image: linear-gradient(to right, #0fd850 0%, #f9f047 100%); */
   transition: 0.5s ease;
   display: block;
   z-index: -1;
@@ -84,15 +84,15 @@ const clickButton = ()=> {
 }
 
 .button-press:hover {
-  /* background-color: rgb(241, 241, 241); */
+  background-color: var(--ath-toolbar-item-hover);
 }
 
 .active {
-  background-color: rgb(220, 220, 220);
+  background-color: var(--ath-toolbar-item-active);
 }
 
 .button-press:active {
-  background-color: rgb(230, 230, 230);
+  background-color: var(--ath-toolbar-item-active);
 }
 
 .icon {

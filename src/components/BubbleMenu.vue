@@ -3,7 +3,7 @@
     :editor="editor"
     :tippy-options="{
       duration: 0,
-      delay: 100,
+      delay: 0,
       appendTo: 'parent',
       hideOnClick: true,
     }"

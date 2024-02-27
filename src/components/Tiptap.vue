@@ -1,8 +1,6 @@
 <template>
   <Notification></Notification>
-  <BubbleMenu
-  :editor="editor"
-  ></BubbleMenu>
+  <BubbleMenu :editor="editor"></BubbleMenu>
   <CloseAiWindowDialog></CloseAiWindowDialog>
   <div class="app-container">
     <AppTitle></AppTitle>
@@ -12,10 +10,14 @@
       <div class="editor-area">
         <FileSelectBar></FileSelectBar>
         <FixedMenu :isHiddenToolPanel="true"></FixedMenu>
-        <div class="editor-container
-        " v-show="editorContent2.currentFile">
+        <div class="editor-container" v-show="editorContent2.currentFile">
           <AiWindow></AiWindow>
-          <editor-content :editor="editor" class="editor" id="editorRef" />
+          <editor-content
+            :editor="editor"
+            class="editor"
+            id="editorRef"
+            spellcheck="false"
+          />
           <RightSidePanel></RightSidePanel>
         </div>
         <div class="no-flie-notice" v-show="!editorContent2.currentFile">
@@ -58,10 +60,10 @@ import {
 import mammoth from "mammoth";
 import { colorItems, INITHTML, paragraphTags } from "@/util/constantData.js";
 import { useEditorContent } from "@/store/editorContent";
-import { authentication } from '@/fetch/user.js'
-import { useUserStore } from '@/store/user.js'
+import { authentication } from "@/fetch/user.js";
+import { useUserStore } from "@/store/user.js";
 const editorContent2 = useEditorContent();
-const userStore = useUserStore()
+const userStore = useUserStore();
 const fileDependenciesStore = useFileDependenciesStore();
 let operateItemRef = null;
 let editorAreaDom = null;
@@ -142,7 +144,7 @@ function onChangeFile(id) {
   });
 }
 function onDeleteFile(id) {
-    editorContent2.deleteFile(id)
+  editorContent2.deleteFile(id);
 }
 function saveAsDocx() {
   saveDocx(getHtml());
@@ -269,7 +271,7 @@ const autoResize = _.throttle(() => {
   }
 }, 100);
 onMounted(async () => {
-  authentication(userStore.initUserInfo)
+  authentication(userStore.initUserInfo);
   await editorContent2.init();
   initFile();
   autoResize();
@@ -300,14 +302,15 @@ onUnmounted(() => {
   flex-direction: column;
 }
 .editor-wrapper {
-  border-top: 1px solid rgba(13, 13, 13, 0.1);
+  border-top: 1px solid var(--ath-divider-color);
   flex: 1;
   display: flex;
   overflow-y: hidden;
 }
 .ProseMirror {
   width: 740px;
-  background-color: #fff;
+  border-radius: 8px;
+  background-color: var(--ath-editorcontainer-editor-background);
   line-height: 16px;
   font-size: 12px;
   padding: 12px;
@@ -316,11 +319,13 @@ onUnmounted(() => {
 .editor-area {
   position: relative;
   flex: 1;
-  padding-top: 50px;
+  padding-top: 43px;
   display: flex;
   flex-direction: column;
 }
 .editor-container {
+  background: var(--ath-editorcontainer-background);
+  color: var(--ath-editorcontainer-text-color);
   position: relative;
   overflow: auto;
   width: 100%;
@@ -398,6 +403,18 @@ blockquote {
   border-radius: 0.4rem;
   padding: 0.1rem 0.3rem;
   box-decoration-break: clone;
+}
+::-webkit-scrollbar {
+  color: transparent;
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--ath-thumb-color);
+  opacity: 0.2;
+  border-radius: 10px;
+  height: 6px;
+  margin-top: 10px;
 }
 </style>
 <style lang="scss">
