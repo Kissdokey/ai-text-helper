@@ -21,10 +21,21 @@
               class="clear-input-text-btn"
               v-if="aiText.trim()"
               @click="clearInputText"
+              v-tooltip.bottom="{
+                content: '清空内容',
+                theme: 'delicate',
+              }"
             >
               <v-icon>$IconClose</v-icon>
             </div>
-            <div class="input-submit-btn" @click="handleSubmit">
+            <div
+              class="input-submit-btn"
+              @click="handleSubmit"
+              v-tooltip.bottom="{
+                content: '发送',
+                theme: 'delicate',
+              }"
+            >
               <v-icon>$IconSubmit</v-icon>
             </div>
           </div>
@@ -38,9 +49,17 @@
   </div>
 </template>
 <script setup>
-import { inject, nextTick, onMounted, onUpdated, reactive, ref, watch } from "vue";
+import {
+  inject,
+  nextTick,
+  onMounted,
+  onUpdated,
+  reactive,
+  ref,
+  watch,
+} from "vue";
 import { useAiTextAreaStore } from "@/store/aiTextArea";
-import {aiRequest} from "@/fetch/user.js"
+import { aiRequest } from "@/fetch/user.js";
 const eventBus = inject("eventBus");
 const cursorPos = reactive({ x: 0, y: 0 });
 const aiTextArea = ref(null);
@@ -49,8 +68,8 @@ const aiTextAreaStore = useAiTextAreaStore();
 const contentRef = ref(null);
 const clisk = () => {};
 const answer = ref("");
-const isCursorShow = ref(false)
-let timeId
+const isCursorShow = ref(false);
+let timeId;
 let testData =
   "经历了将近一周的,我感慨颇多,我们见到了社会的真实一面，实践生活中每一天遇到的情况还在我脑海里回旋，它给我们带来了意想不到的效果，社会实践活动给生活在都市象牙塔中的大学生们提供了广泛接触社会、了解社会的机会这短暂而又充实的实习，我认为对我走向社会起到了一个桥梁的作用，过渡的作用，是人生的一段重要的经历，也是一个重要步骤，对将来走上工作岗位也有着很大帮助。向他人虚心求教，与人文明交往等一些做人处世的基本原则都要在实际生活中认真的贯彻，好的习惯也要在实际生活中不断培养";
 let index = 0;
@@ -60,44 +79,52 @@ const handleInputChange = (e) => {
   e.target.style.height = e.target.scrollHeight + "px";
   aiText.value = e.target.innerText;
 };
-const handleSubmit =async () => {
-    isCursorShow.value = true
-    testData = ''
-    answer.value = ''
-    nextTick(()=> {
-        updateCursorPosition()
-    })
-    if(timeId !== 0) {
-        clearInterval(timeId)
-        timeId = 0
-        index = 0
+const handleSubmit = async () => {
+  isCursorShow.value = true;
+  testData = "";
+  answer.value = "";
+  nextTick(() => {
+    updateCursorPosition();
+  });
+  if (timeId !== 0) {
+    clearInterval(timeId);
+    timeId = 0;
+    index = 0;
+  }
+  await aiRequest(
+    {
+      system: "你是一个文本处理助手，按照我的上下文和问题，给出我答案",
+      temperature: 0.7,
+      requestContent:
+        "上下文为「" +
+        aiTextAreaStore.selectedText.replace(/[\'\"\\\/\b\f\n\r\t]/g, "") +
+        "」。我的问题是「" +
+        aiTextAreaStore.inputText +
+        "」",
+    },
+    (res) => {
+      testData = res?.data?.content?.result;
     }
-    await aiRequest({
-        system:"你是一个文本处理助手，按照我的上下文和问题，给出我答案",
-        temperature:0.7,
-        requestContent: "上下文为「" + aiTextAreaStore.selectedText.replace(/[\'\"\\\/\b\f\n\r\t]/g, '') + "」。我的问题是「" + aiTextAreaStore.inputText + "」"
-    },(res)=> {
-        testData = res?.data?.content?.result
-    })
-    timeId = setInterval(() => {
+  );
+  timeId = setInterval(() => {
     if (index >= testData.length) {
       clearInterval(timeId);
-      timeId = 0
+      timeId = 0;
       index = 0;
-      isCursorShow.value = false
+      isCursorShow.value = false;
       return;
     }
     answer.value += testData[index];
-    nextTick(()=> {
-        updateCursorPosition()
-    })
+    nextTick(() => {
+      updateCursorPosition();
+    });
     index++;
   }, 10);
 };
 const clearInputText = () => {
   aiTextArea.value.innerText = "";
-  testData = ''
-  answer.value = ''
+  testData = "";
+  answer.value = "";
   textAreaFocus();
   handleInputChange({ target: aiTextArea.value });
 };
@@ -119,10 +146,10 @@ const updateCursorPosition = () => {
   range.setStart(lastText, 0);
   range.setEnd(lastText, 0);
   const rect = range.getBoundingClientRect();
-  const areaRect = contentRef.value.getBoundingClientRect()
+  const areaRect = contentRef.value.getBoundingClientRect();
   cursorPos.x = rect.left - areaRect.left;
   cursorPos.y = rect.top - areaRect.top;
-  lastText.remove()
+  lastText.remove();
 };
 onMounted(() => {
   eventBus.on("open-ai-window", textAreaFocus);
@@ -131,15 +158,14 @@ onMounted(() => {
 </script>
 <style scoped>
 .select-text-mask {
+  border-radius: 8px;
   position: absolute;
   display: none;
   z-index: 999;
-  background-color: rgba(13, 13, 13, 0.1);
+  background-color: var(--ath-aiwindow-mask);
 }
 .ai-window-container {
   position: absolute;
-  width: 80%;
-  max-width: 683px;
   z-index: 999;
   display: none;
 }
@@ -149,14 +175,15 @@ onMounted(() => {
   min-height: 200px;
   font-size: 14px;
   line-height: 2;
-  background-color: red;
+  background-color: var(--ath-aiwindow-answer-background);
+  color: var(--ath-aiwindow-answer-color);
   margin-bottom: 200px;
 }
 .ai-answer-area-cursor {
   position: absolute;
   width: 10px;
   height: 14px;
-  background: #fff;
+  background: var(--ath-aiwindow-answer-color);
   opacity: 0;
   z-index: 9999;
   animation: cursor 0.6s infinite;
@@ -174,7 +201,8 @@ onMounted(() => {
   padding: 12px;
   border-radius: 12px;
   border: 1px solid rgba(13, 13, 13, 0.3);
-  background-color: white;
+  background-color: var(--ath-aiwindow-input-background);
+  color: var(--ath-aiwindow-input-color);
 }
 .ai-textarea-layout {
   width: 100%;
@@ -198,6 +226,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
+  pointer-events: none;
 }
 .question-input-area {
   text-indent: 36px;
@@ -215,5 +244,18 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: space-between;
+}
+.clear-input-text-btn,
+.input-submit-btn {
+  cursor: pointer;
+  border-radius: 8px;
+}
+.clear-input-text-btn:hover,
+.input-submit-btn:hover {
+  background-color: var(--ath-aiwindow-btn-hover);
+}
+.clear-input-text-btn:active,
+.input-submit-btn:active {
+  background-color: var(--ath-aiwindow-btn-active);
 }
 </style>

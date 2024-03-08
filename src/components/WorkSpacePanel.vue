@@ -210,14 +210,15 @@ const clickbg = () => {
   border: 1px solid  var(--ath-divider-color);
 }
 .workspace-container-absolute .workspace {
-  padding-top: 4px;
   max-height: 500px;
+  margin-top: 4px;
+  user-select: none;
   overflow:auto;
 }
 .workspace-container .workspace {
-  padding: 4px;
+  margin-top: 4px;
   user-select: none;
-  height: calc(100% - 30px);
+  height: calc(100% - 34px);
   overflow: auto;
 }
 

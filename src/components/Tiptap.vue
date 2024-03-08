@@ -302,13 +302,15 @@ onUnmounted(() => {
   flex-direction: column;
 }
 .editor-wrapper {
+  width: 100%;
   border-top: 1px solid var(--ath-divider-color);
   flex: 1;
   display: flex;
   overflow-y: hidden;
 }
 .ProseMirror {
-  width: 740px;
+  width: 100%;
+
   border-radius: 8px;
   background-color: var(--ath-editorcontainer-editor-background);
   line-height: 16px;
@@ -337,6 +339,8 @@ onUnmounted(() => {
   width: fit-content;
   height: fit-content;
   min-height: 100%;
+  width: 100%;
+  max-width: 740px;
   display: flex;
   padding: 24px 24px 24px 24px;
 }

@@ -20,6 +20,9 @@
   border-bottom-right-radius: 16px;
   padding-top: 6px;
 }
+.logo-container:hover {
+  background: var(--ath-logo-hover);
+}
 .header {
   display: flex;
   justify-content: center;
@@ -29,6 +32,9 @@
   background-image: var(--ath-logo-text-background);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+.logo-container:hover .header {
+  background-image: var(--ath-logo-text-hover);
 }
 .derection {
   width: 80%;
@@ -54,6 +60,10 @@
   border-bottom: 5px solid transparent;
   border-left: 5px solid var(--ath-logo-derection2-background);
   border-right: 5px solid transparent;
+}
+.logo-container:hover .derection2 {
+  border-top: 5px solid var(--ath-logo-derection2-hover);
+  border-left: 5px solid var(--ath-logo-derection2-hover);
 }
 .derection2::after {
   content: "";

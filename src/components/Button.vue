@@ -84,15 +84,15 @@ const clickButton = ()=> {
 }
 
 .button-press:hover {
-  background-color: var(--ath-toolbar-item-hover);
+  background-color: var(--ath-btn-hover);
 }
 
 .active {
-  background-color: var(--ath-toolbar-item-active);
+  background-color: var(--ath-btn-active);
 }
 
 .button-press:active {
-  background-color: var(--ath-toolbar-item-active);
+  background-color: var(--ath-btn-active);
 }
 
 .icon {

@@ -11,32 +11,25 @@
     v-show="isBubbleShow"
   >
     <div class="buble-menu-box">
-      <button @click="openAiWindow">test</button>
-      <v-icon> $IconLogo </v-icon>
-      <button
-        @click="editor.chain().focus().toggleBold().run()"
-        :class="{ 'is-active': editor.isActive('bold') }"
+      <v-icon
+        @click="openAiWindow"
+        v-tooltip.bottom="{
+          content: 'AI',
+          theme: 'delicate',
+        }"
       >
-        bold
-      </button>
-      <button
-        @click="editor.chain().focus().toggleItalic().run()"
-        :class="{ 'is-active': editor.isActive('italic') }"
-      >
-        italic
-      </button>
-      <button
-        @click="editor.chain().focus().toggleStrike().run()"
-        :class="{ 'is-active': editor.isActive('strike') }"
-      >
-        strike
-      </button>
+        $IconLogo
+      </v-icon>
+      <Button type="bold" tooltip="Bold"></Button>
+      <Button type="italic" tooltip="Italic"></Button>
+      <Button type="strike" tooltip="Strike"></Button>
     </div>
   </bubble-menu>
 </template>
 <script setup>
 import { defineProps, inject, ref, onMounted, onBeforeUnmount } from "vue";
 import { BubbleMenu } from "@tiptap/vue-3";
+import Button from "@/components/Button.vue";
 import { useAiTextAreaStore } from "@/store/aiTextArea";
 const props = defineProps({ editor: Object });
 const AIWINDOWCLASS = ".ai-window-container";
@@ -51,17 +44,19 @@ const eventBus = inject("eventBus");
 const aiTextAreaStore = useAiTextAreaStore();
 onMounted(() => {
   window.addEventListener("mousedown", closeAiWindow);
+  window.addEventListener("resize", updateAiWindowPosition);
 });
 onBeforeUnmount(() => {
   window.removeEventListener("mousedown", closeAiWindow);
+  window.removeEventListener("resize", updateAiWindowPosition);
 });
 const openAIWindowSignal = () => {
   eventBus.emit("open-ai-window");
 };
 const openAiWindow = () => {
   isBubbleShow.value = false;
-  const selectedText = getSelectedText()
-  aiTextAreaStore.updateSelectedText(selectedText)
+  const selectedText = getSelectedText();
+  aiTextAreaStore.updateSelectedText(selectedText);
   const range = window.getSelection();
   const anchor = initNode(range.anchorNode);
   const focus = initNode(range.focusNode);
@@ -117,21 +112,24 @@ const getOuterNode = (lowerNode) => {
 };
 // 获取当前选中的文本
 const getSelectedText = () => {
-  let selectedText = ''
+  let selectedText = "";
 
   if (window.getSelection) {
     // 非IE浏览器
-    selectedText = window.getSelection().toString()
-  } else if (document.selection && document.selection.type !== 'Control') {
+    selectedText = window.getSelection().toString();
+  } else if (document.selection && document.selection.type !== "Control") {
     // IE浏览器
-    selectedText = document.selection.createRange().text
+    selectedText = document.selection.createRange().text;
   }
 
-  return selectedText
-}
+  return selectedText;
+};
 //更新ai-window和mask的位置等样式
 const updateAiWindowPosition = () => {
   if (!selectNode.value) {
+    return;
+  }
+  if (isBubbleShow.value) {
     return;
   }
   const scrollContainer = document.querySelector(SCROLLCLASS);
@@ -156,14 +154,15 @@ const updateAiWindowPosition = () => {
   Object.assign(aiWindowNode.value.style, {
     display: "block",
     left: left + "px",
-    top: top + "px",
+    width: rect.width + "px",
+    top: top + 30 + "px",
   });
   Object.assign(selectTextMaskNode.value.style, {
     display: "block",
-    width: rect.width + "px",
-    left: left + "px",
-    height: maskHight + "px",
-    top: maskTop + "px",
+    width: rect.width + 8 + "px",
+    left: left - 4 + "px",
+    height: maskHight + 8 + "px",
+    top: maskTop - 4 + "px",
   });
 };
 </script>
@@ -171,14 +170,15 @@ const updateAiWindowPosition = () => {
 .buble-menu-box {
   display: flex;
   cursor: pointer;
+  align-items: center;
   justify-content: space-between;
   height: 44px;
   padding: 8px;
   box-sizing: border-box;
-  border: 1px solid rgba(8, 14, 23, 0.1);
-  box-shadow: 0 12px 32px rgba(24, 26, 31, 0.08);
+  box-shadow: var(--ath-menu-box-shadow);
   border-radius: 8px;
-  background: #fff;
+  background: var(--ath-menu-background);
+  color: var(--ath-menu-color);
 }
 .modal {
   position: fixed;

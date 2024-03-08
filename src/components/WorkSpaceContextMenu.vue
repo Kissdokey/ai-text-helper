@@ -127,10 +127,10 @@ watch(isMenuShow, () => {
 </script>
 <style scoped>
 .workspace-menu {
-  background-color: #fff;
+  background-color: var(--ath-menu-background);
   border-radius: 12px;
   padding: 12px;
-  box-shadow: 1px 2px 3px rgba(12, 12, 12, 0.1);
+  box-shadow: var(--ath-menu-box-shadow);
   user-select: none;
   font-size: 14px;
 }
@@ -139,10 +139,10 @@ watch(isMenuShow, () => {
   min-width: 70px;
 }
 .item:hover {
-  background-color: rgba(13, 13, 13, 0.06);
+  background-color: var(--ath-menu-item-hover);
 }
 .item:active {
-  background-color: rgba(13, 13, 13, 0.1);
+  background-color: var(--ath-menu-item-active);
 }
 .delete-confirm-box {
   display: flex;

@@ -1,4 +1,22 @@
 :root {
+  /* ai-window */
+  --ath-aiwindow-mask: rgba(13,13,13,0.1);
+  --ath-aiwindow-input-background: white;
+  --ath-aiwindow-input-color: black;
+  --ath-aiwindow-answer-background: white;
+  --ath-aiwindow-answer-color:black;
+  --ath-aiwindow-btn-hover: rgba(13,13,13,0.06);
+  --ath-aiwindow-btn-active: rgba(13,13,13,0.1);
+  --ath-aiwindow-box-shadow: 2px 2px 6px rgba(13,13,13,0.1), -6px -6px 12px rgba(13,13,13,0.06);
+  /* menu */
+  --ath-menu-background: rgba(240,240,240);
+  --ath-menu-color: black;
+  --ath-menu-border: rgba(13,13,13,0.1);
+  --ath-menu-box-shadow: 2px 2px 6px rgba(13,13,13,0.1), -6px -6px 12px rgba(13,13,13,0.06);
+  --ath-menu-item-color: rgba(240,240,240);
+  --ath-menu-item-hover: rgba(13,13,13,0.06);
+  --ath-menu-item-active: rgba(13,13,13,0.1);
+
   /* all-back */
   --ath-total-background: linear-gradient(
     to right,
@@ -19,16 +37,23 @@
   /* thumb */
   --ath-thumb-color: rgba(13,13,13,0.06);
   /* btn */
-  --ath-btn-hover: rgba(13, 13, 13, 0.06);
-  --ath-btn-active: rgba(13, 13, 13, 0.1);
+  --ath-btn-hover: rgba(13, 13, 13, 0.1);
+  --ath-btn-active: rgba(13, 13, 13, 0.2);
   /* logo */
-  --ath-logo-background: linear-gradient(to left, #e684ae, #79cbca, #77a1d3);
+  --ath-logo-background: linear-gradient(to left, #cf6191, #6adad8, #4e95ec);
+  --ath-logo-hover: linear-gradient(to left, #e684ae, #79cbca, #77a1d3);
   --ath-logo-text-background: -webkit-linear-gradient(
+    left,
+    #f2e1e1,
+    #ece5d3,
+    #d7f3f3
+  );
+  --ath-logo-text-hover: -webkit-linear-gradient(
     left,
     #473334,
     #706241,
     #2b5656
-  );
+  );;
   --ath-logo-derection1-background: linear-gradient(
     to left,
     #f69297,
@@ -36,6 +61,7 @@
     #9df6f6
   );
   --ath-logo-derection2-background: white;
+  --ath-logo-derection2-hover: rgba(230,230,230);
   /* header */
   --ath-header-background: transparent;
   --ath-header-text-image: -webkit-linear-gradient(
@@ -78,6 +104,23 @@
 }
 
 .theme-dark {
+  --ath-aiwindow-mask: rgba(240,240,240,0.1);
+  --ath-aiwindow-input-background: rgba(29,30,31);
+  --ath-aiwindow-input-color: white;
+  --ath-aiwindow-answer-background: rgba(29,30,31);
+  --ath-aiwindow-answer-color:white;
+  --ath-aiwindow-btn-hover: rgba(240,240,240,0.1);
+  --ath-aiwindow-btn-active: rgba(240,240,240,0.06);
+  --ath-aiwindow-box-shadow: 2px 2px 6px rgba(13,13,13,0.9), -6px -6px 12px rgba(13,13,13,0.6);
+
+  --ath-menu-background: rgba(39,40,34);
+  --ath-menu-color: white;
+  --ath-menu-border: rgba(240,240,240);
+  --ath-menu-box-shadow: 2px 2px 6px rgba(13,13,13,0.9), -6px -6px 12px rgba(13,13,13,0.6);
+  --ath-menu-item-color: rgba(29,30,31);
+  --ath-menu-item-hover: rgba(240,240,240,0.1);
+  --ath-menu-item-active: rgba(240,240,240,0.06);
+
   --ath-total-background: rgba(82,82,80);
   --ath-switch-action-color: rgba(26,26,26);
   --ath-switch-background-color: rgba(47,47,47);

@@ -1,6 +1,6 @@
 <template>
-  <div class="app-header">
-    <v-icon size="32">$IconLogo</v-icon>
+  <div class="app-header" >
+    <v-icon size="32" class="app-icon">$IconLogo</v-icon>
     <span>AI TEXT HELPER</span>
     <div class="change-them-btn">
       <el-switch
@@ -28,12 +28,12 @@ const customerSetting = useCustomerSetting()
 const isThemeDark = ref(customerSetting.isThemeDark);
 const handleThemeChange = (val)=> {
   if(val) {
-    document.querySelector('#app').classList.add('theme-dark')
+    document.querySelector('html').classList.add('theme-dark')
     document.querySelector('html').classList.add('dark')
     customerSetting.updateTheme(true)
     return
   }
-  document.querySelector('#app').classList.remove('theme-dark')
+  document.querySelector('html').classList.remove('theme-dark')
   document.querySelector('html').classList.remove('dark')
   customerSetting.updateTheme(false)
 }
@@ -53,6 +53,9 @@ onMounted(()=> {
   font-weight: bold;
   user-select: none;
   background-color: var(--ath-header-background);
+}
+.app-icon {
+  pointer-events: none;
 }
 .app-header span {
   font-size: 24px;
