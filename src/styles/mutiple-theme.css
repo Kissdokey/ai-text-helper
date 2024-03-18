@@ -1,5 +1,9 @@
 :root {
+  /* code */
+  --ath-code-block-color: rgba(13,13,13,0.1);
+  --ath-code-color : rgba(13,13,13,0.1);
   /* ai-window */
+  --ath-aiwindow-header-background: white;
   --ath-aiwindow-mask: rgba(13,13,13,0.1);
   --ath-aiwindow-input-background: white;
   --ath-aiwindow-input-color: black;
@@ -104,6 +108,9 @@
 }
 
 .theme-dark {
+  --ath-code-block-color: rgba(240,240,240,0.4);
+  --ath-code-color : rgba(240,240,240,0.4);
+  --ath-aiwindow-header-background: rgba(29,30,31);
   --ath-aiwindow-mask: rgba(240,240,240,0.1);
   --ath-aiwindow-input-background: rgba(29,30,31);
   --ath-aiwindow-input-color: white;

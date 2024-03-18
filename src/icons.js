@@ -26,6 +26,10 @@ import IconStrikethrough from '@/assets/svgs/IconStrikethrough.vue'
 import IconUnderline from '@/assets/svgs/IconUnderline.vue'
 import IconDay from '@/assets/svgs/IconDay.vue'
 import IconNight from '@/assets/svgs/IconNight.vue'
+import IconEditor from '@/assets/svgs/IconEditor.vue'
+import IconCodeBlock from '@/assets/svgs/IconCodeBlock.vue'
+import IconPreviewOff  from "@/assets/svgs/IconPreviewOff.vue";
+import IconPreviewOn from "@/assets/svgs/IconPreviewOn.vue";
 const icons = {
   IconBlockquote,
   IconBold,
@@ -54,7 +58,11 @@ const icons = {
   IconLogo,
   IconSubmit,
   IconDay,
-  IconNight
+  IconNight,
+  IconEditor,
+  IconCodeBlock,
+  IconPreviewOn,
+  IconPreviewOff
 };
 
 export { icons };

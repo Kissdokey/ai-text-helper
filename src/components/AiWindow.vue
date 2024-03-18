@@ -1,6 +1,9 @@
 <template>
   <div class="select-text-mask"></div>
   <div class="ai-window-container" @click.stop="clisk">
+    <div class="ai-window-header">
+      <AiPresetsBar :handleSubmit="handleChoiceBtnClick"></AiPresetsBar>
+    </div>
     <div class="ai-main-input-field">
       <div class="ai-textarea-layout">
         <div class="ai-textarea-layout-left">
@@ -42,12 +45,13 @@
         </div>
       </div>
     </div>
-    <div class="ai-answer-area-container">
-      <div class="ai-answer-area-cursor" v-if="isCursorShow"></div>
+    <div class="ai-answer-area-container" v-show="isAnswerShow">
+      <div class="ai-answer-area-cursor" v-show="isCursorShow"></div>
       <div class="ai-answer-area" ref="contentRef">{{ answer }}</div>
     </div>
   </div>
 </template>
+
 <script setup>
 import {
   inject,
@@ -59,7 +63,8 @@ import {
   watch,
 } from "vue";
 import { useAiTextAreaStore } from "@/store/aiTextArea";
-import { aiRequest } from "@/fetch/user.js";
+import { aiRequest, textDeal } from "@/fetch/user.js";
+import AiPresetsBar from "@/components/AiPresetsBar.vue";
 const eventBus = inject("eventBus");
 const cursorPos = reactive({ x: 0, y: 0 });
 const aiTextArea = ref(null);
@@ -69,6 +74,7 @@ const contentRef = ref(null);
 const clisk = () => {};
 const answer = ref("");
 const isCursorShow = ref(false);
+const isAnswerShow = ref(false);
 let timeId;
 let testData =
   "经历了将近一周的,我感慨颇多,我们见到了社会的真实一面，实践生活中每一天遇到的情况还在我脑海里回旋，它给我们带来了意想不到的效果，社会实践活动给生活在都市象牙塔中的大学生们提供了广泛接触社会、了解社会的机会这短暂而又充实的实习，我认为对我走向社会起到了一个桥梁的作用，过渡的作用，是人生的一段重要的经历，也是一个重要步骤，对将来走上工作岗位也有着很大帮助。向他人虚心求教，与人文明交往等一些做人处世的基本原则都要在实际生活中认真的贯彻，好的习惯也要在实际生活中不断培养";
@@ -79,8 +85,10 @@ const handleInputChange = (e) => {
   e.target.style.height = e.target.scrollHeight + "px";
   aiText.value = e.target.innerText;
 };
-const handleSubmit = async () => {
+const streamRequest = async (requestFn, isCustomize, data) => {
+  isAnswerShow.value = true;
   isCursorShow.value = true;
+  aiTextAreaStore.updateIsAiModel(true);
   testData = "";
   answer.value = "";
   nextTick(() => {
@@ -91,27 +99,35 @@ const handleSubmit = async () => {
     timeId = 0;
     index = 0;
   }
-  await aiRequest(
-    {
-      system: "你是一个文本处理助手，按照我的上下文和问题，给出我答案",
-      temperature: 0.7,
-      requestContent:
-        "上下文为「" +
-        aiTextAreaStore.selectedText.replace(/[\'\"\\\/\b\f\n\r\t]/g, "") +
-        "」。我的问题是「" +
-        aiTextAreaStore.inputText +
-        "」",
-    },
-    (res) => {
+  if (isCustomize) {
+    await requestFn(data, (res) => {
       testData = res?.data?.content?.result;
-    }
-  );
+    });
+  } else {
+    await requestFn(
+      {
+        requestType: data?.type,
+        requestContent: aiTextAreaStore.selectedText.replace(
+          /[\'\"\\\/\b\f\n\r\t]/g,
+          ""
+        ),
+      },
+      (res) => {
+        testData = res?.data?.content?.result || "";
+      }
+    );
+  }
   timeId = setInterval(() => {
     if (index >= testData.length) {
       clearInterval(timeId);
       timeId = 0;
       index = 0;
       isCursorShow.value = false;
+      if (testData.length <= 0) {
+        isAnswerShow.value = false;
+        const isAiModel = !!aiText.value.trim();
+        aiTextAreaStore.updateIsAiModel(isAiModel);
+      }
       return;
     }
     answer.value += testData[index];
@@ -121,14 +137,34 @@ const handleSubmit = async () => {
     index++;
   }, 10);
 };
+const handleSubmit = async () => {
+  streamRequest(aiRequest, true, {
+    system: "你是一个文本处理助手，按照我的上下文和问题，给出我答案",
+    temperature: 0.7,
+    requestContent:
+      "上下文为「" +
+      aiTextAreaStore.selectedText.replace(/[\'\"\\\/\b\f\n\r\t]/g, "") +
+      "」。我的问题是「" +
+      aiTextAreaStore.inputText +
+      "」",
+  });
+};
+const handleChoiceBtnClick = (type, id) => {
+  if (type !== "customize") {
+    streamRequest(textDeal, false, { type: type });
+    return;
+  }
+};
 const clearInputText = () => {
   aiTextArea.value.innerText = "";
   testData = "";
   answer.value = "";
   textAreaFocus();
+  aiTextAreaStore.updateIsAiModel(false);
   handleInputChange({ target: aiTextArea.value });
 };
 const textAreaFocus = () => {
+  isAnswerShow.value = false;
   aiTextArea.value?.focus();
 };
 watch(aiText, (newVal, oldVal) => {
@@ -156,6 +192,7 @@ onMounted(() => {
   eventBus.on("close-ai-window", clearInputText);
 });
 </script>
+
 <style scoped>
 .select-text-mask {
   border-radius: 8px;
@@ -164,21 +201,36 @@ onMounted(() => {
   z-index: 999;
   background-color: var(--ath-aiwindow-mask);
 }
+
 .ai-window-container {
   position: absolute;
   z-index: 999;
   display: none;
 }
+
+.ai-window-header {
+  user-select: none;
+  position: absolute;
+  bottom: 100%;
+  width: 100%;
+  height: 40px;
+  padding-bottom: 4px;
+  background-color: transparent;
+}
+
 .ai-answer-area-container {
   position: relative;
   width: 100%;
-  min-height: 200px;
+  min-height: 30px;
+  max-height: 100px;
+  overflow: auto;
   font-size: 14px;
   line-height: 2;
   background-color: var(--ath-aiwindow-answer-background);
   color: var(--ath-aiwindow-answer-color);
   margin-bottom: 200px;
 }
+
 .ai-answer-area-cursor {
   position: absolute;
   width: 10px;
@@ -191,11 +243,13 @@ onMounted(() => {
   left: calc(v-bind("cursorPos.x") * 1px);
   top: calc(v-bind("cursorPos.y") * 1px);
 }
+
 @keyframes cursor {
   30% {
     opacity: 1;
   }
 }
+
 .ai-main-input-field {
   width: 100%;
   padding: 12px;
@@ -204,21 +258,25 @@ onMounted(() => {
   background-color: var(--ath-aiwindow-input-background);
   color: var(--ath-aiwindow-input-color);
 }
+
 .ai-textarea-layout {
   width: 100%;
 
   overflow: auto;
 }
+
 .ai-textarea-layout-left {
   position: relative;
   float: left;
   min-width: calc(100% - 60px);
 }
+
 .ai-textarea-layout-right {
   float: right;
   display: flex;
   align-items: center;
 }
+
 .ai-textarea-logo {
   position: absolute;
   width: 32px;
@@ -228,6 +286,7 @@ onMounted(() => {
   justify-content: center;
   pointer-events: none;
 }
+
 .question-input-area {
   text-indent: 36px;
   resize: none;
@@ -240,20 +299,24 @@ onMounted(() => {
   outline: none;
   overflow: initial;
 }
+
 .ai-textarea-actions {
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
+
 .clear-input-text-btn,
 .input-submit-btn {
   cursor: pointer;
   border-radius: 8px;
 }
+
 .clear-input-text-btn:hover,
 .input-submit-btn:hover {
   background-color: var(--ath-aiwindow-btn-hover);
 }
+
 .clear-input-text-btn:active,
 .input-submit-btn:active {
   background-color: var(--ath-aiwindow-btn-active);

@@ -94,6 +94,8 @@ const userAuthentication = [
   "register-error",
   "update-avatar-error",
   "update-avatar-success",
+  "ai-request-success",
+  "ai-request-error"
 ];
 userAuthentication.forEach((item) => {
   eventBus.on(item, (msg) =>

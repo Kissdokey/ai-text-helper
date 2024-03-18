@@ -3,8 +3,8 @@ import { ref } from 'vue'
 
 export const useAiTextAreaStore = defineStore('ai-text-area', () => {
   // States
-  const inputText = ref('') // 输入框文字
-  const isAiModel = ref(false) // 文字背景颜色
+  const inputText = ref('') 
+  const isAiModel = ref(false) 
   const selectedText = ref('') // 选中的上下文
 
   // Getters

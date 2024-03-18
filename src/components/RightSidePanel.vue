@@ -1,5 +1,7 @@
 <template>
-    <div class="right-side-panel"></div>
+    <div class="right-side-panel">
+        <div class="preview-panel"></div>
+    </div>
 </template>
 
 

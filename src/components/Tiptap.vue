@@ -10,15 +10,20 @@
       <div class="editor-area">
         <FileSelectBar></FileSelectBar>
         <FixedMenu :isHiddenToolPanel="true"></FixedMenu>
+        <div class="preview-setting-btn" @click="handlePreviewBtnClick">
+            <v-icon v-show="isPreview">$IconPreviewOff</v-icon>
+            <v-icon v-show="!isPreview">$IconPreviewOn</v-icon>
+          </div>
         <div class="editor-container" v-show="editorContent2.currentFile">
           <AiWindow></AiWindow>
           <editor-content
+            v-show="!isPreview"
             :editor="editor"
             class="editor"
             id="editorRef"
             spellcheck="false"
           />
-          <RightSidePanel></RightSidePanel>
+          <RightSidePanel v-show="isPreview"></RightSidePanel>
         </div>
         <div class="no-flie-notice" v-show="!editorContent2.currentFile">
           请选择文件或者新建文件
@@ -31,6 +36,7 @@
 <script setup>
 import { useFileDependenciesStore } from "@/store/fileDependencies.js";
 import _ from "lodash";
+import 'highlight.js/styles/github.css';
 import ToolPanel from "@/components/ToolPanel.vue";
 import FileSelectBar from "@/components/FileSelectBar.vue";
 import RightSidePanel from "@/components/RightSidePanel.vue";
@@ -62,6 +68,7 @@ import { colorItems, INITHTML, paragraphTags } from "@/util/constantData.js";
 import { useEditorContent } from "@/store/editorContent";
 import { authentication } from "@/fetch/user.js";
 import { useUserStore } from "@/store/user.js";
+import hljs from "highlight.js";
 const editorContent2 = useEditorContent();
 const userStore = useUserStore();
 const fileDependenciesStore = useFileDependenciesStore();
@@ -80,22 +87,14 @@ const editor = useEditor({
   editable: true,
   injectCSS: true,
   onUpdate() {
-    // if (!editorAreaDom) {
-    //   editorAreaDom = document.querySelector(".ProseMirror");
-    // }
-    // PARAGRAPHDOM.forEach((item) => {
-    //   let collectDom = editorAreaDom?.getElementsByTagName(item) || [];
-    //   for (let i = 0; i < collectDom.length; i++) {
-    //     collectDom[i].onmouseover = mouseOver;
-    //     collectDom[i].onmouseout = mouseOut;
-    //   }
-    // });
+    updatePreviewPanel()
     editorContent2.saveContent(editorContent2.currentFile, getHtml());
   },
 });
 
 const isHiddenToolPanel = ref(false);
 const isHiddenFilePanel = ref(false);
+const isPreview = ref(false)
 provide("editor", editor);
 
 function getdefaultName() {
@@ -106,6 +105,9 @@ function initFile() {
     return;
   }
   onChangeFile(editorContent2.currentFile);
+}
+function handlePreviewBtnClick() {
+  isPreview.value = !isPreview.value
 }
 function createNewFile(fileName) {
   editorContent2.initFile();
@@ -244,6 +246,9 @@ function simpleButtonClick(type) {
   if (type === "blockquote") {
     editor.value.chain().focus().toggleBlockquote().run();
   }
+  if(type === 'codeBlock') {
+    editor.value.chain().focus().toggleCodeBlock().run()
+  }
 }
 // function mouseOver(e) {
 //   operateItemRef.style.left = e.relatedTarget.offsetLeft + 'px';
@@ -270,6 +275,27 @@ const autoResize = _.throttle(() => {
     return;
   }
 }, 100);
+const updatePreviewPanel = () => {
+  const html = getHtml();
+  console.log(html)
+  var tempDiv = document.createElement("div");
+  tempDiv.innerHTML = html;
+  var codeTags = tempDiv.getElementsByTagName("code");
+  console.log(codeTags)
+  for (var i = 0; i < codeTags.length; i++) {
+    var codeTag = codeTags[i];
+
+    // 创建一个子元素div
+    var childHtml = codeTag.innerHTML;
+    const highlightedCode = hljs.highlight(childHtml, {
+      language: "javascript",
+    }).value;
+    codeTag.innerHTML = highlightedCode;
+    console.log(highlightedCode)
+  }
+  console.log(tempDiv.innerHTML)
+  document.querySelector('.preview-panel').innerHTML = tempDiv.innerHTML
+};
 onMounted(async () => {
   authentication(userStore.initUserInfo);
   await editorContent2.init();
@@ -308,15 +334,21 @@ onUnmounted(() => {
   display: flex;
   overflow-y: hidden;
 }
-.ProseMirror {
+.ProseMirror,.preview-panel {
   width: 100%;
-
   border-radius: 8px;
   background-color: var(--ath-editorcontainer-editor-background);
   line-height: 16px;
   font-size: 12px;
   padding: 12px;
   box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+}
+.preview-panel {
+  user-select: none;
+  pointer-events: none;
+  max-width: 692px;
+  margin: 24px 24px 24px 24px;
+  min-height: 85vh;
 }
 .editor-area {
   position: relative;
@@ -333,6 +365,13 @@ onUnmounted(() => {
   width: 100%;
   display: flex;
   flex: 1;
+}
+.preview-setting-btn {
+  position: absolute;
+  top: 80px;
+  left: -4px;
+  z-index: 999;
+  cursor: pointer;
 }
 .editor {
   box-sizing: border-box;
@@ -362,8 +401,12 @@ onUnmounted(() => {
 }
 
 .code-style {
-  background-color: red;
+  position: relative;
+  display: inline;
+  border: 1px solid var(--ath-code-color);
   border-radius: 4px;
+  background-color: var(--ath-code-color);
+  margin: 12px 0;
 }
 
 .height-line-style {
@@ -382,14 +425,28 @@ onUnmounted(() => {
 }
 
 .code-block-style {
-  background-color: greenyellow;
+  background-color: var(--ath-code-block-color);
+  border-radius: 8px;
+  padding: 12px;
+  margin: 12px 0;
 }
 
 blockquote {
-  padding-left: 1rem;
-  border-left: 3px solid rgba(#0d0d0d, 0.1);
-  background-color: pink;
-  border-radius: 4px;
+  position: relative;
+ margin-left: 25px;
+ background-color: var(--ath-code-block-color);
+ border-radius: 8px;
+ margin: 12px 0 12px 25px;
+ padding: 12px;
+}
+blockquote::after {
+  content: '';
+  position: absolute;
+  left: -20px;
+  top: 6px;
+  width: 2px;
+  height: calc(100% - 12px);
+  background-color: var(--ath-code-block-color);
 }
 
 .bullet-list-style {

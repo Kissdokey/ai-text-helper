@@ -115,7 +115,7 @@ export default {
   line-height: 22px;
   letter-spacing: 0em;
   text-align: left;
-  color: rgba(37, 52, 83, 0.7);
+  color: var(--ath-menu-color);
   margin-left: 20px;
 }
 
@@ -125,8 +125,8 @@ export default {
   left: 676px;
   top: 188px;
   border-radius: 12px;
-  background-color: white;
-  box-shadow: 0px 12px 32px 0px rgba(13, 13, 13, 0.08);
+  background-color: var(--ath-menu-background);
+  box-shadow: 0px 12px 32px 0px var(--ath-menu-box-shadow);
   margin-left: 14px;
 }
 

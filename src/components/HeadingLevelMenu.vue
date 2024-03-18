@@ -58,7 +58,7 @@ function headingType() {
   user-select: none;
 }
 .heading-item:hover {
-  background-color: rgb(241, 241, 241);
+  background-color: var(--ath-menu-item-hover);
   user-select: none;
 }
 .selected-heading {
@@ -75,9 +75,9 @@ function headingType() {
   box-sizing: border-box;
   padding: 12px;
   width: 130px;
-  background-color: white;
-  box-shadow: 0 0 0 1px rgba(13, 13, 13, 0.06),
-    0px 1px 4px rgba(13, 13, 13, 0.1);
+  background-color: var(--ath-menu-background);
+  box-shadow: 0 0 0 1px var(--ath-menu-box-shadow),
+    0px 1px 4px var(--ath-menu-box-shadow);
   box-sizing: border-box;
   border-radius: 8px;
   display: flex;

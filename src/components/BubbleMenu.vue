@@ -155,7 +155,7 @@ const updateAiWindowPosition = () => {
     display: "block",
     left: left + "px",
     width: rect.width + "px",
-    top: top + 30 + "px",
+    top: top + 50 + "px",
   });
   Object.assign(selectTextMaskNode.value.style, {
     display: "block",

@@ -118,11 +118,11 @@ const append = computed(()=> {
         tooltip: "Underline",
         typeDetail: "underline",
       },
-      {
-        type: "normal",
-        tooltip: "Make a Link",
-        typeDetail: "link",
-      },
+      // {
+      //   type: "normal",
+      //   tooltip: "Make a Link",
+      //   typeDetail: "link",
+      // },
       {
         type: "normal",
         tooltip: "TextAlign Left",
@@ -142,6 +142,11 @@ const append = computed(()=> {
         type: "normal",
         tooltip: "Blockquote",
         typeDetail: "blockquote",
+      },
+      {
+        type: "normal",
+        tooltip: "Block Code",
+        typeDetail: "codeBlock",
       },
     ]
   : [];
@@ -170,17 +175,17 @@ const buttonInfo = computed(()=> {
     info: 1,
     tooltip: "Select Text Color",
   },
-  {
-    type: "drowDown",
-    title: "table actions",
-    typeIndex: 2,
-    id: "table-actions",
-    action: () => {
-      onDropDownMenu(2);
-    },
-    info: "表格",
-    tooltip: "Select Table Operater",
-  },
+  // {
+  //   type: "drowDown",
+  //   title: "table actions",
+  //   typeIndex: 2,
+  //   id: "table-actions",
+  //   action: () => {
+  //     onDropDownMenu(2);
+  //   },
+  //   info: "表格",
+  //   tooltip: "Select Table Operater",
+  // },
   {
     type: "drowDown",
     title: "Heading Level",

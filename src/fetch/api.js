@@ -1,4 +1,4 @@
-const HOST = 'http://127.0.0.1:8000'
+const HOST = 'http://192.168.25.1:8000'
 export const REGISTER = `${HOST}/userAccount/register`
 export const LOGIN = `${HOST}/userAccount/login`
 export const AUTHENTICATION = `${HOST}/userInfo/authentication`

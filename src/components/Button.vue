@@ -17,6 +17,7 @@
       <v-icon v-if="props.type?.textAlign === 'center'" class="icon" >$IconCenter</v-icon>
       <v-icon v-if="props.type?.textAlign === 'right'" class="icon" >$IconRight</v-icon>
       <v-icon v-if="props.type === 'blockquote'" class="icon" >$IconBlockquote</v-icon>
+      <v-icon v-if="props.type === 'codeBlock'" class="icon" >$IconCodeBlock</v-icon>
     </div>
   </div>
 </template>
