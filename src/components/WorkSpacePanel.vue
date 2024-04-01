@@ -47,8 +47,10 @@ import { useFileDependenciesStore } from "@/store/fileDependencies.js";
 import { useEditorContent } from "@/store/editorContent.js";
 import { computed, inject, nextTick, onMounted, ref } from "vue";
 import WorkSpaceContextMenu from "@/components/WorkSpaceContextMenu.vue";
-import { useCustomerSetting } from '@/store/customerSetting.js'
-const customerSetting = useCustomerSetting()
+import { useCustomerSetting } from "@/store/customerSetting.js";
+import { updateDirectoryDependence,updateUserFile } from "@/fetch/user.js";
+
+const customerSetting = useCustomerSetting();
 const props = defineProps({ isHiddenFilePanel: Boolean });
 const eventBus = inject("eventBus");
 const isOpen = ref(customerSetting.ifWorkspaceOpen);
@@ -77,22 +79,31 @@ const workSpaceDragUp = _.throttle((e) => {
 const workSpaceDragDown = _.throttle((e) => {
   workspaceRef.value.style.left = e.pageX - mouseOffset.left + "px";
   workspaceRef.value.style.top = e.pageY - mouseOffset.top + "px";
-  customerSetting.updateWorkspacePosition({x:e.pageX - mouseOffset.left,y:e.pageY - mouseOffset.top})
+  customerSetting.updateWorkspacePosition({
+    x: e.pageX - mouseOffset.left,
+    y: e.pageY - mouseOffset.top,
+  });
 }, 500);
 
 onMounted(() => {
   updateFolder();
-  eventBus.on("update-folder", updateFolder);
+  eventBus.on("update-folder", handleFolderChanged);
   eventBus.on("create-new-file", () => (isFolderActive.value = false));
   eventBus.on("change-file", () => (isFolderActive.value = false));
   eventBus.on("create-new-folder", (name) => createNewFolder(name));
   eventBus.on("change-workSpace", () => {
     isOpen.value = !isOpen.value;
-    customerSetting.updateFfWorkspaceOpen(isOpen.value)
+    customerSetting.updateFfWorkspaceOpen(isOpen.value);
   });
-  workspaceRef.value.style.left = customerSetting.workspacePosition.x + 'px'
-  workspaceRef.value.style.top = customerSetting.workspacePosition.y + 'px'
+  workspaceRef.value.style.left = customerSetting.workspacePosition.x + "px";
+  workspaceRef.value.style.top = customerSetting.workspacePosition.y + "px";
 });
+function handleFolderChanged() {
+  updateFolder();
+  updateDirectoryDependence({
+    directoryDependence: JSON.stringify(fileDependenciesStore.fileDependencies),
+  });
+}
 function updateFolder() {
   const workSpace = document.createElement("div");
   walkThrought(fileDependenciesStore.fileDependencies, workSpace);
@@ -196,7 +207,7 @@ const clickbg = () => {
   width: 200px;
   min-width: 150px;
   background: var(--ath-workspace-background);
-  color:var(--ath-workspace-text-color);
+  color: var(--ath-workspace-text-color);
   border-right: 1px solid var(--ath-divider-color);
 }
 
@@ -207,13 +218,13 @@ const clickbg = () => {
   background-color: var(--ath-workspace-absolute-background);
   z-index: 99;
   border-radius: 12px;
-  border: 1px solid  var(--ath-divider-color);
+  border: 1px solid var(--ath-divider-color);
 }
 .workspace-container-absolute .workspace {
   max-height: 500px;
   margin-top: 4px;
   user-select: none;
-  overflow:auto;
+  overflow: auto;
 }
 .workspace-container .workspace {
   margin-top: 4px;

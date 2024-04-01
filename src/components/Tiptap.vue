@@ -11,9 +11,9 @@
         <FileSelectBar></FileSelectBar>
         <FixedMenu :isHiddenToolPanel="true"></FixedMenu>
         <div class="preview-setting-btn" @click="handlePreviewBtnClick">
-            <v-icon v-show="isPreview">$IconPreviewOff</v-icon>
-            <v-icon v-show="!isPreview">$IconPreviewOn</v-icon>
-          </div>
+          <v-icon v-show="isPreview">$IconPreviewOff</v-icon>
+          <v-icon v-show="!isPreview">$IconPreviewOn</v-icon>
+        </div>
         <div class="editor-container" v-show="editorContent2.currentFile">
           <AiWindow></AiWindow>
           <editor-content
@@ -36,7 +36,7 @@
 <script setup>
 import { useFileDependenciesStore } from "@/store/fileDependencies.js";
 import _ from "lodash";
-import 'highlight.js/styles/github.css';
+import "highlight.js/styles/github.css";
 import ToolPanel from "@/components/ToolPanel.vue";
 import FileSelectBar from "@/components/FileSelectBar.vue";
 import RightSidePanel from "@/components/RightSidePanel.vue";
@@ -66,7 +66,7 @@ import {
 import mammoth from "mammoth";
 import { colorItems, INITHTML, paragraphTags } from "@/util/constantData.js";
 import { useEditorContent } from "@/store/editorContent";
-import { authentication } from "@/fetch/user.js";
+import { authentication, updateUserFile } from "@/fetch/user.js";
 import { useUserStore } from "@/store/user.js";
 import hljs from "highlight.js";
 const editorContent2 = useEditorContent();
@@ -87,14 +87,14 @@ const editor = useEditor({
   editable: true,
   injectCSS: true,
   onUpdate() {
-    updatePreviewPanel()
+    updatePreviewPanel();
     editorContent2.saveContent(editorContent2.currentFile, getHtml());
   },
 });
 
 const isHiddenToolPanel = ref(false);
 const isHiddenFilePanel = ref(false);
-const isPreview = ref(false)
+const isPreview = ref(false);
 provide("editor", editor);
 
 function getdefaultName() {
@@ -107,7 +107,7 @@ function initFile() {
   onChangeFile(editorContent2.currentFile);
 }
 function handlePreviewBtnClick() {
-  isPreview.value = !isPreview.value
+  isPreview.value = !isPreview.value;
 }
 function createNewFile(fileName) {
   editorContent2.initFile();
@@ -120,6 +120,7 @@ function createNewFile(fileName) {
   nextTick(() => {
     eventBus.emit("file-bar-auto-scroll");
     fileDependenciesStore.createFile(editorContent2.currentFile, name);
+    updateUserFile({ fileId: editorContent2.currentFile, isDelete: false });
     eventBus.emit("update-folder");
   });
 }
@@ -146,7 +147,8 @@ function onChangeFile(id) {
   });
 }
 function onDeleteFile(id) {
-  editorContent2.deleteFile(id);
+  editorContent2.deleteFile(id)
+  updateUserFile({ fileId: id, isDelete: true });
 }
 function saveAsDocx() {
   saveDocx(getHtml());
@@ -246,8 +248,8 @@ function simpleButtonClick(type) {
   if (type === "blockquote") {
     editor.value.chain().focus().toggleBlockquote().run();
   }
-  if(type === 'codeBlock') {
-    editor.value.chain().focus().toggleCodeBlock().run()
+  if (type === "codeBlock") {
+    editor.value.chain().focus().toggleCodeBlock().run();
   }
 }
 // function mouseOver(e) {
@@ -277,11 +279,11 @@ const autoResize = _.throttle(() => {
 }, 100);
 const updatePreviewPanel = () => {
   const html = getHtml();
-  console.log(html)
+  console.log(html);
   var tempDiv = document.createElement("div");
   tempDiv.innerHTML = html;
   var codeTags = tempDiv.getElementsByTagName("code");
-  console.log(codeTags)
+  console.log(codeTags);
   for (var i = 0; i < codeTags.length; i++) {
     var codeTag = codeTags[i];
 
@@ -291,10 +293,10 @@ const updatePreviewPanel = () => {
       language: "javascript",
     }).value;
     codeTag.innerHTML = highlightedCode;
-    console.log(highlightedCode)
+    console.log(highlightedCode);
   }
-  console.log(tempDiv.innerHTML)
-  document.querySelector('.preview-panel').innerHTML = tempDiv.innerHTML
+  console.log(tempDiv.innerHTML);
+  document.querySelector(".preview-panel").innerHTML = tempDiv.innerHTML;
 };
 onMounted(async () => {
   authentication(userStore.initUserInfo);
@@ -334,7 +336,8 @@ onUnmounted(() => {
   display: flex;
   overflow-y: hidden;
 }
-.ProseMirror,.preview-panel {
+.ProseMirror,
+.preview-panel {
   width: 100%;
   border-radius: 8px;
   background-color: var(--ath-editorcontainer-editor-background);
@@ -433,14 +436,14 @@ onUnmounted(() => {
 
 blockquote {
   position: relative;
- margin-left: 25px;
- background-color: var(--ath-code-block-color);
- border-radius: 8px;
- margin: 12px 0 12px 25px;
- padding: 12px;
+  margin-left: 25px;
+  background-color: var(--ath-code-block-color);
+  border-radius: 8px;
+  margin: 12px 0 12px 25px;
+  padding: 12px;
 }
 blockquote::after {
-  content: '';
+  content: "";
   position: absolute;
   left: -20px;
   top: 6px;

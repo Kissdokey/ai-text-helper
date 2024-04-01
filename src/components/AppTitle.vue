@@ -1,8 +1,8 @@
 <template>
-  <div class="app-header" >
+  <div :class="['app-header',isException?'exception':'']" >
     <v-icon size="32" class="app-icon">$IconLogo</v-icon>
     <span>AI TEXT HELPER</span>
-    <div class="change-them-btn">
+    <div v-if="!isException" class="change-them-btn">
       <el-switch
         v-model="isThemeDark"
         size="large"
@@ -18,12 +18,21 @@
         </template>
       </el-switch>
     </div>
+    <div v-if="!isException" class="share-btn-box"> <SareBtn></SareBtn></div>
+   
   </div>
 </template>
 <script setup>
 import { aiRequest } from "@/fetch/user";
 import { onMounted, ref } from "vue";
 import { useCustomerSetting } from '@/store/customerSetting.js'
+import SareBtn from "@/components/SareBtn.vue";
+const props = defineProps({
+  isException: {
+    type:Boolean,
+    default: false
+  }
+})
 const customerSetting = useCustomerSetting()
 const isThemeDark = ref(customerSetting.isThemeDark);
 const handleThemeChange = (val)=> {
@@ -54,6 +63,9 @@ onMounted(()=> {
   user-select: none;
   background-color: var(--ath-header-background);
 }
+.exception {
+  height: 80px;
+}
 .app-icon {
   pointer-events: none;
 }
@@ -77,7 +89,13 @@ onMounted(()=> {
 }
 .change-them-btn {
   position: absolute;
-  right: 20px;
+  right: 55px;
+}
+.share-btn-box {
+  position: absolute;
+  right:10px;
+  top: 50%;
+  transform: translateY(-50%);
 }
 </style>
 <style>

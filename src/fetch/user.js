@@ -1,4 +1,4 @@
-import { REGISTER, LOGIN, AUTHENTICATION,UPDATEAVATAR,TEXTDEAL,AIREQUEST } from "@/fetch/api.js";
+import { REGISTER, LOGIN, AUTHENTICATION,UPDATEAVATAR,TEXTDEAL,AIREQUEST,UPDATEDIRECTORYDEPENDENCE,UPDATEUSERFILE } from "@/fetch/api.js";
 import { emitter } from "@/main.js";
 
 export const TOKEN = "ai-text-helper-token";
@@ -75,6 +75,33 @@ export const authentication = async (callback) => {
   emitter.emit('login-success','登陆成功!')
   callback(res);
 };
+
+export const updateDirectoryDependence = async(data={})=> {
+  const auth = window.localStorage.getItem(TOKEN);
+  if(!auth) {
+    callback({});
+    emitter.emit("login-error", '登录信息出错，请重新登录！');
+  }
+  const res = await _post(UPDATEDIRECTORYDEPENDENCE,data,auth)
+  if(res?.code !== 200) {
+    emitter.emit("update-directoryDependence-error", res?.msg || DEFAULTERROR);
+    return;
+  }
+  emitter.emit('update-directoryDependence-success','更新目录成功!')
+}
+export const updateUserFile = async(data={})=> {
+  const auth = window.localStorage.getItem(TOKEN);
+  if(!auth) {
+    callback({});
+    emitter.emit("login-error", '登录信息出错，请重新登录！');
+  }
+  const res = await _post(UPDATEUSERFILE,data,auth)
+  if(res?.code !== 200) {
+    emitter.emit("update-userFile-error", res?.msg || DEFAULTERROR);
+    return;
+  }
+  emitter.emit('update-userFile-success','用户文件记录添加成功!')
+}
 
 export const updateUserAvatar = async(data = {},callback) => {
   const auth = window.localStorage.getItem(TOKEN);

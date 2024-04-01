@@ -95,7 +95,12 @@ const userAuthentication = [
   "update-avatar-error",
   "update-avatar-success",
   "ai-request-success",
-  "ai-request-error"
+  "ai-request-error",
+  "copy-success",
+  "update-directoryDependence-success",
+  "update-directoryDependence-error",
+  "update-userFile-success",
+  "update-userFile-error"
 ];
 userAuthentication.forEach((item) => {
   eventBus.on(item, (msg) =>
