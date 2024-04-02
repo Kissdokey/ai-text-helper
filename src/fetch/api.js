@@ -8,3 +8,6 @@ export const UPDATEDIRECTORYDEPENDENCE = `${HOST}/userInfo/updateDirectoryDepend
 export const UPDATEUSERFILE = `${HOST}/userInfo/updateUserFile`
 export const TEXTDEAL = `${HOST}/aiTextHelper/textDeal`;
 export const AIREQUEST = `${HOST}/aiTextHelper/customize`;
+export const UPDATEFILE = `${HOST}/fileInfo/updateFile`;
+export const CREATEFILE = `${HOST}/fileInfo/createFile`
+export const ACQUIREFILE = `${HOST}/fileInfo/acquireFile`

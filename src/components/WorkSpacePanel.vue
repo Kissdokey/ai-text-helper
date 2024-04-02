@@ -87,7 +87,8 @@ const workSpaceDragDown = _.throttle((e) => {
 
 onMounted(() => {
   updateFolder();
-  eventBus.on("update-folder", handleFolderChanged);
+  eventBus.on("update-folder", updateFolder);
+  eventBus.on('save-folder-in-cloud',handleFolderChanged)
   eventBus.on("create-new-file", () => (isFolderActive.value = false));
   eventBus.on("change-file", () => (isFolderActive.value = false));
   eventBus.on("create-new-folder", (name) => createNewFolder(name));
@@ -99,7 +100,6 @@ onMounted(() => {
   workspaceRef.value.style.top = customerSetting.workspacePosition.y + "px";
 });
 function handleFolderChanged() {
-  updateFolder();
   updateDirectoryDependence({
     directoryDependence: JSON.stringify(fileDependenciesStore.fileDependencies),
   });

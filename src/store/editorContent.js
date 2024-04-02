@@ -20,7 +20,7 @@ export const useEditorContent = defineStore({
     const openedFiles = ref([]);
     const currentFile = ref("");
     let db;
-    const init =async ()=> {
+    const init = async () => {
       await openDB("editor-content").then(async (res) => {
         db = res;
         const data = await getAllData(db, "file-info");
@@ -29,7 +29,7 @@ export const useEditorContent = defineStore({
         });
         console.log(fileInfo.value);
       });
-    }
+    };
 
     // Getters
 
@@ -37,6 +37,7 @@ export const useEditorContent = defineStore({
     const saveContent = (id, content) => {
       if (id in fileInfo.value) {
         fileInfo.value[id].content = content;
+        fileInfo.value[id].lastModifiedTime = Date.now();
         updateDB(db, "file-info", { id: id, ...fileInfo.value[id] });
       }
     };
@@ -61,7 +62,13 @@ export const useEditorContent = defineStore({
     };
     const createFile = (name, content) => {
       const uuid = uuidv4();
-      const info = { name: name, content: content };
+      const info = {
+        name: name,
+        content: content,
+        createTime: Date.now(),
+        lastModifiedTime: Date.now(),
+        permissions: 0,
+      };
       fileInfo.value[uuid] = info;
       currentFile.value = uuid;
       appendOpenedFile(uuid);
@@ -103,6 +110,6 @@ export const useEditorContent = defineStore({
   },
   persist: {
     key: "editor-content",
-    paths: ['currentFile', 'openedFiles'],
+    paths: ["currentFile", "openedFiles"],
   },
 });

@@ -57,6 +57,7 @@ export const useFileDependenciesStore = defineStore(
       }
       changeCurrentFolder(id);
       fileDependencies.value.push(info);
+      emitter.emit("save-folder-in-cloud");
     };
     const changeCurrentFolder = (id) => {
       currentFolder.value = id;
@@ -82,6 +83,7 @@ export const useFileDependenciesStore = defineStore(
       }
       // changeCurrentFolder(id)
       fileDependencies.value.push(info);
+      emitter.emit("save-folder-in-cloud");
     };
     const deleteItem = (id) => {
       finalIndex = -1;
@@ -89,12 +91,14 @@ export const useFileDependenciesStore = defineStore(
       recursionFindIndex(fileDependencies.value, id);
       recursionDeleteFile(finalFolder[finalIndex]);
       finalFolder.splice(finalIndex, 1);
+      emitter.emit("save-folder-in-cloud");
     };
     const saveName = (id, name) => {
       finalIndex = -1;
       finalFolder = null;
       recursionFindIndex(fileDependencies.value, id);
       finalFolder[finalIndex].name = name;
+      emitter.emit("save-folder-in-cloud");
     };
     return {
       fileDependencies,

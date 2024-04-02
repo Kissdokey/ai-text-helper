@@ -36,7 +36,7 @@ import { ref } from "vue";
 import { useUserStore } from "@/store/user.js";
 import { imageToBase64 } from "@/util/image2Base64.js";
 import {updateUserAvatar} from '@/fetch/user.js'
-import {TOKEN} from '@/fetch/user.js'
+import {TOKEN} from '@/fetch/fetch.js'
 const userStore = useUserStore();
 const isMenuActive = ref(false);
 const imageRef = ref(null);

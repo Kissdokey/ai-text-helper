@@ -100,7 +100,9 @@ const userAuthentication = [
   "update-directoryDependence-success",
   "update-directoryDependence-error",
   "update-userFile-success",
-  "update-userFile-error"
+  "update-userFile-error",
+  "save-in-cloud-error",
+  "save-in-cloud-success"
 ];
 userAuthentication.forEach((item) => {
   eventBus.on(item, (msg) =>

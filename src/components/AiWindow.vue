@@ -63,7 +63,7 @@ import {
   watch,
 } from "vue";
 import { useAiTextAreaStore } from "@/store/aiTextArea";
-import { aiRequest, textDeal } from "@/fetch/user.js";
+import { aiRequest, textDeal } from "@/fetch/ai.js";
 import AiPresetsBar from "@/components/AiPresetsBar.vue";
 const eventBus = inject("eventBus");
 const cursorPos = reactive({ x: 0, y: 0 });

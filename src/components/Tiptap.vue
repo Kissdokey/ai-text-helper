@@ -67,6 +67,7 @@ import mammoth from "mammoth";
 import { colorItems, INITHTML, paragraphTags } from "@/util/constantData.js";
 import { useEditorContent } from "@/store/editorContent";
 import { authentication, updateUserFile } from "@/fetch/user.js";
+import { createFile,updateFile } from "@/fetch/file.js";
 import { useUserStore } from "@/store/user.js";
 import hljs from "highlight.js";
 const editorContent2 = useEditorContent();
@@ -121,6 +122,7 @@ function createNewFile(fileName) {
     eventBus.emit("file-bar-auto-scroll");
     fileDependenciesStore.createFile(editorContent2.currentFile, name);
     updateUserFile({ fileId: editorContent2.currentFile, isDelete: false });
+    createFile(getFileInfo())
     eventBus.emit("update-folder");
   });
 }
@@ -147,8 +149,25 @@ function onChangeFile(id) {
   });
 }
 function onDeleteFile(id) {
-  editorContent2.deleteFile(id)
+  editorContent2.deleteFile(id);
   updateUserFile({ fileId: id, isDelete: true });
+}
+function getFileInfo() {
+  const info = 
+  {
+    fileId: editorContent2.currentFile,
+    fileName: editorContent2.fileInfo[editorContent2.currentFile]?.name,
+    author: userStore.username,
+    content: JSON.stringify(getHtml()),
+    comments: "",
+    lastModifiedTime: `${Date.now()}`,
+    createTime: `${
+      editorContent2.fileInfo[editorContent2.currentFile]?.createTime
+    }`,
+    permissions:
+      editorContent2.fileInfo[editorContent2.currentFile]?.permissions,
+  }
+  return info
 }
 function saveAsDocx() {
   saveDocx(getHtml());
@@ -161,6 +180,13 @@ function saveAsPdf() {
 }
 function saveAsMd() {
   html2md(getHtml());
+}
+function saveInCloud() {
+  if (!editorContent2.currentFile) {
+    eventBus.emit("save-in-cloud-error", "当前未选中文件，无法上传云端");
+    return;
+  }
+  updateFile(getFileInfo());
 }
 function getHtml() {
   const html = editor.value.getHTML();
@@ -316,6 +342,9 @@ onMounted(async () => {
   eventBus.on("save-as-img", saveAsImg);
   eventBus.on("save-as-pdf", saveAsPdf);
   eventBus.on("save-as-md", saveAsMd);
+  eventBus.on("save-in-cloud", () => {
+    saveInCloud();
+  });
   window.addEventListener("resize", autoResize);
 });
 onUnmounted(() => {
