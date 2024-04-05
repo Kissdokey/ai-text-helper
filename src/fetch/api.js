@@ -1,4 +1,4 @@
-const HOST = "http://10.226.38.37:8000";
+const HOST = "http://127.0.0.1:8000";
 export const LOCAL = "http://localhost:5173";
 export const REGISTER = `${HOST}/userAccount/register`;
 export const LOGIN = `${HOST}/userAccount/login`;

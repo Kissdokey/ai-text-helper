@@ -1,24 +1,50 @@
 <template>
-  <div class="ai-window-header-box">
+  <div
+    class="ai-window-header-box"
+    @dragstart="handleDragstart"
+    @dragover="handleDragover"
+    @dragenter="handleDragenter"
+    @drag="handleDrag"
+    @drop="handleDrop"
+  >
     <el-dialog v-model="isEditorMenuShow" title="编辑你的ai预设" width="500">
-    <div class="selected-choices-container">
-      <div v-for="item in requestChoice">
-      {{ item?.name }}</div>
-    </div>
-    <div class="divider"></div>
-    <div class="unselected-choices-container">111</div>
-    <template #footer>
-      <div class="dialog-footer">
-        <el-button @click="centerDialogVisible = false">重置</el-button>
-        <el-button>添加新的ai预设</el-button>
-        <el-button type="primary" @click="centerDialogVisible = false">
-          保存
-        </el-button>
+      <div class="choices-container" data-type="selected">
+        <div
+          v-for="item in selectedArray"
+          :key="item.uid"
+          class="choice-box"
+          draggable="true"
+          :data-uid="item.uid"
+          data-type="selected"
+        >
+          {{ item?.name }}
+        </div>
       </div>
-    </template>
-  </el-dialog>
+      <div class="divider"></div>
+      <div class="choices-container" data-type="unselected">
+        <div
+          v-for="item in unselectedArray"
+          :key="item.uid"
+          class="choice-box"
+          draggable="true"
+          :data-uid="item.uid"
+          data-type="unselected"
+        >
+          {{ item?.name }}
+        </div>
+      </div>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="centerDialogVisible = false">重置</el-button>
+          <el-button>添加新的ai预设</el-button>
+          <el-button type="primary" @click="centerDialogVisible = false">
+            保存
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
     <div class="choice-item-container">
-      <div v-for="choice in requestChoice" :key="choice">
+      <div v-for="choice in selectedArray" :key="choice">
         <div
           class="choice-item"
           @click="handleSubmit(choice?.type, choice?.id)"
@@ -29,7 +55,7 @@
     </div>
 
     <div
-      :class="['edit-choice-item-btn',isEditorMenuShow?'btn-active':'']"
+      :class="['edit-choice-item-btn', isEditorMenuShow ? 'btn-active' : '']"
       v-tooltip.bottom="{
         content: '编辑预设列表',
         theme: 'delicate',
@@ -41,16 +67,189 @@
   </div>
 </template>
 <script setup>
-import { inject, ref } from "vue";
-const requestChoice = ref([
-  { name: "翻译", type: "translate" },
-  { name: "续写", type: "completion" },
+import { inject, onMounted, onUnmounted, ref, computed, nextTick } from "vue";
+onMounted(() => {
+  document.addEventListener("keydown", handleCtrlZ);
+});
+onUnmounted(() => {
+  document.removeEventListener("keydown", handleCtrlZ);
+});
+const saveHistory = (isStart) => {
+  //将historyChoices最后一个元素和aiPresetsArray深层比较，如果不一样，就将aiPresetsArray深拷贝赋值给historyChoices最后一个元素
+  const isSame =
+    JSON.stringify(historyChoices.at(-1)) ===
+    JSON.stringify(aiPresetsArray.value);
+  if (!isSame && isStart) {
+    historyChoices.push(JSON.parse(JSON.stringify(aiPresetsArray.value)));
+  } else if (isSame && !isStart) {
+    historyChoices.pop();
+  }
+};
+//监听ctrl-z事件，如果ctrl-z被触发，则将historChoices中最后一个item值给selectedArray，并将historChoices中最后一个item删除
+const handleCtrlZ = (e) => {
+  if (e.ctrlKey && e.key === "z") {
+    if (historyChoices.length === 0) return;
+    aiPresetsArray.value = historyChoices.pop();
+  }
+};
+const aiPresetsArray = ref([
+  { name: "翻译", type: "translate", uid: "1", selected: true },
+  { name: "续写", type: "completion", uid: "2", selected: true },
+  { name: "续1写", type: "completion", uid: "3", selected: false },
+  { name: "续2写", type: "completion", uid: "4", selected: false },
 ]);
+const selectedArray = computed(() => {
+  return aiPresetsArray.value.filter((item) => {
+    return item.selected;
+  });
+});
+const unselectedArray = computed(() => {
+  return aiPresetsArray.value.filter((item) => {
+    return !item.selected;
+  });
+});
+const historyChoices = [];
 const isEditorMenuShow = ref(false);
 const props = defineProps({ handleSubmit: Function });
+const currentDragInfo = ref(null);
+const currentDragCopyNode = ref(null);
+const draggingClass = "dragging-item";
+//保存拖拽的item信息
+const saveDragInfo = (target) => {
+  const uid = target.dataset.uid;
+  const idx = aiPresetsArray.value.findIndex((item) => {
+    return item.uid === uid;
+  });
+  currentDragInfo.value = aiPresetsArray.value[idx];
+};
 
+//设置拖拽预览
+const setCopyPreview = (e) => {
+  e.dataTransfer.dropEffect = "move";
+  e.dataTransfer.effectAllowed = "move";
+  var img = new Image();
+  img.src =
+    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' %3E%3Cpath /%3E%3C/svg%3E";
+  e.dataTransfer.setDragImage(img, 0, 0);
+  currentDragCopyNode.value = e.target.cloneNode(true);
+  currentDragCopyNode.value.style =
+    "position:fixed;left:0;top:0;z-index:999;pointer-events:none;display:none";
+  document.body.appendChild(currentDragCopyNode.value);
+  e.target.classList.add(draggingClass);
+};
+const updateCopyPreview = (e) => {
+  Object.assign(currentDragCopyNode.value.style, {
+    display: "block",
+    left: e.clientX + "px",
+    top: e.clientY + "px",
+  });
+};
+const removeCopyPreview = () => {
+  removeClass(draggingClass);
+  document.body.removeChild(currentDragCopyNode.value);
+};
+
+//删除所有calss
+const removeClass = (className) => {
+  document.querySelectorAll(`.${className}`).forEach((item) => {
+    item.classList.remove(className);
+  });
+};
+
+const updateSortData = (e) => {
+  if (!e.target?.dataset?.type) {
+    return;
+  }
+  if (!e.target?.dataset?.uid && e.target?.dataset?.type) {
+    const tagetType = currentDragCopyNode.value.dataset.type;
+    if (tagetType === e.target.dataset.type) {
+      return;
+    }
+    sortChoices(undefined, true);
+    return;
+  }
+  if (
+    e.target?.dataset?.uid &&
+    e.target?.dataset?.uid !== currentDragInfo.value?.uid
+  ) {
+    const is = currentDragCopyNode.value.dataset.type !== e.target.dataset.type;
+    sortChoices(e.target.dataset.uid, is);
+  }
+};
+
+//将 requesChoice 进行排序，如果传入的idx为0，则将currendDragChoiceInfo移动到最前面,否则将currenDragChoiceInfo移动到idx位置
+const sortChoices = (uid, isTrans) => {
+  let idx = aiPresetsArray.value.findIndex((item) => {
+    return item.uid === uid;
+  });
+  aiPresetsArray.value = aiPresetsArray.value.filter((item) => {
+    return item.uid !== currentDragInfo.value.uid;
+  });
+  let currentType = currentDragCopyNode.value.dataset.type;
+  if (isTrans) {
+    currentDragInfo.value.selected = !currentDragInfo.value.selected;
+    currentDragCopyNode.value.dataset.type =
+      currentType === "selected" ? "unselected" : "selected";
+    idx = aiPresetsArray.value.findIndex((item) => {
+      return item.uid === uid;
+    });
+  }
+  if (!uid) {
+    let lastItemUid;
+    if (currentType === "selected") {
+      lastItemUid = unselectedArray.value.at(-1)?.uid;
+    } else {
+      lastItemUid = selectedArray.value.at(-1)?.uid;
+    }
+    const insertIndex = aiPresetsArray.value.findIndex((item) => {
+      return item.uid === lastItemUid;
+    });
+    aiPresetsArray.value.splice(insertIndex + 1, 0, currentDragInfo.value);
+  } else {
+    aiPresetsArray.value.splice(idx, 0, currentDragInfo.value);
+  }
+  nextTick(() => {
+    document
+      .querySelector(".ai-window-header-box")
+      .querySelectorAll(".choice-box")
+      .forEach((item) => {
+        if (item.dataset.uid === currentDragInfo.value.uid) {
+          item.classList.add(draggingClass);
+        }
+      });
+  });
+};
+
+//拖拽相关事件
+const handleDragstart = (e) => {
+  setCopyPreview(e);
+  saveDragInfo(e.target);
+  saveHistory(true);
+};
+const handleDrag = (e) => {
+  updateCopyPreview(e);
+};
+const handleDragover = (e) => {
+  e.preventDefault();
+  updateCopyPreview(e);
+};
+const handleDragenter = (e) => {
+  e.preventDefault();
+  //处理跨selected的拖拽
+  updateSortData(e);
+};
+const handleDrop = (e) => {
+  removeCopyPreview();
+  saveHistory();
+};
 </script>
 <style scoped>
+.dragging-item {
+  opacity: 0.5;
+}
+.drag-over {
+  background-color: rgba(13, 13, 13, 0.3);
+}
 .ai-window-header-box {
   position: relative;
   background-color: var(--ath-aiwindow-header-background);
@@ -122,13 +321,28 @@ const props = defineProps({ handleSubmit: Function });
   width: 100vw;
   height: 100vh;
 }
-.selected-choices-container {
+.choices-container {
   display: flex;
+  padding-bottom: 24px;
+}
+.choice-box {
+  cursor: grab;
+  font-size: 14px;
+  color: var(ath-icon-color);
+  height: 24px;
+  border-radius: 4px;
+  padding: 0 8px;
+  border: 1px solid var(--ath-divider-color);
 }
 .divider {
   width: calc(100%);
   height: 1px;
   background-color: var(--ath-divider-color);
   margin: 0 auto;
+}
+</style>
+<style>
+.ai-window-header-box .el-dialog {
+  border-radius: 12px !important;
 }
 </style>

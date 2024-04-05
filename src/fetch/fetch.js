@@ -1,4 +1,5 @@
 export const TOKEN = "ai-text-helper-token";
+import { emitter } from "@/main.js";
 export const  DEFAULTERROR = "something wrong";
 export const _get = async (url = "", auth = "") => {
   try {
