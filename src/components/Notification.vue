@@ -102,7 +102,8 @@ const userAuthentication = [
   "update-userFile-success",
   "update-userFile-error",
   "save-in-cloud-error",
-  "save-in-cloud-success"
+  "save-in-cloud-success",
+  "save-preset-success"
 ];
 userAuthentication.forEach((item) => {
   eventBus.on(item, (msg) =>
