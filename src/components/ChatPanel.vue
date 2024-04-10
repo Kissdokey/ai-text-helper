@@ -24,26 +24,31 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref, onMounted, inject } from "vue";
 import ChatInput from "@/components/ChatInput.vue";
 import ChatHistory from "@/components/ChatHistory.vue";
-import {chat} from "@/fetch/ai.js";
+import { chat } from "@/fetch/ai.js";
 import { useEditorContent } from "@/store/editorContent";
+const eventBus = inject("eventBus");
 const editorContent = useEditorContent();
 const chatCycles = ref([]);
 const handleSubmit = (msg) => {
-  chatCycles.value.push({role: 'user',content: msg,loading:false});
-  chat({
-    fileId: editorContent.currentFile,
-    chatHistory: chatCycles.value,
-  },(res)=> {
-    if(!res?.done) {
-        chatCycles.value.at(-1).content += res.value.data.result
-    }else{
-        chatCycles.value.at(-1).loading = true;
+  eventBus.emit("restart-reuqest");
+  chatCycles.value.push({ role: "user", content: msg, loading: false });
+  chat(
+    {
+      fileId: editorContent.currentFile,
+      chatHistory: chatCycles.value,
+    },
+    (res) => {
+      if (!res?.done) {
+        chatCycles.value.at(-1).content += res.value.data.result;
+      } else {
+        chatCycles.value.at(-1).loading = false;
+      }
     }
-  })
-  chatCycles.value.push({role: 'assistant',content: '',loading:false})
+  );
+  chatCycles.value.push({ role: "assistant", content: "", loading: true });
 };
 </script>
 

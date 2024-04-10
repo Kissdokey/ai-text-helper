@@ -33,7 +33,7 @@ export const _post = async (url = "", data = {}, auth = "") => {
     emitter.emit("network-error", error);
   }
 };
-export const stream_post = async (url = "", data = {}, auth = "",cb) => {
+export const stream_post = async (url = "", data = {}, auth = "", cb) => {
   try {
     const resStr = await fetch(url, {
       method: "POST",
@@ -49,15 +49,35 @@ export const stream_post = async (url = "", data = {}, auth = "",cb) => {
     while (true) {
       const { done, value } = await reader.read();
       if (done) {
-        cb({done,value})
+        cb({ done, value });
         break;
       }
       const text = decoder.decode(value);
-      // 打印第一块的文本内容
-      cb({done,value:JSON.parse(text.replace(/(\b\w+\b)(?=:)/g, '"$1"'))})
+      let textArray = text.split("\n");
+      textArray = textArray.filter((item) => item.length > 0);
+      if (textArray.length > 1) {
+        textArray.forEach((item) => {
+          const textObj = JSON.parse(item.replace(/(\b\w+\b)(?=:)/g, '"$1"'));
+          if (textObj?.error_msg) {
+            emitter.emit("response-error", textObj?.error_msg);
+            cb({ done: true, value: textObj });
+          } else {
+            cb({ done, value: textObj });
+          }
+        });
+      } else {
+        // 打印第一块的文本内容
+        const textObj = JSON.parse(text.replace(/(\b\w+\b)(?=:)/g, '"$1"'));
+        if (textObj?.error_msg) {
+          emitter.emit("response-error", textObj?.error_msg);
+          cb({ done: true, value: textObj });
+        } else {
+          cb({ done, value: textObj });
+        }
+      }
     }
   } catch (error) {
     emitter.emit("network-error", error);
+    console.log(error);
   }
 };
-
