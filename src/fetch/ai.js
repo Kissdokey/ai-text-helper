@@ -1,6 +1,6 @@
-import { TEXTDEAL, AIREQUEST } from "@/fetch/api.js";
+import { TEXTDEAL, AIREQUEST, CHAT } from "@/fetch/api.js";
 import { emitter } from "@/main.js";
-import { TOKEN, DEFAULTERROR, _get, _post } from "@/fetch/fetch.js";
+import { TOKEN, DEFAULTERROR, _get, _post,stream_post } from "@/fetch/fetch.js";
 export const textDeal = async (data = {}, callback) => {
   const auth = window.localStorage.getItem(TOKEN);
   if (!auth) {
@@ -32,3 +32,10 @@ export const aiRequest = async (data = {}, callback) => {
   console.log(res);
   callback(res);
 };
+export const chat = async(data = {}, callback) => {
+  const auth = window.localStorage.getItem(TOKEN);
+  if (!auth) {
+    emitter.emit("login-error", "登录信息出错，请重新登录！");
+  }
+  const res = await stream_post(CHAT, data, auth,callback);
+}

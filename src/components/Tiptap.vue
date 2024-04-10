@@ -5,11 +5,15 @@
   <div class="app-container">
     <AppTitle></AppTitle>
     <div class="editor-wrapper">
-      <ToolPanel></ToolPanel>
-      <WorkSpacePanel :isHiddenFilePanel="isHiddenFilePanel"></WorkSpacePanel>
+      <ToolPanel v-show="!isChatModel"></ToolPanel>
+      <WorkSpacePanel
+        v-show="!isChatModel"
+        :isHiddenFilePanel="isHiddenFilePanel"
+      ></WorkSpacePanel>
+      <ChatSessionPanel v-show="isChatModel"></ChatSessionPanel>
       <div class="editor-area">
-        <FileSelectBar></FileSelectBar>
-        <FixedMenu :isHiddenToolPanel="true"></FixedMenu>
+        <FileSelectBar v-show="!isChatModel"></FileSelectBar>
+        <FixedMenu v-show="!isChatModel" :isHiddenToolPanel="true"></FixedMenu>
         <div class="preview-setting-btn" @click="handlePreviewBtnClick">
           <v-icon v-show="isPreview">$IconPreviewOff</v-icon>
           <v-icon v-show="!isPreview">$IconPreviewOn</v-icon>
@@ -17,7 +21,7 @@
         <div class="editor-container" v-show="editorContent2.currentFile">
           <AiWindow></AiWindow>
           <editor-content
-            v-show="!isPreview"
+            v-show="true"
             :editor="editor"
             class="editor"
             id="editorRef"
@@ -29,6 +33,7 @@
           请选择文件或者新建文件
         </div>
       </div>
+      <ChatPanel v-show="isChatModel"></ChatPanel>
     </div>
   </div>
 </template>
@@ -41,6 +46,8 @@ import ToolPanel from "@/components/ToolPanel.vue";
 import FileSelectBar from "@/components/FileSelectBar.vue";
 import RightSidePanel from "@/components/RightSidePanel.vue";
 import WorkSpacePanel from "@/components/WorkSpacePanel.vue";
+import ChatPanel from "@/components/ChatPanel.vue";
+import ChatSessionPanel from "@/components/ChatSessionPanel.vue";
 import Notification from "@/components/Notification.vue";
 import AppTitle from "./AppTitle.vue";
 import CloseAiWindowDialog from "./CloseAiWindowDialog.vue";
@@ -67,7 +74,7 @@ import mammoth from "mammoth";
 import { colorItems, INITHTML, paragraphTags } from "@/util/constantData.js";
 import { useEditorContent } from "@/store/editorContent";
 import { authentication, updateUserFile } from "@/fetch/user.js";
-import { createFile,updateFile } from "@/fetch/file.js";
+import { createFile, updateFile } from "@/fetch/file.js";
 import { useUserStore } from "@/store/user.js";
 import hljs from "highlight.js";
 const editorContent2 = useEditorContent();
@@ -76,9 +83,10 @@ const fileDependenciesStore = useFileDependenciesStore();
 let operateItemRef = null;
 let editorAreaDom = null;
 const PARAGRAPHDOM = paragraphTags;
-
+const isChatModel = ref(false);
 const initialValue = ref(INITHTML);
 const fileWithoutNameIndex = ref(1);
+const editorAreaPaddingTop = ref(43);
 const eventBus = inject("eventBus");
 
 const editor = useEditor({
@@ -122,7 +130,7 @@ function createNewFile(fileName) {
     eventBus.emit("file-bar-auto-scroll");
     fileDependenciesStore.createFile(editorContent2.currentFile, name);
     updateUserFile({ fileId: editorContent2.currentFile, isDelete: false });
-    createFile(getFileInfo())
+    createFile(getFileInfo());
     eventBus.emit("update-folder");
   });
 }
@@ -153,8 +161,7 @@ function onDeleteFile(id) {
   updateUserFile({ fileId: id, isDelete: true });
 }
 function getFileInfo() {
-  const info = 
-  {
+  const info = {
     fileId: editorContent2.currentFile,
     fileName: editorContent2.fileInfo[editorContent2.currentFile]?.name,
     author: userStore.username,
@@ -166,8 +173,8 @@ function getFileInfo() {
     }`,
     permissions:
       editorContent2.fileInfo[editorContent2.currentFile]?.permissions,
-  }
-  return info
+  };
+  return info;
 }
 function saveAsDocx() {
   saveDocx(getHtml());
@@ -324,6 +331,15 @@ const updatePreviewPanel = () => {
   console.log(tempDiv.innerHTML);
   document.querySelector(".preview-panel").innerHTML = tempDiv.innerHTML;
 };
+const changeAiChatModel = () => {
+  isChatModel.value = !isChatModel.value;
+  nextTick(() => {
+    let fixedMenu = document.querySelector("#fixedMenu");
+    console.log(fixedMenu.offsetHeight);
+    editorAreaPaddingTop.value = fixedMenu ? fixedMenu?.offsetHeight : 43;
+  });
+  document.querySelector('.tiptap').contentEditable  = `${!isChatModel.value}`;
+};
 onMounted(async () => {
   authentication(userStore.initUserInfo);
   await editorContent2.init();
@@ -345,6 +361,7 @@ onMounted(async () => {
   eventBus.on("save-in-cloud", () => {
     saveInCloud();
   });
+  eventBus.on("change-ai-chat-model", changeAiChatModel);
   window.addEventListener("resize", autoResize);
 });
 onUnmounted(() => {
@@ -385,7 +402,7 @@ onUnmounted(() => {
 .editor-area {
   position: relative;
   flex: 1;
-  padding-top: 43px;
+  padding-top: calc(v-bind(editorAreaPaddingTop) * 1px);
   display: flex;
   flex-direction: column;
 }

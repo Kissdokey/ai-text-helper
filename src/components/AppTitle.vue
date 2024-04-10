@@ -2,10 +2,25 @@
   <div :class="['app-header', isException ? 'exception' : '']">
     <v-icon size="32" class="app-icon">$IconLogo</v-icon>
     <span>AI TEXT HELPER</span>
-    <div v-if="!isException" class="change-them-btn"       v-tooltip.bottom="{
+    <div
+      class="ai-chat-box btn"
+      v-if="!isException"
+      v-tooltip.bottom="{
+        content: 'AI Chat Model',
+        theme: 'delicate',
+      }"
+      @click="changeAiChatModel"
+    >
+      <v-icon>$IconCloud</v-icon>
+    </div>
+    <div
+      v-if="!isException"
+      class="change-them-btn"
+      v-tooltip.bottom="{
         content: 'Change theme',
         theme: 'delicate',
-      }">
+      }"
+    >
       <el-switch v-model="isThemeDark" size="large" @change="handleThemeChange">
         <template #active-action>
           <span class="switch-icon">
@@ -18,7 +33,7 @@
       </el-switch>
     </div>
     <div
-      class="cloud-box"
+      class="cloud-box btn"
       v-if="!isException"
       v-tooltip.bottom="{
         content: 'Save in the cloud',
@@ -35,8 +50,8 @@
 import { inject, onMounted, ref } from "vue";
 import { useCustomerSetting } from "@/store/customerSetting.js";
 import SareBtn from "@/components/SareBtn.vue";
-import _ from 'lodash'
-const eventBus = inject('eventBus')
+import _ from "lodash";
+const eventBus = inject("eventBus");
 const props = defineProps({
   isException: {
     type: Boolean,
@@ -56,9 +71,12 @@ const handleThemeChange = (val) => {
   document.querySelector("html").classList.remove("dark");
   customerSetting.updateTheme(false);
 };
-const saveIncloud = _.throttle(()=> {
-  eventBus.emit('save-in-cloud')
-},10000) 
+const saveIncloud = _.throttle(() => {
+  eventBus.emit("save-in-cloud");
+}, 10000);
+const changeAiChatModel = ()=> {
+  eventBus.emit("change-ai-chat-model");
+}
 onMounted(() => {
   handleThemeChange(customerSetting.isThemeDark);
 });
@@ -104,6 +122,17 @@ onMounted(() => {
   position: absolute;
   right: 80px;
 }
+.ai-chat-box {
+  position: absolute;
+  right: 170px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  cursor: pointer;
+}
 .cloud-box {
   position: absolute;
   right: 45px;
@@ -115,10 +144,10 @@ onMounted(() => {
   border-radius: 4px;
   cursor: pointer;
 }
-.cloud-box:hover {
+.btn:hover {
   background-color: var(--ath-btn-hover);
 }
-.cloud-box:active {
+.btn:active {
   background-color: var(--ath-btn-active);
 }
 .share-btn-box {
