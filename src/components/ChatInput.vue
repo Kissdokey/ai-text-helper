@@ -11,6 +11,8 @@
           rows="1"
           ref="aiTextArea"
           @input="handleInputChange"
+          @keydown.enter.prevent="handleSubmit"
+          :data-placeholder="aiText === '' ? '任何问题，都可以问智能文本助手！' : ''"
         ></pre>
       </div>
       <div class="ai-textarea-layout-right">
@@ -53,13 +55,9 @@ import {
   watch,
 } from "vue";
 import { useAiTextAreaStore } from "@/store/aiTextArea";
-import { aiRequest, textDeal } from "@/fetch/ai.js";
-import AiPresetsBar from "@/components/AiPresetsBar.vue";
-const eventBus = inject("eventBus");
 const emit = defineEmits(["submit"]);
 const aiTextArea = ref(null);
 const aiText = ref("");
-const aiTextAreaStore = useAiTextAreaStore();
 
 const handleInputChange = (e) => {
   e.target.style.height = "auto";
@@ -67,7 +65,8 @@ const handleInputChange = (e) => {
   aiText.value = e.target.innerText;
 };
 const handleSubmit = async () => {
-  emit('submit', aiText.value);
+  emit("submit", aiText.value);
+  clearInputText();
 };
 const clearInputText = () => {
   aiTextArea.value.innerText = "";
@@ -77,9 +76,6 @@ const clearInputText = () => {
 const textAreaFocus = () => {
   aiTextArea.value?.focus();
 };
-watch(aiText, (newVal, oldVal) => {
-  aiTextAreaStore.updateInputText(newVal);
-});
 </script>
 
 <style scoped>
@@ -121,7 +117,8 @@ watch(aiText, (newVal, oldVal) => {
 }
 
 .question-input-area {
-    max-height: 150px;
+position: relative;
+  max-height: 150px;
   margin-left: 36px;
   resize: none;
   line-height: 2;
@@ -133,7 +130,14 @@ watch(aiText, (newVal, oldVal) => {
   outline: none;
   overflow: auto;
 }
-
+.question-input-area::before {
+    content: attr(data-placeholder);
+    position: absolute;
+    top: 0;
+    left: 0;
+    color: var(--ath-aiwindow-input-placeholder-color);
+    font-size: 14;
+}
 .ai-textarea-actions {
   display: flex;
   align-items: center;

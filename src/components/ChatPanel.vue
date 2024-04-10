@@ -24,7 +24,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, inject } from "vue";
+import { ref, onMounted, inject, computed } from "vue";
 import ChatInput from "@/components/ChatInput.vue";
 import ChatHistory from "@/components/ChatHistory.vue";
 import { chat } from "@/fetch/ai.js";
@@ -38,7 +38,7 @@ const handleSubmit = (msg) => {
   chat(
     {
       fileId: editorContent.currentFile,
-      chatHistory: chatCycles.value,
+      chatHistory: message.value,
     },
     (res) => {
       if (!res?.done) {
@@ -50,6 +50,14 @@ const handleSubmit = (msg) => {
   );
   chatCycles.value.push({ role: "assistant", content: "", loading: true });
 };
+const message = computed(() => {
+  return chatCycles.value.map((item) => {
+    return {
+      role: item.role,
+      content: item.content,
+    };
+  });
+});
 </script>
 
 <style scoped>
