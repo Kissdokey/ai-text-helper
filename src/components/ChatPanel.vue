@@ -18,7 +18,10 @@
     </div>
     <ChatHistory :chatCycles="chatCycles"></ChatHistory>
     <div class="chat-input-wrapper">
-      <ChatInput @submit="handleSubmit"></ChatInput>
+      <ChatInput
+        @submit="handleSubmit"
+        :controlSubmitBtnDisabled="isSubmitBtnDisabled"
+      ></ChatInput>
     </div>
   </div>
 </template>
@@ -32,7 +35,9 @@ import { useEditorContent } from "@/store/editorContent";
 const eventBus = inject("eventBus");
 const editorContent = useEditorContent();
 const chatCycles = ref([]);
+const isSubmitBtnDisabled = ref(false);
 const handleSubmit = (msg) => {
+  isSubmitBtnDisabled.value = true;
   eventBus.emit("restart-reuqest");
   chatCycles.value.push({
     role: "user",
@@ -53,6 +58,7 @@ const handleSubmit = (msg) => {
         );
       } else {
         chatCycles.value.at(-1).loading = false;
+        isSubmitBtnDisabled.value = false;
       }
     }
   );

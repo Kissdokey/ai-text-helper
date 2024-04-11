@@ -29,7 +29,7 @@
             <v-icon>$IconClose</v-icon>
           </div>
           <div
-            class="input-submit-btn"
+            :class="['input-submit-btn',isSubmitBtnDisabled ? 'btn-disabled' : '']"
             @click="handleSubmit"
             v-tooltip.bottom="{
               content: '发送',
@@ -52,19 +52,31 @@ import {
   onUpdated,
   reactive,
   ref,
+  computed,
   watch,
 } from "vue";
 import { useAiTextAreaStore } from "@/store/aiTextArea";
 const emit = defineEmits(["submit"]);
+const props = defineProps({
+  controlSubmitBtnDisabled: {
+    type: Boolean,
+    default: false
+  }
+})
 const aiTextArea = ref(null);
 const aiText = ref("");
-
+const isSubmitBtnDisabled = computed(()=> {
+  return props.controlSubmitBtnDisabled || !aiText.value.trim()
+})
 const handleInputChange = (e) => {
   e.target.style.height = "auto";
   e.target.style.height = e.target.scrollHeight + "px";
   aiText.value = e.target.innerText;
 };
 const handleSubmit = async () => {
+  if(!aiText.value.trim()) {
+    return
+  }
   emit("submit", aiText.value);
   clearInputText();
 };
@@ -149,7 +161,10 @@ position: relative;
   cursor: pointer;
   border-radius: 8px;
 }
-
+.btn-disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
 .clear-input-text-btn:hover,
 .input-submit-btn:hover {
   background-color: var(--ath-aiwindow-btn-hover);

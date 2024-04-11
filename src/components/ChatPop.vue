@@ -45,7 +45,9 @@ const popClass = computed(() => {
 });
 const cptContent = computed(() => {
   if (props.role === "user") return props.content[0].result;
-  return showText.value;
+  return isCursorShow.value
+    ? showText.value
+    : props.content.map((d) => d.result).join("");
 });
 
 onMounted(() => {
