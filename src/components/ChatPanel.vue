@@ -34,7 +34,11 @@ const editorContent = useEditorContent();
 const chatCycles = ref([]);
 const handleSubmit = (msg) => {
   eventBus.emit("restart-reuqest");
-  chatCycles.value.push({ role: "user", content: msg, loading: false });
+  chatCycles.value.push({
+    role: "user",
+    content: [{ result: msg }],
+    loading: false,
+  });
   chat(
     {
       fileId: editorContent.currentFile,
@@ -42,19 +46,23 @@ const handleSubmit = (msg) => {
     },
     (res) => {
       if (!res?.done) {
-        chatCycles.value.at(-1).content += res.value.data.result;
+        chatCycles.value.at(-1).content.push(res.value.data);
+        eventBus.emit(
+          `update-print-task-${chatCycles.value.length - 1}`,
+          res.value.data
+        );
       } else {
         chatCycles.value.at(-1).loading = false;
       }
     }
   );
-  chatCycles.value.push({ role: "assistant", content: "", loading: true });
+  chatCycles.value.push({ role: "assistant", content: [], loading: true });
 };
 const message = computed(() => {
   return chatCycles.value.map((item) => {
     return {
       role: item.role,
-      content: item.content,
+      content: item.content.map((data) => data.result).join(""),
     };
   });
 });

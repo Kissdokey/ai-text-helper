@@ -6,6 +6,7 @@
       :role="item.role"
       :content="item.content"
       :isLoading="item.loading"
+      :index="index"
     ></ChatPop>
   </div>
 </template>
@@ -28,18 +29,16 @@ onMounted(() => {
   scrollContainer.value?.addEventListener("mousewheel", (e) => {
     isAutoScroll.value = false;
   });
+  eventBus.on("chat-scroll-to-bottom", scrollToBottom);
 });
-watch(props.chatCycles, () => {
-  console.log(111);
+const scrollToBottom = () => {
   if (!scrollContainer.value || !isAutoScroll.value) {
     return;
   }
-  nextTick(() => {
-    scrollContainer.value.scroll({
-      top: scrollContainer.value.scrollHeight,
-    });
+  scrollContainer.value.scroll({
+    top: scrollContainer.value.scrollHeight,
   });
-});
+};
 </script>
 
 <style scoped>

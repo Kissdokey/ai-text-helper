@@ -58,8 +58,8 @@ export const stream_post = async (url = "", data = {}, auth = "", cb) => {
       if (textArray.length > 1) {
         textArray.forEach((item) => {
           const textObj = JSON.parse(item.replace(/(\b\w+\b)(?=:)/g, '"$1"'));
-          if (textObj?.error_msg) {
-            emitter.emit("response-error", textObj?.error_msg);
+          if (textObj?.error_msg || textObj?.code) {
+            emitter.emit("response-error", textObj?.error_msg || textObj?.msg);
             cb({ done: true, value: textObj });
           } else {
             cb({ done, value: textObj });
@@ -68,8 +68,8 @@ export const stream_post = async (url = "", data = {}, auth = "", cb) => {
       } else {
         // 打印第一块的文本内容
         const textObj = JSON.parse(text.replace(/(\b\w+\b)(?=:)/g, '"$1"'));
-        if (textObj?.error_msg) {
-          emitter.emit("response-error", textObj?.error_msg);
+        if (textObj?.error_msg || textObj?.code) {
+          emitter.emit("response-error", textObj?.error_msg || textObj?.msg);
           cb({ done: true, value: textObj });
         } else {
           cb({ done, value: textObj });
