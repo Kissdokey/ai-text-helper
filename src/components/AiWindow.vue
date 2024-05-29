@@ -100,7 +100,29 @@ const streamRequest = async (requestFn, isCustomize, data) => {
     index = 0;
   }
   if (isCustomize) {
-    await requestFn(data, (res) => {
+    let request = {
+      penalty_score: Number(data.penalty_score) || 1.5,
+      temperature: Number(data.temperature) || 0.7,
+      top_p: Number(data.top_p) || 1,
+      system:
+        data.system +
+        "「" +
+        aiTextAreaStore.selectedText.replace(/[\'\"\\\/\b\f\n\r\t]/g, "") +
+        "」",
+      max_output_tokens: Number(data.max_output_tokens) || 200,
+      messages: data?.messages || [
+        {
+          role: "user",
+          content:
+            data.system +
+            "「" +
+            aiTextAreaStore.selectedText.replace(/[\'\"\\\/\b\f\n\r\t]/g, "") +
+            "」",
+        },
+      ],
+    };
+    console.log(request);
+    await requestFn(request, (res) => {
       testData = res?.data?.content?.result;
     });
   } else {
@@ -135,25 +157,28 @@ const streamRequest = async (requestFn, isCustomize, data) => {
       updateCursorPosition();
     });
     index++;
-  }, 10);
+  }, 50);
 };
 const handleSubmit = async () => {
   streamRequest(aiRequest, true, {
     system: "你是一个文本处理助手，按照我的上下文和问题，给出我答案",
     temperature: 0.7,
-    requestContent:
-      "上下文为「" +
-      aiTextAreaStore.selectedText.replace(/[\'\"\\\/\b\f\n\r\t]/g, "") +
-      "」。我的问题是「" +
-      aiTextAreaStore.inputText +
-      "」",
+    messages: [
+      {
+        role: "user",
+        content:
+          "上下文为「" +
+          aiTextAreaStore.selectedText.replace(/[\'\"\\\/\b\f\n\r\t]/g, "") +
+          "」。我的问题是「" +
+          aiTextAreaStore.inputText +
+          "」",
+      },
+    ],
   });
 };
-const handleChoiceBtnClick = (type, id) => {
-  if (type !== "customize") {
-    streamRequest(textDeal, false, { type: type });
-    return;
-  }
+const handleChoiceBtnClick = (data) => {
+  console.log(data);
+  streamRequest(aiRequest, true, data);
 };
 const clearInputText = () => {
   aiTextArea.value.innerText = "";
@@ -219,16 +244,19 @@ onMounted(() => {
 }
 
 .ai-answer-area-container {
+  margin-top: 12px;
   position: relative;
   width: 100%;
-  min-height: 30px;
-  max-height: 100px;
+  min-height: 50px;
   overflow: auto;
   font-size: 14px;
   line-height: 2;
   background-color: var(--ath-aiwindow-answer-background);
   color: var(--ath-aiwindow-answer-color);
   margin-bottom: 200px;
+  border-radius: 8px;
+  padding: 12px;
+  box-shadow: var(--ath-aiwindow-box-shadow);
 }
 
 .ai-answer-area-cursor {
@@ -240,8 +268,8 @@ onMounted(() => {
   z-index: 9999;
   animation: cursor 0.6s infinite;
   transform: translateY(3px);
-  left: calc(v-bind("cursorPos.x") * 1px);
-  top: calc(v-bind("cursorPos.y") * 1px);
+  left: calc((v-bind("cursorPos.x") + 12) * 1px);
+  top: calc((v-bind("cursorPos.y") + 12) * 1px);
 }
 
 @keyframes cursor {

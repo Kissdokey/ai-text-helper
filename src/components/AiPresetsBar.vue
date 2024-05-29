@@ -94,7 +94,7 @@
       <div v-for="choice in selectedArray" :key="choice">
         <div
           class="choice-item"
-          @click="handleSubmit(choice?.type, choice?.id)"
+          @click="handleSubmit(choice)"
         >
           {{ choice?.name }}
         </div>
@@ -135,8 +135,8 @@ const aiPresetsArray = ref([
     temperature: "",
     top_p: "",
     penalty_score: "",
-    system: "",
-    max_output_tokens: "",
+    system: "翻译这段文字",
+    max_output_tokens: 200,
     uid: "1",
     selected: true,
   },

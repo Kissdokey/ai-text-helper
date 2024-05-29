@@ -5,15 +5,18 @@
   <div class="app-container">
     <AppTitle></AppTitle>
     <div class="editor-wrapper">
-      <ToolPanel v-show="!isChatModel"></ToolPanel>
+      <ToolPanel v-show="!isChatModel && !isGuester"></ToolPanel>
       <WorkSpacePanel
-        v-show="!isChatModel"
+        v-show="!isChatModel && !isGuester"
         :isHiddenFilePanel="isHiddenFilePanel"
       ></WorkSpacePanel>
       <ChatSessionPanel v-show="isChatModel"></ChatSessionPanel>
       <div class="editor-area">
-        <FileSelectBar v-show="!isChatModel"></FileSelectBar>
-        <FixedMenu v-show="!isChatModel" :isHiddenToolPanel="true"></FixedMenu>
+        <FileSelectBar v-show="!isChatModel && !isGuester"></FileSelectBar>
+        <FixedMenu
+          v-show="!isChatModel && !isGuester"
+          :isHiddenToolPanel="true"
+        ></FixedMenu>
         <div class="preview-setting-btn" @click="handlePreviewBtnClick">
           <v-icon v-show="isPreview">$IconPreviewOff</v-icon>
           <v-icon v-show="!isPreview">$IconPreviewOn</v-icon>
@@ -23,7 +26,7 @@
           <editor-content
             v-show="true"
             :editor="editor"
-            class="editor"
+            :class="['editor',isGuester ? 'isGuester' : '']"
             id="editorRef"
             spellcheck="false"
           />
@@ -35,13 +38,14 @@
       </div>
       <ChatPanel v-show="isChatModel"></ChatPanel>
     </div>
+    <div class="mask" v-show="false" style="width: 100%; height: 100%;position: absolute;top: 0;left: 0;z-index: 9999999"></div>
   </div>
 </template>
 
 <script setup>
 import { useFileDependenciesStore } from "@/store/fileDependencies.js";
 import _ from "lodash";
-import "highlight.js/styles/github.css";
+
 import ToolPanel from "@/components/ToolPanel.vue";
 import FileSelectBar from "@/components/FileSelectBar.vue";
 import RightSidePanel from "@/components/RightSidePanel.vue";
@@ -58,7 +62,7 @@ import { useEditor, EditorContent } from "@tiptap/vue-3";
 import extensions from "@/util/extensions.js";
 import { saveDocx } from "@/util/html2docx.js";
 import { exportAsImg } from "@/util/html2canvas.ts";
-import { exportAsPdf } from "@/util/html2pdf.ts";
+// import { exportAsPdf } from "@/util/html2pdf.ts";
 import { html2md } from "@/util/html2md.js";
 import { marked } from "marked";
 import {
@@ -69,6 +73,7 @@ import {
   provide,
   inject,
   nextTick,
+  watch,
 } from "vue";
 import mammoth from "mammoth";
 import { colorItems, INITHTML, paragraphTags } from "@/util/constantData.js";
@@ -76,8 +81,9 @@ import { useEditorContent } from "@/store/editorContent";
 import { authentication, updateUserFile } from "@/fetch/user.js";
 import { createFile, updateFile } from "@/fetch/file.js";
 import { useUserStore } from "@/store/user.js";
-import hljs from "highlight.js";
+import { useChatSession } from "@/store/chat.js";
 const editorContent2 = useEditorContent();
+const chatSession = useChatSession();
 const userStore = useUserStore();
 const fileDependenciesStore = useFileDependenciesStore();
 let operateItemRef = null;
@@ -88,7 +94,16 @@ const initialValue = ref(INITHTML);
 const fileWithoutNameIndex = ref(1);
 const editorAreaPaddingTop = ref(43);
 const eventBus = inject("eventBus");
-
+const props = defineProps({
+  isGuester: {
+    type: Boolean,
+    default: false,
+  },
+  fileContent: {
+    type: String,
+    default: "",
+  },
+});
 const editor = useEditor({
   content: "",
   extensions: extensions,
@@ -183,7 +198,7 @@ function saveAsImg() {
   exportAsImg(document.querySelector("#editorRef"), "未命名图片", true);
 }
 function saveAsPdf() {
-  exportAsPdf(document.querySelector("#editorRef"), "未命名pdf");
+  // exportAsPdf(document.querySelector("#editorRef"), "未命名pdf");
 }
 function saveAsMd() {
   html2md(getHtml());
@@ -322,9 +337,7 @@ const updatePreviewPanel = () => {
 
     // 创建一个子元素div
     var childHtml = codeTag.innerHTML;
-    const highlightedCode = hljs.highlight(childHtml, {
-      language: "javascript",
-    }).value;
+    const highlightedCode = ''
     codeTag.innerHTML = highlightedCode;
     console.log(highlightedCode);
   }
@@ -338,13 +351,23 @@ const changeAiChatModel = () => {
     console.log(fixedMenu.offsetHeight);
     editorAreaPaddingTop.value = fixedMenu ? fixedMenu?.offsetHeight : 43;
   });
-  document.querySelector('.tiptap').contentEditable  = `${!isChatModel.value}`;
+  document.querySelector(".tiptap").contentEditable = `${!isChatModel.value}`;
 };
+function initGuesterView() {
+  if (props.isGuester) {
+    document.querySelector(".tiptap").contentEditable = "false";
+    editor.value.commands.setContent(props.fileContent);
+    let updateFunc = editor.value.callbacks.update[0];
+    updateFunc();
+  }
+}
 onMounted(async () => {
   authentication(userStore.initUserInfo);
   await editorContent2.init();
+  await chatSession.init();
   initFile();
   autoResize();
+  initGuesterView();
   operateItemRef = document.querySelector(".operate-item");
   eventBus.on("change-file", onChangeFile);
   eventBus.on("delete-file", onDeleteFile);
@@ -599,5 +622,8 @@ blockquote::after {
   position: absolute;
   background-color: red;
   z-index: 99;
+}
+.isGuester {
+  margin: 0 auto;
 }
 </style>

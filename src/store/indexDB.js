@@ -31,7 +31,9 @@ export function openDB(dbName, version = 1) {
       db = event.target.result; // 数据库对象
       var objectStore;
       // 创建存储库
-      objectStore = db.createObjectStore("file-info", {
+      console.log(db.name)
+      let tableName = db.name === 'chat-session' ? 'chat-record' : 'file-info';
+      objectStore = db.createObjectStore(tableName, {
         keyPath: "id", // 这是主键
         // autoIncrement: true // 实现自增
       });

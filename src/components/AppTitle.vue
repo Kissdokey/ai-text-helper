@@ -1,7 +1,7 @@
 <template>
   <div :class="['app-header', isException ? 'exception' : '']">
     <v-icon size="32" class="app-icon">$IconLogo</v-icon>
-    <span>AI TEXT HELPER</span>
+    <span>AI Text Helper</span>
     <div
       class="ai-chat-box btn"
       v-if="!isException"
@@ -11,7 +11,7 @@
       }"
       @click="changeAiChatModel"
     >
-      <v-icon>$IconCloud</v-icon>
+      <span>AI Chat</span>
     </div>
     <div
       v-if="!isException"
@@ -125,13 +125,16 @@ onMounted(() => {
 .ai-chat-box {
   position: absolute;
   right: 170px;
-  width: 24px;
   height: 24px;
+  padding: 2px 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 4px;
   cursor: pointer;
+}
+.ai-chat-box span{
+  font-size: 18px !important;
 }
 .cloud-box {
   position: absolute;

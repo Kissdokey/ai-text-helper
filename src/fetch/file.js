@@ -45,4 +45,5 @@ export const acquireFile = async (data = {}) => {
   }
   emitter.emit("save-in-cloud-success", "文件获取成功!");
   exceptionState.updateExceptionState(exceptionStateMap.SUCCESS)
+  return res?.data;
 };

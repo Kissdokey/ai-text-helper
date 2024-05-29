@@ -1,5 +1,6 @@
 :root {
   /* code */
+  --ath-pop-color: rgba(220,220,220,0.4);
   --ath-code-block-color: rgba(13,13,13,0.1);
   --ath-code-color : rgba(13,13,13,0.1);
   /* ai-window */
@@ -109,6 +110,7 @@
 }
 
 .theme-dark {
+  --ath-pop-color: rgba(220,220,220,0.4);
   --ath-code-block-color: rgba(240,240,240,0.4);
   --ath-code-color : rgba(240,240,240,0.4);
   --ath-aiwindow-input-placeholder-color: rgba(220,220,220,0.2);

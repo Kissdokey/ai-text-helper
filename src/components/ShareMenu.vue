@@ -36,7 +36,7 @@ const mockFechLink = () => {
 };
 const copyLinK = () => {
   const textarea = document.createElement("textarea");
-  textarea.value = shareLink.value;
+  textarea.value = `${LOCAL}/ATH/${editorContent.currentFile}`;
   document.body.appendChild(textarea);
   textarea.select();
   document.execCommand("copy");
@@ -44,11 +44,7 @@ const copyLinK = () => {
   eventBus.emit("copy-success", "成功复制链接到剪贴板");
 };
 watch(visible, (newV) => {
-  if (newV && !hasFetchUrl) {
-    hasFetchUrl = true;
-    //mock fetch
     mockFechLink();
-  }
 });
 </script>
 <style scoped>

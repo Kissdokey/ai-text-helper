@@ -32,6 +32,7 @@ import IconPreviewOff  from "@/assets/svgs/IconPreviewOff.vue";
 import IconPreviewOn from "@/assets/svgs/IconPreviewOn.vue";
 import IconShare from "@/assets/svgs/IconShare.vue"
 import IconCloud from '@/assets/svgs/IconCloud.vue'
+import IconCopy from '@/assets/svgs/IconCopy.vue'
 const icons = {
   IconBlockquote,
   IconBold,
@@ -66,7 +67,8 @@ const icons = {
   IconPreviewOn,
   IconPreviewOff,
   IconShare,
-  IconCloud
+  IconCloud,
+  IconCopy
 };
 
 export { icons };

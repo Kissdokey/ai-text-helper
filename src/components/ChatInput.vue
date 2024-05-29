@@ -12,7 +12,9 @@
           ref="aiTextArea"
           @input="handleInputChange"
           @keydown.enter.prevent="handleSubmit"
-          :data-placeholder="aiText === '' ? '任何问题，都可以问智能文本助手！' : ''"
+          :data-placeholder="
+            aiText === '' ? '任何问题，都可以问智能文本助手！' : ''
+          "
         ></pre>
       </div>
       <div class="ai-textarea-layout-right">
@@ -29,7 +31,10 @@
             <v-icon>$IconClose</v-icon>
           </div>
           <div
-            :class="['input-submit-btn',isSubmitBtnDisabled ? 'btn-disabled' : '']"
+            :class="[
+              'input-submit-btn',
+              isSubmitBtnDisabled ? 'btn-disabled' : '',
+            ]"
             @click="handleSubmit"
             v-tooltip.bottom="{
               content: '发送',
@@ -60,22 +65,22 @@ const emit = defineEmits(["submit"]);
 const props = defineProps({
   controlSubmitBtnDisabled: {
     type: Boolean,
-    default: false
-  }
-})
+    default: false,
+  },
+});
 const aiTextArea = ref(null);
 const aiText = ref("");
-const isSubmitBtnDisabled = computed(()=> {
-  return props.controlSubmitBtnDisabled || !aiText.value.trim()
-})
+const isSubmitBtnDisabled = computed(() => {
+  return props.controlSubmitBtnDisabled || !aiText.value.trim();
+});
 const handleInputChange = (e) => {
   e.target.style.height = "auto";
   e.target.style.height = e.target.scrollHeight + "px";
   aiText.value = e.target.innerText;
 };
 const handleSubmit = async () => {
-  if(!aiText.value.trim()) {
-    return
+  if (!aiText.value.trim()) {
+    return;
   }
   emit("submit", aiText.value);
   clearInputText();
@@ -96,7 +101,7 @@ const textAreaFocus = () => {
   padding: 12px;
   border-radius: 12px;
   border: 1px solid rgba(13, 13, 13, 0.3);
-  background-color: var(--ath-aiwindow-input-background);
+  /* background-color: var(--ath-aiwindow-input-background); */
   color: var(--ath-aiwindow-input-color);
 }
 
@@ -129,12 +134,14 @@ const textAreaFocus = () => {
 }
 
 .question-input-area {
-position: relative;
+  position: relative;
   max-height: 150px;
   margin-left: 36px;
   resize: none;
   line-height: 2;
-  font-size: 16px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 32px;
   word-break: break-all;
   cursor: text;
   white-space: pre-wrap;
@@ -143,12 +150,12 @@ position: relative;
   overflow: auto;
 }
 .question-input-area::before {
-    content: attr(data-placeholder);
-    position: absolute;
-    top: 0;
-    left: 0;
-    color: var(--ath-aiwindow-input-placeholder-color);
-    font-size: 14;
+  content: attr(data-placeholder);
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: var(--ath-aiwindow-input-placeholder-color);
+  font-size: 14;
 }
 .ai-textarea-actions {
   display: flex;

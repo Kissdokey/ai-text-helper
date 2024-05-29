@@ -43,9 +43,8 @@ const scrollToBottom = () => {
 
 <style scoped>
 .chat-history-container {
-  padding: 24px;
+  padding: 12px;
   flex: 1;
-  background-color: white;
   margin-top: 24px;
   overflow: auto;
 }

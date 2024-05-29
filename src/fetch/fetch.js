@@ -78,6 +78,6 @@ export const stream_post = async (url = "", data = {}, auth = "", cb) => {
     }
   } catch (error) {
     emitter.emit("network-error", error);
-    console.log(error);
+    cb({ done: true, value: error });
   }
 };
